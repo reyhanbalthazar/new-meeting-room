@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "dev-digimax-room",
     "public": "dist/meeting-room",
     "ignore": [
       "firebase.json",
