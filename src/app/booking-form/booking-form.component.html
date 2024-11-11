@@ -2,7 +2,7 @@
 <form (ngSubmit)="onSubmit()" class="max-w-sm mx-auto mt-5 px-5">
     <div class="relative w-full inline-block text-left mb-5">
         <div>
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Pilih
                 Ruangan</label>
             <button type="button"
                 class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -30,7 +30,7 @@
     </div>
 
     <div class="mb-5">
-        <label for="choose-date" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pilih
+        <label for="choose-date" class="block mb-2 text-sm font-medium text-gray-900">Pilih
             Waktu</label>
         <div class="mb-5">
             <mat-form-field appearance="fill" class="w-full">
@@ -45,37 +45,37 @@
     </div>
     <div class="flex gap-5">
         <div class="mb-5 w-full">
-            <label for="choose-start-time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jam
+            <label for="choose-start-time" class="block mb-2 text-sm font-medium text-gray-900">Jam
                 Mulai</label>
             <input type="time" id="choose-start-time" [(ngModel)]="bookingData.start_time" name="start_time"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center"
                 required />
         </div>
         <div class="mb-5 w-full">
-            <label for="choose-end-time" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jam
+            <label for="choose-end-time" class="block mb-2 text-sm font-medium text-gray-900">Jam
                 Selesai</label>
             <input type="time" id="choose-end-time" [(ngModel)]="bookingData.end_time" name="end_time"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center"
                 required />
         </div>
     </div>
     <div class="mb-5">
-        <label for="pic" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">PIC</label>
+        <label for="pic" class="block mb-2 text-sm font-medium text-gray-900">PIC</label>
         <input type="text" id="pic" [(ngModel)]="bookingData.pic" name="pic"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required />
     </div>
     <div class="mb-5">
-        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
         <input type="text" id="email" [(ngModel)]="bookingData.email" name="email"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required />
     </div>
     <div class="mb-5">
-        <label for="meeting-topic" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Topik
+        <label for="meeting-topic" class="block mb-2 text-sm font-medium text-gray-900">Topik
             Meeting</label>
         <input type="text" id="meeting-topic" [(ngModel)]="bookingData.topic" name="topic"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required />
     </div>
     <button type="submit"
