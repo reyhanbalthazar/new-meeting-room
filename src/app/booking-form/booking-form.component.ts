@@ -19,7 +19,7 @@ export class BookingFormComponent {
   selectedRoomName = 'Pilih Ruangan'; // Default button text
   bookingData = {
     room_id: '',
-    user_id: 2,
+    user_id: 1,
     date: '',
     start_time: '',
     end_time: '',
