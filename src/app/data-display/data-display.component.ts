@@ -10,7 +10,7 @@ export class DataDisplayComponent implements OnInit {
   dataBookings: any;
   dataRooms: any;
   filteredBookings: any[] = [];
-  selectedRoom: string | null = null; // Store selected room's ID or name
+  selectedRoom: string | null = 'Semua Jadwal Ruangan Meeting'; // Default to "Semua Jadwal Ruangan Meeting"
   showMoreTabs: boolean = false;
 
   constructor(private apiService: ApiService) { }
@@ -20,7 +20,7 @@ export class DataDisplayComponent implements OnInit {
     this.apiService.getDataBookings().subscribe(
       (response) => {
         this.dataBookings = response;
-        this.filteredBookings = response; // Initialize with all bookings
+        this.filterBookingsByRoom({ name: 'Semua Jadwal Ruangan Meeting' }); // Show all bookings by default
       },
       (error) => {
         console.error('Error fetching data:', error);
@@ -35,7 +35,7 @@ export class DataDisplayComponent implements OnInit {
       (error) => {
         console.error('Error fetching data:', error);
       }
-    )
+    );
   }
 
   formatTime(time: string): string {
@@ -46,14 +46,17 @@ export class DataDisplayComponent implements OnInit {
   filterBookingsByRoom(room: any): void {
     this.selectedRoom = room.name;
 
-    // Flatten and filter schedules by room
-    this.filteredBookings = this.dataBookings
-      .map((booking: any) => ({
-        date: booking.date,
-        schedules: booking.schedules.filter((schedule: any) => schedule.room === this.selectedRoom)
-      }))
-      .filter((booking: any) => booking.schedules.length > 0); // Keep only dates with matching schedules
+    if (this.selectedRoom === 'Semua Jadwal Ruangan Meeting') {
+      // Show all bookings if "Semua Jadwal Ruangan Meeting" is selected
+      this.filteredBookings = this.dataBookings;
+    } else {
+      // Flatten and filter schedules by selected room
+      this.filteredBookings = this.dataBookings
+        .map((booking: any) => ({
+          date: booking.date,
+          schedules: booking.schedules.filter((schedule: any) => schedule.room === this.selectedRoom)
+        }))
+        .filter((booking: any) => booking.schedules.length > 0); // Keep only dates with matching schedules
+    }
   }
-
-
 }
