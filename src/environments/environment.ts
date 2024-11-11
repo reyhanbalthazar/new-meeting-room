@@ -1,6 +1,6 @@
 // environment.ts
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:8000', // development API URL
+    apiUrl: 'https://api-room.dmmrnd.id', // development API URL
   };
   
