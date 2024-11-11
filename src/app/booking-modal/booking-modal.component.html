@@ -1,0 +1,37 @@
+<p mat-dialog-title class="modal-title">
+    <!-- Dynamic title based on modal type -->
+    <ng-container [ngSwitch]="data.type">
+        <span *ngSwitchCase="'confirmation'">{{ data.title }}</span>
+        <span *ngSwitchCase="'success'">{{ data.title }}</span>
+        <span *ngSwitchCase="'conflict'">{{ data.title }}</span>
+        <span *ngSwitchCase="'invalidForm'">{{ data.title }}</span>
+        <span *ngSwitchDefault>Error</span>
+    </ng-container>
+</p>
+
+<mat-dialog-content class="modal-content">
+    <ng-container [ngSwitch]="data.type">
+        <p *ngSwitchCase="'confirmation'" class="modal-message">{{ data.message }}</p>
+        <p *ngSwitchCase="'confirmation'" class="modal-submessage">{{ data.subMessage }}</p>
+        <p *ngSwitchCase="'success'" class="modal-message">{{ data.message }}</p>
+        <p *ngSwitchCase="'success'" class="modal-submessage">{{ data.subMessage }}</p>
+        <p *ngSwitchCase="'conflict'" class="modal-message">{{ data.message }}</p>
+        <p *ngSwitchCase="'error'" class="modal-submessage">{{ data.message }}</p>
+    </ng-container>
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-actions">
+    <!-- Conditional buttons based on modal type -->
+    <ng-container [ngSwitch]="data.type">
+        <button mat-button *ngSwitchCase="'confirmation'" (click)="closeModal(true)" class="confirm-button">{{
+            data.button1 }}</button>
+        <button mat-button *ngSwitchCase="'confirmation'" (click)="closeModal(false)" class="cancel-button">{{
+            data.button2 }}</button>
+        <button mat-button *ngSwitchCase="'success'" mat-dialog-close (click)="closeModalAndRedirect(true)" class="confirm-button btn-single">{{ data.button1
+            }}</button>
+        <button mat-button *ngSwitchCase="'conflict'" mat-dialog-close (click)="closeModal(true)"
+            class="confirm-button btn-single">{{ data.button1 }}</button>
+        <button mat-button *ngSwitchDefault mat-dialog-close class="cancel-button btn-single">Close</button>
+
+    </ng-container>
+</mat-dialog-actions>

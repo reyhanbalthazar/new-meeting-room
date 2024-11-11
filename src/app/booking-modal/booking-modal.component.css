@@ -1,0 +1,48 @@
+/* Center content */
+.modal-title {
+    text-align: center;
+    font-size: 16px;
+}
+
+.modal-content {
+    text-align: center;
+    color: black;
+}
+
+.modal-message {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.modal-submessage {
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+/* Style for the "Lanjutkan" button */
+.confirm-button {
+    background-color: #4CAF50;
+    /* Green background */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+/* Add a hover effect for the "Lanjutkan" button */
+.confirm-button:hover {
+    background-color: #45A049;
+}
+
+/* Style for the "Periksa Lagi" button */
+.cancel-button {
+    text-decoration: underline;
+}
+
+.btn-single {
+    margin: auto;
+}

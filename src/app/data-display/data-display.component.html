@@ -1,0 +1,40 @@
+<div class="relative">
+  <ul class="flex flex-nowrap space-x-2 overflow-x-auto py-2 border-b border-gray-200 dark:border-gray-700">
+    <li *ngFor="let room of dataRooms" class="flex-shrink-0">
+      <a href="javascript:void(0);" (click)="filterBookingsByRoom(room)"
+        [ngClass]="{'text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500': selectedRoom === room.name}"
+        class="inline-block p-4 rounded-t-lg">
+        {{ room.name }}
+      </a>
+    </li>
+  </ul>
+</div>
+
+<div class="page-container">
+  <div *ngFor="let items of filteredBookings" class="grid gap-2 py-3 block">
+    <!-- Booking List -->
+    <div class="mx-3 px-3 py-1 w-44 text-white text-center rounded" style="background-color: #28a745;">
+      {{ items.date | date: 'EEEE dd MMMM' }}
+    </div>
+
+    <div *ngFor="let schedule of items.schedules" class="col-span-4 mx-3 rounded border border-gray-300 bg-white">
+      <div class="grid md:grid-cols-3 grid-cols-1 px-4 py-4">
+        <div class="grid grid-cols-1">
+          <div class="font-medium text-base">
+            {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
+          </div>
+          <div class="font-light text-sm text-gray-600">PIC : {{ schedule.pic }}</div>
+        </div>
+        <div class="flex items-center font-medium text-2xl md:col-span-2 md:text-left text-center mt-2 md:mt-0">
+          {{ schedule.topic }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
+    <img src="../../../../../../assets/qr-scan-booking.png" width="110" alt="qr-scan-booking">
+    <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p>
+  </div>
+</div>
