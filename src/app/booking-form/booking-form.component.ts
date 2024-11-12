@@ -41,7 +41,7 @@ export class BookingFormComponent {
   fetchRooms(): void {
     this.apiService.getDataRooms().subscribe(
       (response) => {
-        this.rooms = response;
+        this.rooms = response.filter((room:any) => room.id !== 1);
       },
       (error) => {
         console.error('Error fetching data:', error);
