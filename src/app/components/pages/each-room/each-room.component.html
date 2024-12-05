@@ -9,7 +9,7 @@
 <div class="relative">
   <!-- Booking List -->
   <div class="page-container">
-    <div *ngFor="let items of filteredBookings" class="grid gap-2 py-3 block">
+    <div *ngFor="let items of filteredBookings" class="grid gap-2 py-3 block ">
       <div class="mx-3 px-3 py-1 w-44 text-white text-center rounded" style="background-color: #28a745;">
         {{ items.date | date: 'EEEE dd MMMM' }}
       </div>
@@ -31,8 +31,8 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
-      <img src="../../../../../../assets/qr-scan-booking.png" width="110" alt="qr-scan-booking">
-      <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p>
-    </div>
+  </div>
+  <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
+    <img src="../../../../../../assets/qr_meetingroom.png" width="110" alt="qr-scan-booking">
+    <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p>
   </div>
