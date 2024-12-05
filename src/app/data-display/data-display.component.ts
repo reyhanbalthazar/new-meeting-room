@@ -19,6 +19,7 @@ export class DataDisplayComponent implements OnInit {
     // Fetch data from the API Booking list
     this.apiService.getDataBookings().subscribe(
       (response) => {
+        console.log(response);
         this.dataBookings = response;
         this.filterBookingsByRoom({ name: 'Semua Jadwal Ruangan Meeting' }); // Show all bookings by default
       },

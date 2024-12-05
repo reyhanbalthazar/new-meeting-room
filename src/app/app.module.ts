@@ -20,6 +20,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { BookingModalComponent } from './booking-modal/booking-modal.component';
 import { DeleteSuccessComponent } from './delete-success/delete-success.component';
+import { EachRoomComponent } from './components/pages/each-room/each-room.component';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import { DeleteSuccessComponent } from './delete-success/delete-success.componen
     BookingModalComponent,
     FooterComponent,
     DeleteSuccessComponent,
+    EachRoomComponent
   ],
   imports: [
     BrowserModule,

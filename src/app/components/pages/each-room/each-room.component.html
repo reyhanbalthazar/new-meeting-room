@@ -1,0 +1,38 @@
+<div class="image-container">
+  <img src="../../../../../../assets/background-header-tablet.png" alt="header-background" class="background-image">
+
+  <div class="content">
+    <img src="../../../../../../assets/dmmx-logo-white.png" class="w-44 md:w-60  mx-5" alt="">
+    <div class="text-overlay-2 mx-9">{{ selectedRoomName }}</div>
+  </div>
+</div>
+<div class="relative">
+  <!-- Booking List -->
+  <div class="page-container">
+    <div *ngFor="let items of filteredBookings" class="grid gap-2 py-3 block">
+      <div class="mx-3 px-3 py-1 w-44 text-white text-center rounded" style="background-color: #28a745;">
+        {{ items.date | date: 'EEEE dd MMMM' }}
+      </div>
+
+      <div *ngFor="let schedule of items.schedules" class="col-span-4 mx-3 rounded border border-gray-300 bg-white">
+        <div class="grid md:grid-cols-3 grid-cols-1 px-4 py-4">
+          <!-- <div class="flex items-center justify-center font-medium bg-gray-100 p-4 rounded">{{ schedule.room }}</div> -->
+          <div class="grid grid-cols-1 mt-4">
+            <div class="font-medium text-base">
+              {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
+            </div>
+            <div class="font-light text-sm text-gray-600">PIC : {{ schedule.pic }}</div>
+          </div>
+          <div class="flex items-center font-medium text-2xl md:col-span-2 md:text-left text-center mt-2 md:mt-0">
+            {{ schedule.topic }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
+      <img src="../../../../../../assets/qr-scan-booking.png" width="110" alt="qr-scan-booking">
+      <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p>
+    </div>
+  </div>

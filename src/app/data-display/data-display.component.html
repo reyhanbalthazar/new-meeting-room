@@ -19,7 +19,8 @@
 
     <div *ngFor="let schedule of items.schedules" class="col-span-4 mx-3 rounded border border-gray-300 bg-white">
       <div class="grid md:grid-cols-3 grid-cols-1 px-4 py-4">
-        <div class="grid grid-cols-1">
+        <div class="flex items-center justify-center font-medium bg-gray-100 p-4 rounded">{{ schedule.room }}</div>
+        <div class="grid grid-cols-1 mt-4">
           <div class="font-medium text-base">
             {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
           </div>
