@@ -41,7 +41,7 @@ export class BookingFormComponent {
   fetchRooms(): void {
     this.apiService.getDataRooms().subscribe(
       (response) => {
-        this.rooms = response.filter((room:any) => room.id !== 1);
+        this.rooms = response.filter((room: any) => room.id !== 1);
       },
       (error) => {
         console.error('Error fetching data:', error);
@@ -179,6 +179,31 @@ export class BookingFormComponent {
       width: '300px'
     });
   }
+
+  updateEndTime(): void {
+    if (this.bookingData.start_time) {
+      // Parse the start time into hours and minutes
+      const [hours, minutes] = this.bookingData.start_time.split(':').map(Number);
+
+      // Add 1 hour and 30 minutes to the start time
+      let endHours = hours + 1;
+      let endMinutes = minutes + 30;
+
+      if (endMinutes >= 60) {
+        endMinutes -= 60;
+        endHours += 1;
+      }
+
+      // Ensure hours stay within a 24-hour format
+      if (endHours >= 24) {
+        endHours -= 24;
+      }
+
+      // Format the time back to HH:mm
+      this.bookingData.end_time = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+    }
+  }
+
 
 
 }
