@@ -1,8 +1,8 @@
 <div class="relative">
-  <ul class="flex flex-nowrap space-x-2 overflow-x-auto py-2 border-b border-gray-200 dark:border-gray-700">
+  <ul class="flex flex-nowrap space-x-2 overflow-x-auto py-2 border-b border-gray-200">
     <li *ngFor="let room of dataRooms" class="flex-shrink-0">
       <a href="javascript:void(0);" (click)="filterBookingsByRoom(room)"
-        [ngClass]="{'text-blue-600 bg-gray-100 dark:bg-gray-800 dark:text-blue-500': selectedRoom === room.name}"
+        [ngClass]="{'text-blue-600 bg-gray-100': selectedRoom === room.name}"
         class="inline-block p-4 rounded-t-lg">
         {{ room.name }}
       </a>
