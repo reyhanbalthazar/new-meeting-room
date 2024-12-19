@@ -17,55 +17,55 @@ export class EachRoomComponent implements OnInit {
 
   constructor(private apiService: ApiService, private route: ActivatedRoute) { }
 
-  // ngOnInit(): void {
-  //   // Fetch rooms and bookings
-  //   this.fetchRooms();
-  //   this.fetchBookings();
-
-  //   // Check if a room ID is passed in the route
-  //   const roomId = this.route.snapshot.paramMap.get('id');
-  //   console.log('Captured roomId:', roomId); // Debug log
-  //   if (roomId) {
-  //     this.selectedRoom = Number(roomId);
-
-  //     // Wait until dataRooms is fetched
-  //     const interval = setInterval(() => {
-  //       if (this.dataRooms && this.dataRooms.length > 0) {
-  //         this.setRoomName(roomId); // Fetch the room name based on roomId
-  //         clearInterval(interval); // Stop polling
-  //       }
-  //     }, 100);
-  //   }
-  // }
-
   ngOnInit(): void {
-      // Fetch initial dataBookings
-      this.fetchBookings();
-    
-      // Periodically update dataBookings every 30 seconds
-      interval(1000)
-        .pipe(switchMap(() => this.apiService.getDataBookings()))
-        .subscribe(
-          (response) => {
-            console.log('Updated dataBookings:', response);
-            this.dataBookings = response;
-            this.filterBookingsByRoomId(this.selectedRoom || 0);
-          },
-          (error) => {
-            console.error('Error updating dataBookings:', error);
-          }
-        );
-    
-      // Fetch dataRooms once on component initialization
-      this.apiService.getDataRooms().subscribe(
-        (response) => {
-          this.dataRooms = response;
-        },
-        (error) => {
-          console.error('Error fetching dataRooms:', error);
+    // Fetch rooms and bookings
+    this.fetchRooms();
+    this.fetchBookings();
+
+    // Check if a room ID is passed in the route
+    const roomId = this.route.snapshot.paramMap.get('id');
+    console.log('Captured roomId:', roomId); // Debug log
+    if (roomId) {
+      this.selectedRoom = Number(roomId);
+
+      // Wait until dataRooms is fetched
+      const interval = setInterval(() => {
+        if (this.dataRooms && this.dataRooms.length > 0) {
+          this.setRoomName(roomId); // Fetch the room name based on roomId
+          clearInterval(interval); // Stop polling
         }
-      );
+      }, 100);
     }
+  }
+
+  // ngOnInit(): void {
+  //     // Fetch initial dataBookings
+  //     this.fetchBookings();
+    
+  //     // Periodically update dataBookings every 30 seconds
+  //     interval(1000)
+  //       .pipe(switchMap(() => this.apiService.getDataBookings()))
+  //       .subscribe(
+  //         (response) => {
+  //           console.log('Updated dataBookings:', response);
+  //           this.dataBookings = response;
+  //           this.filterBookingsByRoom({ name: this.selectedRoom || 'Semua Jadwal Ruangan Meeting' });
+  //         },
+  //         (error) => {
+  //           console.error('Error updating dataBookings:', error);
+  //         }
+  //       );
+    
+  //     // Fetch dataRooms once on component initialization
+  //     this.apiService.getDataRooms().subscribe(
+  //       (response) => {
+  //         this.dataRooms = response;
+  //       },
+  //       (error) => {
+  //         console.error('Error fetching dataRooms:', error);
+  //       }
+  //     );
+  //   }
 
 
   fetchRooms(): void {
