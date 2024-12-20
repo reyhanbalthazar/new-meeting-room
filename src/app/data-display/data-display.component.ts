@@ -21,7 +21,7 @@ export class DataDisplayComponent implements OnInit {
     this.fetchBookings();
   
     // Periodically update dataBookings every 30 seconds
-    interval(1000)
+    interval(10000)
       .pipe(switchMap(() => this.apiService.getDataBookings()))
       .subscribe(
         (response) => {

@@ -18,60 +18,31 @@ export class EachRoomComponent implements OnInit {
   constructor(private apiService: ApiService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    // Fetch rooms and bookings
+    // Fetch rooms once on initialization
     this.fetchRooms();
-    this.fetchBookings();
 
     // Check if a room ID is passed in the route
     const roomId = this.route.snapshot.paramMap.get('id');
-    console.log('Captured roomId:', roomId); // Debug log
     if (roomId) {
       this.selectedRoom = Number(roomId);
 
       // Wait until dataRooms is fetched
-      const interval = setInterval(() => {
+      const intervalId = setInterval(() => {
         if (this.dataRooms && this.dataRooms.length > 0) {
           this.setRoomName(roomId); // Fetch the room name based on roomId
-          clearInterval(interval); // Stop polling
+          clearInterval(intervalId); // Stop polling
         }
       }, 100);
     }
+
+    // Fetch initial bookings and start periodic updates
+    this.fetchBookings(); // Initial fetch
+    this.setupPeriodicUpdates(); // Start periodic updates
   }
-
-  // ngOnInit(): void {
-  //     // Fetch initial dataBookings
-  //     this.fetchBookings();
-    
-  //     // Periodically update dataBookings every 30 seconds
-  //     interval(1000)
-  //       .pipe(switchMap(() => this.apiService.getDataBookings()))
-  //       .subscribe(
-  //         (response) => {
-  //           console.log('Updated dataBookings:', response);
-  //           this.dataBookings = response;
-  //           this.filterBookingsByRoom({ name: this.selectedRoom || 'Semua Jadwal Ruangan Meeting' });
-  //         },
-  //         (error) => {
-  //           console.error('Error updating dataBookings:', error);
-  //         }
-  //       );
-    
-  //     // Fetch dataRooms once on component initialization
-  //     this.apiService.getDataRooms().subscribe(
-  //       (response) => {
-  //         this.dataRooms = response;
-  //       },
-  //       (error) => {
-  //         console.error('Error fetching dataRooms:', error);
-  //       }
-  //     );
-  //   }
-
 
   fetchRooms(): void {
     this.apiService.getDataRooms().subscribe(
       (rooms) => {
-
         this.dataRooms = rooms;
       },
       (error) => {
@@ -93,6 +64,23 @@ export class EachRoomComponent implements OnInit {
         console.error('Error fetching bookings:', error);
       }
     );
+  }
+
+  setupPeriodicUpdates(): void {
+    interval(10000) // Update every 30 seconds
+      .pipe(switchMap(() => this.apiService.getDataBookings()))
+      .subscribe(
+        (bookings) => {
+          console.log('Updated bookings:', bookings);
+          this.dataBookings = bookings;
+          if (this.selectedRoom) {
+            this.filterBookingsByRoomId(this.selectedRoom);
+          }
+        },
+        (error) => {
+          console.error('Error during periodic updates:', error);
+        }
+      );
   }
 
   setRoomName(roomId: string): void {
