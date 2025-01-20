@@ -101,7 +101,7 @@ export class EachRoomComponent implements OnInit {
   }
 
   filterBookingsByRoomId(roomId: number | null): void {
-    console.log('roomIdNumber : ', roomId);
+    // console.log('roomIdNumber : ', roomId);
 
     if (roomId === null || isNaN(roomId)) {
       this.filteredBookings = []; // Reset filteredBookings if no valid room ID is provided
@@ -110,18 +110,40 @@ export class EachRoomComponent implements OnInit {
     }
 
     // Log all bookings before filtering
-    console.log('All bookings:', this.dataBookings);
+    // console.log('All bookings:', this.dataBookings);
 
     // Perform filtering
     this.filteredBookings = this.dataBookings
-      .map((booking) => ({
-        ...booking,
-        schedules: booking.schedules.filter((schedule: any) => schedule.room_id === roomId),
-      }))
+      .map((booking) => {
+        const filteredSchedules = booking.schedules.filter((schedule: any) => {
+          // console.log('Checking schedule.room_id:', schedule.room_id, 'against roomId:', roomId);
+          return schedule.room_id === roomId; // Ensure both are integers
+        });
+        return {
+          ...booking,
+          schedules: filteredSchedules,
+        };
+      })
       .filter((booking) => booking.schedules.length > 0); // Only include bookings with matching schedules
 
+    // Perform filtering but only for ongoing schedules
+    /*
+    this.filteredBookings = this.dataBookings
+      .map((booking) => ({
+        ...booking,
+        schedules: booking.schedules
+          .filter((schedule: any) => schedule.room_id === roomId)
+          .filter((schedule: any) => {
+            const endTime = new Date(`${booking.date}T${schedule.end_time}`);
+            const now = new Date();
+            return endTime > now; // Keep only ongoing schedules
+          }),
+      }))
+      .filter((booking) => booking.schedules.length > 0); // Only include bookings with matching schedules
+    */
+
     // Log the result
-    console.log('Filtered bookings:', this.filteredBookings);
+    // console.log('Filtered bookings:', this.filteredBookings);
   }
 
   formatTime(time: string): string {
