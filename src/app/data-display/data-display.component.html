@@ -2,8 +2,7 @@
   <ul class="flex flex-nowrap space-x-2 overflow-x-auto py-2 border-b border-gray-200">
     <li *ngFor="let room of dataRooms" class="flex-shrink-0">
       <a href="javascript:void(0);" (click)="filterBookingsByRoom(room)"
-        [ngClass]="{'text-blue-600 bg-gray-100': selectedRoom === room.name}"
-        class="inline-block p-4 rounded-t-lg">
+        [ngClass]="{'text-blue-600 bg-gray-100': selectedRoom === room.name}" class="inline-block p-4 rounded-t-lg">
         {{ room.name }}
       </a>
     </li>
@@ -11,27 +10,43 @@
 </div>
 
 <div class="page-container">
-  <div *ngFor="let items of filteredBookings" class="grid gap-2 py-3 block">
-    <!-- Booking List -->
-    <div class="mx-3 px-3 py-1 w-52 text-white text-center rounded" style="background-color: #28a745;">
-      {{ items.date | date: 'EEEE dd MMMM' }}
-    </div>
+  <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4 py-3">
+    <!-- Header Bulan -->
+    <h2 class="text-xl font-bold px-3">{{ monthGroup.month + '-01' | date: 'MMMM' }}</h2>
 
-    <div *ngFor="let schedule of items.schedules" class="col-span-4 mx-3 rounded border border-gray-300 bg-white">
-      <div class="grid md:grid-cols-3 grid-cols-1 px-4 py-4">
-        <div class="flex items-center justify-center font-medium bg-gray-100 p-4 rounded">{{ schedule.room }}</div>
-        <div class="grid grid-cols-1 mt-4">
-          <div class="font-medium text-base">
-            {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
-          </div>
-          <div class="font-light text-sm text-gray-600">PIC : {{ schedule.pic }}</div>
+    <!-- Looping Tanggal -->
+    <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col gap-4">
+      <div class="flex items-start p-3">
+        <!-- Tanggal -->
+        <div class="mx-3 px-3 py-1 w-12 text-white text-center rounded flex flex-col"
+          style="background-color: #28a745;">
+          <span class="text-sm font-semibold">{{ dateGroup.date | date: 'EE' }}</span>
+          <span class="text-lg font-bold">{{ dateGroup.date | date: 'dd' }}</span>
         </div>
-        <div class="flex items-center font-medium text-2xl md:col-span-2 md:text-left text-center mt-2 md:mt-0">
-          {{ schedule.topic }}
+
+        <!-- Jadwal -->
+        <div class="gap-4 w-full">
+          <div *ngFor="let schedule of dateGroup.schedules; let i = index" class="rounded border border-gray-300 bg-white p-3">
+            <span *ngIf="selectedRoom === 'Semua Jadwal Ruangan Meeting' && (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room)" style="background-color: #E9EDF0;" class="flex justify-center font-bold text-lg py-2 rounded">
+              {{ schedule.room }}
+            </span>
+            <div class="flex px-2 py-2">
+              <div class="flex flex-col">
+                <!-- Waktu -->
+                <div class="font-medium text-base">
+                  {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
+                </div>
+                <!-- PIC -->
+                <div class="font-light text-sm text-gray-600">PIC: {{ schedule.pic }}</div>
+              </div>
+              <!-- Topik -->
+              <div class="font-medium text-2xl mt-2 mx-10">
+                {{ schedule.topic }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-
-  
 </div>

@@ -10,7 +10,7 @@ import { interval, switchMap } from 'rxjs';
 })
 export class EachRoomComponent implements OnInit {
   dataRooms: any[] = []; // Holds room data
-  dataBookings: any[] = []; // Holds all bookings
+  dataBookings: any[] = []; // Holds all bookings (grouped by month and date)
   filteredBookings: any[] = []; // Filtered bookings for the selected room
   selectedRoom: number | null = null; // Currently selected room ID
   selectedRoomName: string = ''; // Selected room name
@@ -54,7 +54,6 @@ export class EachRoomComponent implements OnInit {
   fetchBookings(): void {
     this.apiService.getDataBookings().subscribe(
       (bookings) => {
-        // console.log('Bookings Data:', bookings); // Debug log
         this.dataBookings = bookings;
         if (this.selectedRoom) {
           this.filterBookingsByRoomId(this.selectedRoom);
@@ -67,7 +66,7 @@ export class EachRoomComponent implements OnInit {
   }
 
   setupPeriodicUpdates(): void {
-    interval(10000) // Update every 30 seconds
+    interval(10000) // Update every 10 seconds
       .pipe(switchMap(() => this.apiService.getDataBookings()))
       .subscribe(
         (bookings) => {
@@ -101,49 +100,27 @@ export class EachRoomComponent implements OnInit {
   }
 
   filterBookingsByRoomId(roomId: number | null): void {
-    // console.log('roomIdNumber : ', roomId);
-
     if (roomId === null || isNaN(roomId)) {
       this.filteredBookings = []; // Reset filteredBookings if no valid room ID is provided
       console.warn('Invalid roomId:', roomId); // Debug log
       return;
     }
 
-    // Log all bookings before filtering
-    // console.log('All bookings:', this.dataBookings);
-
-    // Perform filtering
+    // Process the nested structure (grouped by month and date)
     this.filteredBookings = this.dataBookings
-      .map((booking) => {
-        const filteredSchedules = booking.schedules.filter((schedule: any) => {
-          // console.log('Checking schedule.room_id:', schedule.room_id, 'against roomId:', roomId);
-          return schedule.room_id === roomId; // Ensure both are integers
-        });
-        return {
-          ...booking,
-          schedules: filteredSchedules,
-        };
-      })
-      .filter((booking) => booking.schedules.length > 0); // Only include bookings with matching schedules
-
-    // Perform filtering but only for ongoing schedules
-    /*
-    this.filteredBookings = this.dataBookings
-      .map((booking) => ({
-        ...booking,
-        schedules: booking.schedules
-          .filter((schedule: any) => schedule.room_id === roomId)
-          .filter((schedule: any) => {
-            const endTime = new Date(`${booking.date}T${schedule.end_time}`);
-            const now = new Date();
-            return endTime > now; // Keep only ongoing schedules
-          }),
+      .map((monthGroup) => ({
+        ...monthGroup,
+        dates: monthGroup.dates
+          .map((dateGroup: any) => ({
+            ...dateGroup,
+            schedules: dateGroup.schedules.filter((schedule: any) => schedule.room_id === roomId),
+          }))
+          .filter((dateGroup: any) => dateGroup.schedules.length > 0), // Only include dates with matching schedules
       }))
-      .filter((booking) => booking.schedules.length > 0); // Only include bookings with matching schedules
-    */
+      .filter((monthGroup) => monthGroup.dates.length > 0); // Only include months with matching dates
 
     // Log the result
-    // console.log('Filtered bookings:', this.filteredBookings);
+    console.log('Filtered bookings:', this.filteredBookings);
   }
 
   formatTime(time: string): string {

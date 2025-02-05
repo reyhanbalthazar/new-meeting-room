@@ -19,7 +19,7 @@ export class DataDisplayComponent implements OnInit {
   ngOnInit(): void {
     // Fetch initial dataBookings
     this.fetchBookings();
-  
+
     // Periodically update dataBookings every 30 seconds
     interval(10000)
       .pipe(switchMap(() => this.apiService.getDataBookings()))
@@ -33,7 +33,7 @@ export class DataDisplayComponent implements OnInit {
           console.error('Error updating dataBookings:', error);
         }
       );
-  
+
     // Fetch dataRooms once on component initialization
     this.apiService.getDataRooms().subscribe(
       (response) => {
@@ -44,7 +44,7 @@ export class DataDisplayComponent implements OnInit {
       }
     );
   }
-  
+
   // Helper method for initial fetch
   private fetchBookings(): void {
     this.apiService.getDataBookings().subscribe(
@@ -58,7 +58,7 @@ export class DataDisplayComponent implements OnInit {
       }
     );
   }
-  
+
 
   formatTime(time: string): string {
     return time.slice(0, 5); // Get "HH:mm" by slicing the first 5 characters
@@ -67,18 +67,25 @@ export class DataDisplayComponent implements OnInit {
   // Method to filter bookings by room name
   filterBookingsByRoom(room: any): void {
     this.selectedRoom = room.name;
+    console.log('selectedRoom : ' + this.selectedRoom);
 
     if (this.selectedRoom === 'Semua Jadwal Ruangan Meeting') {
       // Show all bookings if "Semua Jadwal Ruangan Meeting" is selected
       this.filteredBookings = this.dataBookings;
     } else {
       // Flatten and filter schedules by selected room
+      // Process the nested structure (grouped by month and date)
       this.filteredBookings = this.dataBookings
-        .map((booking: any) => ({
-          date: booking.date,
-          schedules: booking.schedules.filter((schedule: any) => schedule.room === this.selectedRoom)
+        .map((monthGroup: any) => ({
+          ...monthGroup,
+          dates: monthGroup.dates
+            .map((dateGroup: any) => ({
+              ...dateGroup,
+              schedules: dateGroup.schedules.filter((schedule: any) => schedule.room_id === room.id),
+            }))
+            .filter((dateGroup: any) => dateGroup.schedules.length > 0), // Only include dates with matching schedules
         }))
-        .filter((booking: any) => booking.schedules.length > 0); // Keep only dates with matching schedules
+        .filter((monthGroup: any) => monthGroup.dates.length > 0); // Only include months with matching dates
     }
   }
 }

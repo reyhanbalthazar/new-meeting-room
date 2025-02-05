@@ -8,30 +8,46 @@
 </div>
 <div class="relative">
   <!-- Booking List -->
-  <div class="page-container">
-    <div *ngFor="let items of filteredBookings" class="grid gap-2 py-3 block ">
-      <div class="mx-3 px-3 py-1 w-44 text-white text-center rounded" style="background-color: #28a745;">
-        {{ items.date | date: 'EEEE dd MMMM' }}
-      </div>
+  <div class="page-container w-full">
+    <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4 py-3">
+      <!-- Header Bulan -->
+      <h2 class="text-xl font-bold px-3">{{ monthGroup.month + '-01' | date: 'MMMM' }}</h2>
 
-      <div *ngFor="let schedule of items.schedules" class="col-span-4 mx-3 rounded border border-gray-300 bg-white">
-        <div class="grid md:grid-cols-3 grid-cols-1 px-2 py-2">
-          <!-- <div class="flex items-center justify-center font-medium bg-gray-100 p-4 rounded">{{ schedule.room }}</div> -->
-          <div class="grid grid-cols-1">
-            <div class="font-medium text-base">
-              {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
-            </div>
-            <div class="font-light text-sm text-gray-600">PIC : {{ schedule.pic }}</div>
+      <!-- Looping Tanggal -->
+      <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col gap-4">
+        <div class="flex items-start p-3">
+          <!-- Tanggal -->
+          <div class="mx-3 px-3 py-1 w-12 text-white text-center rounded flex flex-col"
+            style="background-color: #28a745;">
+            <span class="text-sm font-semibold">{{ dateGroup.date | date: 'EE' }}</span>
+            <span class="text-lg font-bold">{{ dateGroup.date | date: 'dd' }}</span>
           </div>
-          <div class="flex items-center font-medium text-2xl md:col-span-2 md:text-left mt-2 md:mt-0">
-            {{ schedule.topic }}
+
+          <!-- Jadwal -->
+          <div class="gap-4 w-full">
+            <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white p-3">
+              <div class="flex px-2 py-2">
+                <div class="flex flex-col">
+                  <!-- Waktu -->
+                  <div class="font-medium text-base">
+                    {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
+                  </div>
+                  <!-- PIC -->
+                  <div class="font-light text-sm text-gray-600">PIC: {{ schedule.pic }}</div>
+                </div>
+                <!-- Topik -->
+                <div class="font-medium text-2xl mt-2 mx-10">
+                  {{ schedule.topic }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Footer -->
   </div>
+
+  <!-- Footer -->
   <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
     <img src="../../../../../../assets/qr_meetingroom.png" width="110" alt="qr-scan-booking">
     <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p>
