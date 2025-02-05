@@ -1,11 +1,20 @@
 <div class="image-container">
-  <img src="../../../../../../assets/background-header-tablet.png" alt="header-background" class="background-image">
-
-  <div class="content">
-    <img src="../../../../../../assets/dmmx-logo-white.png" class="w-44 md:w-60  mx-5" alt="">
-    <div class="text-overlay-2 mx-9">{{ selectedRoomName }}</div>
+  <div style="height: 100%; display: flex; align-items: center; font-size: 1.5em; font-weight: bold;">{{ selectedRoomName }}</div>
+  <div style="height: 100%; display: flex; gap: 2%;">
+    <div style="display: flex; margin: auto;">
+      <div style="width: 10vw;">
+        <img src="../../../../../../assets/qr-scan-booking.png" alt="">
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; margin: auto;">
+      <div style="width: 20vw;">
+        <img src="../../../../../../assets/dmmx-logo-white.png" alt="">
+      </div>
+      <div style="font-size: small;">Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</div>
+    </div>
   </div>
 </div>
+
 <div class="relative">
   <!-- Booking List -->
   <div class="page-container w-full">
@@ -49,6 +58,6 @@
 
   <!-- Footer -->
   <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
-    <img src="../../../../../../assets/qr_meetingroom.png" width="110" alt="qr-scan-booking">
-    <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p>
+    <!-- <img src="../../../../../../assets/qr_meetingroom.png" width="110" alt="qr-scan-booking">
+    <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p> -->
   </div>
