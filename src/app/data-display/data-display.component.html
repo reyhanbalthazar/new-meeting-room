@@ -18,19 +18,24 @@
     <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col gap-4">
       <div class="flex items-start p-3">
         <!-- Tanggal -->
-        <div class="mx-3 px-3 py-1 w-12 text-white text-center rounded flex flex-col"
-          style="background-color: #28a745;">
-          <span class="text-sm font-semibold">{{ dateGroup.date | date: 'EE' }}</span>
-          <span class="text-lg font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+        <div class="mx-3 text-white text-center rounded flex flex-col"
+          style="background-color: #28a745; align-items: center; height: 20vh;">
+          <div class="flex flex-col m-auto px-2">
+            <span class="text-sm ">{{ dateGroup.date | date: 'EE' }}</span>
+            <span class="text-3xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+          </div>
         </div>
 
         <!-- Jadwal -->
         <div class="gap-4 w-full">
-          <div *ngFor="let schedule of dateGroup.schedules; let i = index" class="rounded border border-gray-300 bg-white p-3">
-            <span *ngIf="selectedRoom === 'Semua Jadwal Ruangan Meeting' && (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room)" style="background-color: #E9EDF0;" class="flex justify-center font-bold text-lg py-2 rounded">
+          <div *ngFor="let schedule of dateGroup.schedules; let i = index"
+            class="rounded border border-gray-300 bg-white p-3" style="height: 20vh; align-content: center;">
+            <span
+              *ngIf="selectedRoom === 'Semua Jadwal Ruangan Meeting' && (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room)"
+              style="background-color: #E9EDF0;" class="flex justify-center font-bold text-lg py-2 rounded">
               {{ schedule.room }}
             </span>
-            <div class="flex px-2 py-2">
+            <div class="px-2 py-2" style="display: flex; align-items: center;">
               <div class="flex flex-col">
                 <!-- Waktu -->
                 <div class="font-medium text-base">
