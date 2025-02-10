@@ -1,16 +1,14 @@
-<div class="image-container">
-  <div style="height: 100%; display: flex; align-items: center; font-size: 1.5em; font-weight: bold;">{{ selectedRoomName }}</div>
-  <div style="height: 100%; display: flex; gap: 2%;">
-    <div style="display: flex; margin: auto;">
-      <div style="width: 10vw;">
-        <img src="../../../../../../assets/qr-scan-booking.png" alt="">
-      </div>
-    </div>
-    <div style="display: flex; flex-direction: column; margin: auto;">
-      <div style="width: 20vw;">
-        <img src="../../../../../../assets/dmmx-logo-white.png" alt="">
-      </div>
-      <div style="font-size: small;">Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</div>
+<div class="header">
+  <div class="room-name">
+    {{ selectedRoomName }}
+  </div>
+  <div class="qr-scan-booking">
+    <img src="../../../../../../assets/qr-scan-booking.png" alt="">
+    <div>
+      <img style="width: 7em;" src="../../../../../../assets/dmmx-logo-white.png" alt="">
+      <p>
+        Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.
+      </p>
     </div>
   </div>
 </div>
@@ -24,18 +22,21 @@
 
       <!-- Looping Tanggal -->
       <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col gap-4">
-        <div class="flex items-start p-3">
+        <div class="flex">
           <!-- Tanggal -->
-          <div class="mx-3 px-3 py-1 w-12 text-white text-center rounded flex flex-col"
-            style="background-color: #28a745;">
-            <span class="text-sm font-semibold">{{ dateGroup.date | date: 'EE' }}</span>
-            <span class="text-lg font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+          <div class="mx-3 text-white text-center rounded flex flex-col"
+            style="background-color: #28a745; align-items: center; height: 16vh;">
+            <div class="flex flex-col m-auto px-2">
+              <span class="text-sm ">{{ dateGroup.date | date: 'EE' }}</span>
+              <span class="text-3xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+            </div>
           </div>
 
           <!-- Jadwal -->
           <div class="gap-4 w-full">
-            <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white p-3">
-              <div class="flex px-2 py-2">
+            <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white py-3 mx-3"
+              style="height: 16vh;">
+              <div class="flex px-2 h-full" style="align-items: center;">
                 <div class="flex flex-col">
                   <!-- Waktu -->
                   <div class="font-medium text-base">
@@ -45,7 +46,7 @@
                   <div class="font-light text-sm text-gray-600">PIC: {{ schedule.pic }}</div>
                 </div>
                 <!-- Topik -->
-                <div class="font-medium text-2xl mt-2 mx-10">
+                <div class="font-medium text-3xl mt-2 mx-10">
                   {{ schedule.topic }}
                 </div>
               </div>

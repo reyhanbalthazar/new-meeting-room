@@ -1,80 +1,58 @@
-.image-container {
-	background-image: url("../../../../assets/background-header-tablet.png");
-	background-repeat: no-repeat;
-	background-size: cover; 
-
+.header {
+	position: relative;
+	/* Required for pseudo-element positioning */
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	padding-left: 2%;
-	padding-right: 2%;
+	align-items: center;
+	/* Center items vertically */
+	padding: 5%;
 	color: white;
-
-	width: 100%; 
-	height: 30%;
-}
-
-.background-image {
 	width: 100%;
-	height: 100%;
+	height: 145px;
+	/* overflow: hidden; */
+	/* Ensure the pseudo-element doesn't overflow */
 }
 
-.content {
+.header::before {
+	content: "";
+	background-image: url("../../../../assets/background-header-tablet.png");
+	background-repeat: repeat;
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
+	z-index: -1;
+}
+
+.room-name {
+	height: 100%;
 	display: flex;
-	flex-direction: row;
 	align-items: center;
-	justify-content: space-between;
-}
-
-.text-overlay {
-	color: white;
-	font-size: 10px;
-}
-
-.text-overlay-2 {
-	color: white;
-	font-size: 40px;
+	font-size: 3vw;
 	font-weight: bold;
 }
 
-.text-overlay-footer {
-	position: absolute;
-	top: 30%;
-	left: 0%;
-	transform: translate(-20%, -20%);
+.qr-scan-booking {
+	display: flex;
+	flex-direction: row;
+	gap: 2%;
 }
 
-.text-overlay-footer-2 {
-	position: absolute;
-	top: 43%;
-	left: 13%;
-	transform: translate(-0%, -20%);
-	color: white;
-	font-size: 20px;
+.qr-scan-booking>img {
+	height: 5rem;
+	width: 5rem;
+	align-self: center;
 }
 
-@media screen and (max-width: 768px) {
-	.image-container {
-		height: 12vh;
-	}
-
-	.text-overlay {
-		font-size: 10pt;
-		font-weight: 400;
-	}
-
-	.text-overlay-2 {
-		/* display: none; */
-		font-size: 12pt;
-	}
+.qr-scan-booking>div {
+	display: flex;
+	flex-direction: column;
+	gap: 2%;
+	width: 20em;
 }
 
-/* Flexbox layout for the page */
 .page-container {
 	display: flex;
 	flex-direction: column;
@@ -89,22 +67,40 @@
 
 .footer-background {
 	background-image: url("../../../../assets/background-footer.png");
-	padding: 30px;
-	display: flex;
-	align-items: center;
-	gap: 10px;
+	background-size: cover;
+	/* background-position: center; */
+	background-repeat: no-repeat;
+	height: 15vh;
+	/* display: flex; */
+	margin: auto;
+	/* gap: 10px; */
 	width: 100%;
-}
-
-.footer-background img {
-	width: 110px;
-}
-
-.footer-background p {
-	font-size: large;
-	color: white;
 }
 
 .fixed-footer {
 	margin-top: auto;
+}
+
+@media screen and (max-width: 768px) {
+	.room-name {
+		font-size: 3vw;
+	}
+
+	.qr-scan-booking {
+		width: 60%;
+	}
+
+	.qr-scan-booking>div>p {
+		font-size: 10px;
+	}
+
+	.text-overlay {
+		font-size: 10pt;
+		font-weight: 400;
+	}
+
+	.text-overlay-2 {
+		/* display: none; */
+		font-size: 12pt;
+	}
 }
