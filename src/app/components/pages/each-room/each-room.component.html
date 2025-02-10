@@ -25,7 +25,7 @@
         <div class="flex">
           <!-- Tanggal -->
           <div class="mx-3 text-white text-center rounded flex flex-col"
-            style="background-color: #28a745; align-items: center; height: 7vh;">
+            style="background-color: #28a745; align-items: center; height: 8vh; width: 8vh;">
             <div class="flex flex-col m-auto px-2">
               <span class="text-sm ">{{ dateGroup.date | date: 'EE' }}</span>
               <span class="text-2xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
@@ -35,7 +35,7 @@
           <!-- Jadwal -->
           <div class="w-full">
             <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white"
-              style="height: 7vh;">
+              style="height: 8vh;">
               <div class="flex px-2 h-full" style="align-items: center;">
                 <div class="flex flex-col">
                   <!-- Waktu -->
