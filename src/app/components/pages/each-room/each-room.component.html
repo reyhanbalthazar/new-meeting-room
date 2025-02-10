@@ -18,14 +18,14 @@
   <div class="page-container w-full">
     <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4">
       <!-- Header Bulan -->
-      <h2 class="text-xl font-bold px-3">{{ monthGroup.month + '-01' | date: 'MMMM' }}</h2>
+      <p class="text-4xl font-bold px-5 pt-6">{{ monthGroup.month + '-01' | date: 'MMMM' }}</p>
 
       <!-- Looping Tanggal -->
       <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col mx-3">
         <div class="flex">
           <!-- Tanggal -->
           <div class="mx-3 text-white text-center rounded flex flex-col"
-            style="background-color: #28a745; align-items: center; height: 5vh; width: 5vh;">
+            style="background-color: #28a745; align-items: center; height: 7vh; width: 7vh;">
             <div class="flex flex-col m-auto px-2">
               <span class="text-lg ">{{ dateGroup.date | date: 'EE' }}</span>
               <span class="text-4xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
@@ -35,15 +35,15 @@
           <!-- Jadwal -->
           <div class="w-full">
             <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white"
-              style="height: 5vh;">
+              style="height: 7vh;">
               <div class="flex px-2 h-full" style="align-items: center;">
                 <div class="flex flex-col">
                   <!-- Waktu -->
-                  <div class="font-medium text-base">
+                  <div class="font-medium text-lg">
                     {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
                   </div>
                   <!-- PIC -->
-                  <div class="font-light text-sm text-gray-600">PIC: {{ schedule.pic }}</div>
+                  <div class="font-light text-base text-gray-600">PIC: {{ schedule.pic }}</div>
                 </div>
                 <!-- Topik -->
                 <div class="font-medium text-3xl mt-2 mx-10">
