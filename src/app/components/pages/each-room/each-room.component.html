@@ -16,49 +16,60 @@
 <div class="relative">
   <!-- Booking List -->
   <div class="page-container w-full">
-    <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4">
-      <!-- Header Bulan -->
-      <p class="text-4xl font-bold px-5 pt-6">{{ monthGroup.month + '-01' | date: 'MMMM' }}</p>
+    <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
+      <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4">
+        <!-- Header Bulan -->
+        <p class="text-4xl font-bold px-5 pt-6">{{ monthGroup.month + '-01' | date: 'MMMM' }}</p>
 
-      <!-- Looping Tanggal -->
-      <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col mx-3">
-        <div class="flex">
-          <!-- Tanggal -->
-          <div class="mx-3 text-white text-center rounded flex flex-col"
-            style="background-color: #28a745; align-items: center; height: 7em; width: 7em;">
-            <div class="flex flex-col m-auto px-2">
-              <span class="text-lg ">{{ dateGroup.date | date: 'EE' }}</span>
-              <span class="text-4xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+        <!-- Looping Tanggal -->
+        <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col mx-3">
+          <div class="flex">
+            <!-- Tanggal -->
+            <div class="mx-3 text-white text-center rounded flex flex-col"
+              style="background-color: #28a745; align-items: center; height: 7em; width: 7em;">
+              <div class="flex flex-col m-auto px-2">
+                <span class="text-lg">{{ dateGroup.date | date: 'EE' }}</span>
+                <span class="text-4xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+              </div>
             </div>
-          </div>
 
-          <!-- Jadwal -->
-          <div class="w-full">
-            <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white"
-              style="height: 7em;">
-              <div class="flex px-2 h-full gap-4" style="align-items: center;">
-                <div class="flex flex-col" style="width: 30%;">
-                  <!-- Waktu -->
-                  <div class="font-medium text-xl">
-                    {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
+            <!-- Jadwal -->
+            <div class="w-full">
+              <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white"
+                style="height: 7em;">
+                <div class="flex px-2 h-full gap-4" style="align-items: center;">
+                  <div class="flex flex-col" style="width: 30%;">
+                    <!-- Waktu -->
+                    <div class="font-medium text-xl">
+                      {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
+                    </div>
+                    <!-- PIC -->
+                    <div class="font-light text-lg text-gray-600">PIC: {{ schedule.pic }}</div>
                   </div>
-                  <!-- PIC -->
-                  <div class="font-light text-lg text-gray-600">PIC: {{ schedule.pic }}</div>
-                </div>
-                <!-- Topik -->
-                <div class="font-medium text-2xl mt-2">
-                  {{ schedule.topic }}
+                  <!-- Topik -->
+                  <div class="font-medium text-2xl mt-2">
+                    {{ schedule.topic }}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ng-container>
+
+    <!-- No Bookings Template -->
+    <ng-template #noBookings>
+      <div class="flex flex-col items-center justify-center h-96">
+        <img src="../../../../../../assets/no-booking.png" alt="No Bookings Found" class="w-64 h-64">
+      </div>
+    </ng-template>
   </div>
+
 
   <!-- Footer -->
   <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
     <img src="../../../../../../assets/banner-footer.jpg" alt="qr-scan-booking" style="width: 100%; height: 15vh;">
     <!-- <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p> -->
   </div>
+</div>
