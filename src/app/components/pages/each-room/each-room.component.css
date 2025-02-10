@@ -63,17 +63,6 @@
 .footer-background {
 	position: fixed;
 	bottom: 0;
-}
-
-.footer-background {
-	background-image: url("../../../../assets/background-footer.png");
-	background-size: cover;
-	/* background-position: center; */
-	background-repeat: no-repeat;
-	height: 15vh;
-	/* display: flex; */
-	margin: auto;
-	/* gap: 10px; */
 	width: 100%;
 }
 

@@ -28,7 +28,7 @@
             style="background-color: #28a745; align-items: center; height: 8vh;">
             <div class="flex flex-col m-auto px-2">
               <span class="text-sm ">{{ dateGroup.date | date: 'EE' }}</span>
-              <span class="text-3xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+              <span class="text-2xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
             </div>
           </div>
 
@@ -59,6 +59,6 @@
 
   <!-- Footer -->
   <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
-    <!-- <img src="../../../../../../assets/qr_meetingroom.png" width="110" alt="qr-scan-booking">
-    <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p> -->
+    <img src="../../../../../../assets/banner-footer.jpg" alt="qr-scan-booking" style="width: 100%; height: 15vh;">
+    <!-- <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p> -->
   </div>
