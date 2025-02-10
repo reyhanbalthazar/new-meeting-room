@@ -16,16 +16,16 @@
 <div class="relative">
   <!-- Booking List -->
   <div class="page-container w-full">
-    <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4 py-3">
+    <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4">
       <!-- Header Bulan -->
       <h2 class="text-xl font-bold px-3">{{ monthGroup.month + '-01' | date: 'MMMM' }}</h2>
 
       <!-- Looping Tanggal -->
-      <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col gap-4">
+      <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col mx-3">
         <div class="flex">
           <!-- Tanggal -->
           <div class="mx-3 text-white text-center rounded flex flex-col"
-            style="background-color: #28a745; align-items: center; height: 8vh;">
+            style="background-color: #28a745; align-items: center; height: 10vh;">
             <div class="flex flex-col m-auto px-2">
               <span class="text-sm ">{{ dateGroup.date | date: 'EE' }}</span>
               <span class="text-2xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
@@ -33,9 +33,9 @@
           </div>
 
           <!-- Jadwal -->
-          <div class="gap-4 w-full">
-            <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white py-3 mx-3"
-              style="height: 8vh;">
+          <div class="w-full">
+            <div *ngFor="let schedule of dateGroup.schedules" class="rounded border border-gray-300 bg-white"
+              style="height: 10vh;">
               <div class="flex px-2 h-full" style="align-items: center;">
                 <div class="flex flex-col">
                   <!-- Waktu -->
