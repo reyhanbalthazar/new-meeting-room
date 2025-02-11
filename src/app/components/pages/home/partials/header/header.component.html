@@ -2,13 +2,15 @@
     <img src="../../../../../../assets/background-header-tablet.png" alt="header-background" class="background-image">
     
     <div class="content">
-        <img src="../../../../../../assets/dmmx-logo-white.png" class="w-44 md:w-60  mx-5" alt="">
-        
+        <img *ngIf="isHomePage" onclick="window.location.href='/'" style="cursor: pointer;" src="../../../../../../assets/dmmx-logo-white.png" class="w-40 md:w-60  mx-5" alt="">
+        <img *ngIf="!isHomePage" onclick="window.location.href='/'" style="cursor: pointer;" src="../../../../../../assets/arrow_back.png" class="w-10 md:w-60  mx-5" alt="">
         <!-- Text on larger screens -->
         <!-- <div class="text-overlay-2 mx-9">CEO Meeting Room</div> -->
         
         <!-- Button on small screens -->
-        <button onclick="window.location.href='/form-booking'" class="text-overlay text-white py-2 px-2 mx-5 rounded md:hidden" style="background-color: #28a745;">
+        <button *ngIf="isHomePage" onclick="window.location.href='/form-booking'" 
+            class="text-overlay text-white py-2 px-2 mx-5 rounded md:hidden" 
+            style="background-color: #28a745;">
             Jadwalkan Meeting
         </button>
     </div>
