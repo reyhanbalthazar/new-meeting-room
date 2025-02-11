@@ -11,7 +11,7 @@ export class DataDisplayComponent implements OnInit {
   dataBookings: any;
   dataRooms: any;
   filteredBookings: any[] = [];
-  selectedRoom: string | null = 'Semua Jadwal Ruangan Meeting'; // Default to "Semua Jadwal Ruangan Meeting"
+  selectedRoom: { id: number | null; name: string } = { id: null, name: 'Semua Jadwal Ruangan Meeting' };
   showMoreTabs: boolean = false;
 
   constructor(private apiService: ApiService) { }
@@ -27,7 +27,7 @@ export class DataDisplayComponent implements OnInit {
         (response) => {
           console.log('Updated dataBookings:', response);
           this.dataBookings = response;
-          this.filterBookingsByRoom({ name: this.selectedRoom || 'Semua Jadwal Ruangan Meeting' });
+          this.filterBookingsByRoom({ id: this.selectedRoom.id || null, name: this.selectedRoom.name || 'Semua Jadwal Ruangan Meeting' });
         },
         (error) => {
           console.error('Error updating dataBookings:', error);
@@ -66,10 +66,11 @@ export class DataDisplayComponent implements OnInit {
 
   // Method to filter bookings by room name
   filterBookingsByRoom(room: any): void {
-    this.selectedRoom = room.name;
-    console.log('selectedRoom : ' + this.selectedRoom);
+    this.selectedRoom = room;
+    console.log('selectedRoom name : ' + this.selectedRoom.name);
+    console.log('selectedRoom id : ' + this.selectedRoom.id);
 
-    if (this.selectedRoom === 'Semua Jadwal Ruangan Meeting') {
+    if (this.selectedRoom.name === 'Semua Jadwal Ruangan Meeting') {
       // Show all bookings if "Semua Jadwal Ruangan Meeting" is selected
       this.filteredBookings = this.dataBookings;
     } else {

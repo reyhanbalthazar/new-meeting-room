@@ -2,7 +2,7 @@
   <ul class="flex flex-nowrap space-x-2 overflow-x-auto py-2 border-b border-gray-200">
     <li *ngFor="let room of dataRooms" class="flex-shrink-0">
       <a href="javascript:void(0);" (click)="filterBookingsByRoom(room)"
-        [ngClass]="{'text-blue-600 bg-gray-100': selectedRoom === room.name}" class="inline-block p-4 rounded-t-lg">
+        [ngClass]="{'text-blue-600 bg-gray-100': selectedRoom.id === room.id}" class="inline-block p-4 rounded-t-lg">
         {{ room.name }}
       </a>
     </li>
@@ -16,36 +16,37 @@
 
     <!-- Looping Tanggal -->
     <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col gap-4">
-      <div class="flex items-start p-3">
+      <div class="flex items-start">
         <!-- Tanggal -->
         <div class="mx-3 text-white text-center rounded flex flex-col"
-          style="background-color: #28a745; align-items: center; height: 20vh;">
-          <div class="flex flex-col m-auto px-2">
-            <span class="text-sm ">{{ dateGroup.date | date: 'EE' }}</span>
-            <span class="text-3xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+          style="background-color: #28a745; align-items: center; height: 4em; width: 4em;">
+          <div class="flex flex-col m-auto">
+            <span class="text-sm">{{ dateGroup.date | date: 'EE' }}</span>
+            <span class="text-base font-bold">{{ dateGroup.date | date: 'dd' }}</span>
           </div>
         </div>
 
         <!-- Jadwal -->
-        <div class="gap-4 w-full">
+        <div class="gap-4 w-full" style="margin-right: 1em;">
           <div *ngFor="let schedule of dateGroup.schedules; let i = index"
-            class="rounded border border-gray-300 bg-white p-3" style="height: 20vh; align-content: center;">
+            class="rounded border border-gray-300 bg-white p-3" style="height: 7em; align-content: center;">
             <span
-              *ngIf="selectedRoom === 'Semua Jadwal Ruangan Meeting' && (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room)"
-              style="background-color: #E9EDF0;" class="flex justify-center font-bold text-lg py-2 rounded">
+              *ngIf="selectedRoom.name === 'Semua Jadwal Ruangan Meeting' && (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room)"
+              style="background-color: #E9EDF0; height: 2em; display: flex; justify-content: center; align-items: center;"
+              class="font-bold text-sm rounded">
               {{ schedule.room }}
             </span>
-            <div class="px-2 py-2" style="display: flex; align-items: center;">
+            <div class="mt-1" style="display: flex; align-items: center;">
               <div class="flex flex-col">
                 <!-- Waktu -->
-                <div class="font-medium text-base">
+                <div class="font-medium text-sm" style="width: 7rem;">
                   {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
                 </div>
                 <!-- PIC -->
                 <div class="font-light text-sm text-gray-600">PIC: {{ schedule.pic }}</div>
               </div>
               <!-- Topik -->
-              <div class="font-medium text-2xl mt-2 mx-10">
+              <div class="font-medium text-sm">
                 {{ schedule.topic }}
               </div>
             </div>
