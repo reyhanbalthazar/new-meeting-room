@@ -1,0 +1,17 @@
+<mat-dialog-content class="modal-content">
+    <p class="modal-title">{{ data.title }}</p>
+    <p class="modal-message">{{ data.message }}</p>
+    <p class="modal-submessage">{{ data.subMessage }}</p>
+
+    <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Enter Your Email</mat-label>
+        <input matInput [(ngModel)]="enteredEmail">
+    </mat-form-field>
+
+    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-actions">
+    <button mat-button (click)="verifyEmail()" class="confirm-button">{{ data.button1 }}</button>
+    <button mat-button mat-dialog-close class="cancel-button">{{ data.button2 }}</button>
+</mat-dialog-actions>

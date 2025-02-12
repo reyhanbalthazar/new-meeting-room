@@ -1,0 +1,52 @@
+.modal-content {
+    text-align: center;
+    color: black;
+}
+
+.modal-message {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.modal-submessage {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Error Message */
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+/* Confirm Button */
+.confirm-button {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+/* Confirm Button Hover Effect */
+.confirm-button:hover {
+    background-color: #45A049;
+}
+
+/* Cancel Button */
+.cancel-button {
+    text-decoration: underline;
+    color: #333;
+}
+
+/* Center Single Button */
+.btn-single {
+    margin: auto;
+}

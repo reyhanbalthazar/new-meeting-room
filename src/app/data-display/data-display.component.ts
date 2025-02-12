@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../api.service';
+import { BookingModalComponent } from '../booking-modal/booking-modal.component';
 import { interval, switchMap } from 'rxjs';
+import { CancelModalComponent } from '../cancel-modal/cancel-modal.component';
 
 @Component({
   selector: 'app-data-display',
@@ -14,7 +17,7 @@ export class DataDisplayComponent implements OnInit {
   selectedRoom: { id: number | null; name: string } = { id: null, name: 'Semua Jadwal Ruangan Meeting' };
   showMoreTabs: boolean = false;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     // Fetch initial dataBookings
@@ -59,7 +62,6 @@ export class DataDisplayComponent implements OnInit {
     );
   }
 
-
   formatTime(time: string): string {
     return time.slice(0, 5); // Get "HH:mm" by slicing the first 5 characters
   }
@@ -88,5 +90,30 @@ export class DataDisplayComponent implements OnInit {
         }))
         .filter((monthGroup: any) => monthGroup.dates.length > 0); // Only include months with matching dates
     }
+  }
+
+  // Open modal and pass selected booking data
+  openVerificationModal(booking: any) {
+    const dialogRef = this.dialog.open(CancelModalComponent, {
+      width: '400px',
+      data: {
+        id : booking.id,
+        bookingEmail: booking.email, // Pass the email from the selected booking
+        title: 'Batalkan Meeting',
+        message: 'Anda akan menghapus jadwal meeting yang telah Anda buat.',
+        subMessage: 'Untuk melanjutkan, silahkan masukkan alamat email yang digunakan saat melakukan reservasi.',
+        button1: 'Lanjutkan',
+        button2: 'Kembali',
+        type: 'confirmation',
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Email verified successfully');
+      } else {
+        console.log('Verification cancelled');
+      }
+    });
   }
 }

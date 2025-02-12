@@ -21,6 +21,7 @@ import { FormsModule } from '@angular/forms';
 import { BookingModalComponent } from './booking-modal/booking-modal.component';
 import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { EachRoomComponent } from './components/pages/each-room/each-room.component';
+import { CancelModalComponent } from './cancel-modal/cancel-modal.component';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { EachRoomComponent } from './components/pages/each-room/each-room.compon
     BookingModalComponent,
     FooterComponent,
     DeleteSuccessComponent,
-    EachRoomComponent
+    EachRoomComponent,
+    CancelModalComponent
   ],
   imports: [
     BrowserModule,
