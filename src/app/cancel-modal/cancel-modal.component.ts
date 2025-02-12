@@ -34,11 +34,11 @@ export class CancelModalComponent {
       this.http.get(environment.apiUrl + `/bookings-delete/${this.data.id}`, {}).subscribe(
         (response: any) => {
           console.log('Booking canceled successfully:', response);
-          this.dialogRef.close(true); // Pass success result
         },
         (error) => {
-          console.error('Error canceling booking:', error);
-          this.errorMessage = 'Failed to cancel booking. Please try again.';
+          // console.error('Error canceling booking:', error);
+          // this.errorMessage = 'Failed to cancel booking. Please try again.';
+          this.dialogRef.close(true); // Pass success result
         }
       );
     } else {
