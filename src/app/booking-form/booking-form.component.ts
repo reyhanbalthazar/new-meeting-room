@@ -136,8 +136,12 @@ export class BookingFormComponent {
         type: 'success',
         title: 'Reservasi Berhasil',
         message: 'Reservasi untuk ruangan ' + this.selectedRoomName + ' pada ' + this.bookingData.date + ' dari ' + this.bookingData.start_time + ' hingga ' + this.bookingData.end_time + ' telah berhasil.',
-        subMessage: 'Mohon segera berikan informasi reservasi ini kepada resepsionis untuk verifikasi lebih lanjut. Terima kasih',
+        subMessage: 'Mohon segera berikan informasi reservasi ini kepada resepsionis untuk konfirmasi ruangan. Terima kasih',
         button1: 'Selesai',
+        btnWaMe: 'Konfirmasi',
+        roomName: this.selectedRoomName,
+        startTime: this.bookingData.start_time,
+        endTime: this.bookingData.end_time
       },
       width: '300px'
     });

@@ -27,7 +27,9 @@
             data.button1 }}</button>
         <button mat-button *ngSwitchCase="'confirmation'" (click)="closeModal(false)" class="cancel-button">{{
             data.button2 }}</button>
-        <button mat-button *ngSwitchCase="'success'" mat-dialog-close (click)="closeModalAndRedirect(true)" class="confirm-button btn-single">{{ data.button1
+        <button mat-button *ngSwitchCase="'success'" mat-dialog-close (click)="closeModalAndRedirect(true)" class="selesai-button btn-single">{{ data.button1
+            }}</button>
+        <button mat-button *ngSwitchCase="'success'" mat-dialog-close (click)="btnWaMe(true)" class="confirm-button btn-single">{{ data.btnWaMe
             }}</button>
         <button mat-button *ngSwitchCase="'conflict'" mat-dialog-close (click)="closeModal(true)"
             class="confirm-button btn-single">{{ data.button1 }}</button>

@@ -27,7 +27,13 @@
 /* Style for the "Lanjutkan" button */
 .confirm-button {
     background-color: #4CAF50;
-    /* Green background */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+.selesai-button {
+    background-color: #b14545;
     color: white;
     padding: 8px 16px;
     border-radius: 4px;
@@ -35,6 +41,10 @@
 
 /* Add a hover effect for the "Lanjutkan" button */
 .confirm-button:hover {
+    background-color: #45A049;
+}
+
+.selesai-button:hover {
     background-color: #45A049;
 }
 
