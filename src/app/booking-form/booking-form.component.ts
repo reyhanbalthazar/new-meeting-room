@@ -189,14 +189,8 @@ export class BookingFormComponent {
       // Parse the start time into hours and minutes
       const [hours, minutes] = this.bookingData.start_time.split(':').map(Number);
 
-      // Add 1 hour and 30 minutes to the start time
+      // Add 1 hour to the start time
       let endHours = hours + 1;
-      let endMinutes = minutes + 30;
-
-      if (endMinutes >= 60) {
-        endMinutes -= 60;
-        endHours += 1;
-      }
 
       // Ensure hours stay within a 24-hour format
       if (endHours >= 24) {
@@ -204,10 +198,7 @@ export class BookingFormComponent {
       }
 
       // Format the time back to HH:mm
-      this.bookingData.end_time = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
+      this.bookingData.end_time = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
   }
-
-
-
 }
