@@ -42,7 +42,7 @@ export class BookingModalComponent {
   btnWaMe(confirmed: boolean) {
     this.dialog.closeAll();
     if (confirmed) {
-      window.open(`https://wa.me/628997566261?text=Halo!%0A%0ASaya%20baru%20saja%20reservasi%20meeting%20room%0Adi%20https://dev-digimax-room.web.app/%0A%0AUntuk%20ruang%20meeting%20dan%20jam%20berikut%20:%0A*${this.data.roomName}*%0A*${this.data.startTime}%20${this.data.endTime}*`, '_blank');
+      window.open(`https://wa.me/6285716875565?text=Halo!%0A%0ASaya%20baru%20saja%20reservasi%20meeting%20room%0Adi%20https://dev-digimax-room.web.app/%0A%0AUntuk%20ruang%20meeting%20dan%20jam%20berikut%20:%0A*${this.data.roomName}*%0A*${this.data.startTime}%20${this.data.endTime}*`, '_blank');
     }
   }
 }
