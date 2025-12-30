@@ -11,20 +11,20 @@
 
 .footer-background {
     background-image: url("../../assets/background-footer.png");
-    padding: 30px;
+    padding: var(--spacing-lg);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--spacing-md);
     width: 100%;
 }
 
 .footer-background img {
-    width: 110px;
+    width: 6.875rem; /* 110px */
 }
 
 .footer-background p {
-    font-size: large;
-    color: white;
+    font-size: var(--font-size-lg);
+    color: var(--text-white);
 }
 
 .fixed-footer {

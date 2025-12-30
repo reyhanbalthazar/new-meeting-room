@@ -1,7 +1,7 @@
 /* Center content */
 .modal-title {
     text-align: center;
-    font-size: 16px;
+    font-size: var(--font-size-base);
 }
 
 .modal-content {
@@ -10,49 +10,16 @@
 }
 
 .modal-message {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
 }
 
 .modal-submessage {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
 }
 
 .modal-actions {
     display: flex;
     justify-content: space-between;
-    padding: 20px;
-}
-
-/* Style for the "Lanjutkan" button */
-.confirm-button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-}
-
-.selesai-button {
-    background-color: #b14545;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-}
-
-/* Add a hover effect for the "Lanjutkan" button */
-.confirm-button:hover {
-    background-color: #45A049;
-}
-
-.selesai-button:hover {
-    background-color: #45A049;
-}
-
-/* Style for the "Periksa Lagi" button */
-.cancel-button {
-    text-decoration: underline;
-}
-
-.btn-single {
-    margin: auto;
+    padding: var(--spacing-lg);
 }

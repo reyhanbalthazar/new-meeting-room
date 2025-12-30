@@ -1,27 +1,23 @@
 <app-header></app-header>
-<form (ngSubmit)="onSubmit()" class="max-w-sm mx-auto mt-5 px-5">
-    <div class="relative w-full inline-block text-left mb-5">
-        <div>
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Pilih
-                Ruangan</label>
-            <button type="button"
-                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                id="menu-button" aria-expanded="isOpen" aria-haspopup="true" (click)="toggleMenu()">
+<form (ngSubmit)="onSubmit()" class="max-w-md mx-auto mt-5 px-5">
+    <div class="form-group">
+        <label for="room" class="form-label">Pilih Ruangan</label>
+        <div class="relative w-full inline-block text-left">
+            <button type="button" class="form-input w-full justify-center gap-x-1.5 text-left" id="menu-button"
+                aria-expanded="isOpen" aria-haspopup="true" (click)="toggleMenu()">
                 {{ selectedRoomName }}
-                <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <svg class="-mr-1 ml-auto h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd"
                         d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
                         clip-rule="evenodd" />
                 </svg>
             </button>
         </div>
-        <div *ngIf="isOpen"
-            class="absolute z-10 mt-2 w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+        <div *ngIf="isOpen" class="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg border border-gray-200">
             <ul class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
                 <li *ngFor="let room of rooms">
                     <button type="button" (click)="selectRoom(room)"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem">
+                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" role="menuitem">
                         {{ room.name }}
                     </button>
                 </li>
@@ -29,58 +25,46 @@
         </div>
     </div>
 
-    <div class="mb-5">
-        <label for="choose-date" class="block mb-2 text-sm font-medium text-gray-900">Pilih
-            Waktu</label>
-        <div class="mb-5">
-            <mat-form-field appearance="fill" class="w-full">
-                <mat-label>Pilih Waktu</mat-label>
-                <input matInput [matDatepicker]="picker" placeholder="Pilih Tanggal" class="bg-gray-50 text-gray-900"
-                    (dateChange)="onDateChange($event)" />
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-        </div>
+    <div class="form-group">
+        <label for="choose-date" class="form-label">Pilih Waktu</label>
+        <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Pilih Tanggal</mat-label>
+            <input matInput [matDatepicker]="picker" placeholder="Pilih Tanggal" class="form-input"
+                (dateChange)="onDateChange($event)" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+    </div>
 
-    </div>
-    <div class="flex gap-5">
-        <div class="mb-5 w-full">
-            <label for="choose-start-time" class="block mb-2 text-sm font-medium text-gray-900">Jam
-                Mulai</label>
+    <div class="grid grid-cols-2 gap-5">
+        <div class="form-group">
+            <label for="choose-start-time" class="form-label">Jam Mulai</label>
             <input type="time" id="choose-start-time" [(ngModel)]="bookingData.start_time" name="start_time"
-                (change)="updateEndTime()"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center"
-                required />
+                (change)="updateEndTime()" class="form-input w-full text-center" required />
         </div>
-        <div class="mb-5 w-full">
-            <label for="choose-end-time" class="block mb-2 text-sm font-medium text-gray-900">Jam
-                Selesai</label>
+        <div class="form-group">
+            <label for="choose-end-time" class="form-label">Jam Selesai</label>
             <input type="time" id="choose-end-time" [(ngModel)]="bookingData.end_time" name="end_time"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 text-center"
-                required />
+                class="form-input w-full text-center" required />
         </div>
     </div>
-    <div class="mb-5">
-        <label for="pic" class="block mb-2 text-sm font-medium text-gray-900">PIC</label>
-        <input type="text" id="pic" [(ngModel)]="bookingData.pic" name="pic"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
+    <div class="form-group">
+        <label for="pic" class="form-label">PIC</label>
+        <input type="text" id="pic" [(ngModel)]="bookingData.pic" name="pic" class="form-input w-full" required />
+    </div>
+
+    <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input type="text" id="email" [(ngModel)]="bookingData.email" name="email" class="form-input w-full" required />
+    </div>
+
+    <div class="form-group">
+        <label for="meeting-topic" class="form-label">Topik Meeting</label>
+        <input type="text" id="meeting-topic" [(ngModel)]="bookingData.topic" name="topic" class="form-input w-full"
             required />
     </div>
-    <div class="mb-5">
-        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
-        <input type="text" id="email" [(ngModel)]="bookingData.email" name="email"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            required />
-    </div>
-    <div class="mb-5">
-        <label for="meeting-topic" class="block mb-2 text-sm font-medium text-gray-900">Topik
-            Meeting</label>
-        <input type="text" id="meeting-topic" [(ngModel)]="bookingData.topic" name="topic"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            required />
-    </div>
-    <button type="submit"
-        class="text-white bg-dmm-green hover:bg-dmm-green focus:ring-4 focus:outline-none focus:ring-dmm-green font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-dmm-green dark:hover:bg-dmm-green dark:focus:ring-dmm-green-800">Booking
-        Sekarang</button>
+
+    <button type="submit" class="btn-primary w-full py-3">Booking Sekarang</button>
 
 </form>

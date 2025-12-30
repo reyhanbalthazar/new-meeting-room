@@ -1,17 +1,17 @@
-<mat-dialog-content class="modal-content">
-    <p class="modal-title">{{ data.title }}</p>
-    <p class="modal-message">{{ data.message }}</p>
-    <p class="modal-submessage">{{ data.subMessage }}</p>
+<div class="text-center p-6">
+    <h2 class="modal-title text-center text-lg font-bold mb-3">{{ data.title }}</h2>
+    <p class="modal-message text-base font-medium mb-2">{{ data.message }}</p>
+    <p class="modal-submessage text-sm text-gray-500 mb-4">{{ data.subMessage }}</p>
 
-    <mat-form-field appearance="fill" class="w-full">
+    <mat-form-field appearance="fill" class="w-full mb-4">
         <mat-label>Enter Your Email</mat-label>
-        <input matInput [(ngModel)]="enteredEmail">
+        <input matInput [(ngModel)]="enteredEmail" class="form-input">
     </mat-form-field>
 
-    <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-</mat-dialog-content>
+    <p *ngIf="errorMessage" class="error-message text-error text-xs mt-1 mb-4">{{ errorMessage }}</p>
 
-<mat-dialog-actions class="modal-actions">
-    <button mat-button (click)="verifyEmail()" class="confirm-button">{{ data.button1 }}</button>
-    <button mat-button mat-dialog-close class="cancel-button">{{ data.button2 }}</button>
-</mat-dialog-actions>
+    <mat-dialog-actions class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button mat-button (click)="verifyEmail()" class="btn-primary flex-1">{{ data.button1 }}</button>
+        <button mat-button mat-dialog-close class="btn-cancel flex-1">{{ data.button2 }}</button>
+    </mat-dialog-actions>
+</div>

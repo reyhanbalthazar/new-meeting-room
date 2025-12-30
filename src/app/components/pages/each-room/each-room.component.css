@@ -6,10 +6,10 @@
 	justify-content: space-between;
 	align-items: center;
 	/* Center items vertically */
-	padding: 1.5em;
-	color: white;
+	padding: var(--spacing-2xl);
+	color: var(--text-white);
 	width: 100%;
-	height: 145px;
+	height: 9.0625rem; /* 145px */
 	/* overflow: hidden; */
 	/* Ensure the pseudo-element doesn't overflow */
 }
@@ -31,7 +31,7 @@
 	display: flex;
 	align-items: center;
 	font-size: 4vw;
-	font-weight: bold;
+	font-weight: var(--font-weight-bold);
 }
 
 .qr-scan-booking {
@@ -57,7 +57,7 @@
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
-	margin-bottom: 15em;
+	margin-bottom: var(--footer-height);
 }
 
 .footer-background {
@@ -80,12 +80,12 @@
 	}
 
 	.qr-scan-booking>div>p {
-		font-size: 10px;
+		font-size: var(--font-size-sm);
 	}
 
 	.text-overlay {
 		font-size: 10pt;
-		font-weight: 400;
+		font-weight: var(--font-weight-normal);
 	}
 
 	.text-overlay-2 {

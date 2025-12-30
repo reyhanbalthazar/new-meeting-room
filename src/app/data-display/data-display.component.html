@@ -18,8 +18,7 @@
     <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col gap-4">
       <div class="flex items-start">
         <!-- Tanggal -->
-        <div class="mx-3 text-white text-center rounded flex flex-col"
-          style="background-color: #28a745; align-items: center; height: 4em; width: 4em;">
+        <div class="mx-3 text-white text-center rounded flex flex-col date-box">
           <div class="flex flex-col m-auto">
             <span class="text-sm">{{ dateGroup.date | date: 'EE' }}</span>
             <span class="text-base font-bold">{{ dateGroup.date | date: 'dd' }}</span>
@@ -28,15 +27,13 @@
 
         <!-- Jadwal -->
         <div class="gap-4 w-full" style="margin-right: 1em;">
-          <div *ngFor="let schedule of dateGroup.schedules; let i = index"
-            class="rounded border border-gray-300 bg-white p-3"
+          <div *ngFor="let schedule of dateGroup.schedules; let i = index" class="schedule-box-condensed p-3"
             [ngStyle]="{ 'min-height': (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room) ? '7em' : '5em' }"
             style="align-content: center;">
 
             <span
               *ngIf="selectedRoom.name === 'Semua Jadwal Ruangan Meeting' && (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room)"
-              style="background-color: #E9EDF0; height: 2em; display: flex; justify-content: center; align-items: center;"
-              class="font-bold text-sm rounded">
+              class="badge badge-secondary text-xs rounded flex items-center justify-center" style="height: 2em;">
               {{ schedule.room }}
             </span>
 
@@ -44,7 +41,7 @@
               <div class="mt-1 gap-4" style="align-items: center; flex: 1;">
                 <div class="flex flex-col">
                   <!-- Waktu -->
-                  <div class="font-medium text-xs" style="width: 7rem;">
+                  <div class="font-medium text-xs time-display">
                     {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
                   </div>
                   <!-- PIC -->
@@ -56,8 +53,9 @@
                 </div>
               </div>
               <div class="font-medium text-sm flex-shrink-0" style="display: flex; justify-content:flex-end">
-                <button (click)="openVerificationModal(schedule)"><img style="width: 2em; height: 2em;"
-                    src="../../assets/menu_button.png"></button>
+                <button (click)="openVerificationModal(schedule)" class="p-1 rounded hover:bg-gray-100">
+                  <img style="width: 2em; height: 2em;" src="../../assets/menu_button.png" alt="Menu">
+                </button>
               </div>
             </div>
           </div>
