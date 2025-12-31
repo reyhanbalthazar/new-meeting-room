@@ -1,0 +1,74 @@
+<div class="header">
+  <div class="room-name">
+    {{ selectedRoomName }}
+  </div>
+  <div class="qr-scan-booking">
+    <img src="../../../../../../assets/qr-scan-booking.png" alt="">
+    <div>
+      <img style="width: 7em;" src="../../../../../../assets/dmmx-logo-white.png" alt="">
+      <p>
+        Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="relative">
+  <!-- Booking List -->
+  <div class="page-container w-full">
+    <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
+      <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4">
+        <!-- Header Bulan -->
+        <p class="text-4xl font-bold px-5 pt-6">{{ monthGroup.month + '-01' | date: 'MMMM' }}</p>
+
+        <!-- Looping Tanggal -->
+        <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col mx-3">
+          <div class="flex">
+            <!-- Tanggal -->
+            <div class="mx-3 text-white text-center rounded flex flex-col date-box-large">
+              <div class="flex flex-col m-auto px-2">
+                <span class="text-lg">{{ dateGroup.date | date: 'EE' }}</span>
+                <span class="text-4xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
+              </div>
+            </div>
+
+            <!-- Jadwal -->
+            <div class="w-full">
+              <div *ngFor="let schedule of dateGroup.schedules" class="schedule-box p-4">
+                <div class="flex h-full gap-4" style="align-items: center;">
+                  <div class="flex flex-col" style="width: 30%;">
+                    <!-- Waktu -->
+                    <div class="font-medium text-xl">
+                      {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
+                    </div>
+                    <!-- PIC -->
+                    <div class="font-light text-lg text-gray-600">PIC: {{ schedule.pic }}</div>
+                  </div>
+                  <!-- Topik -->
+                  <div class="font-medium text-2xl mt-2 flex-1">
+                    {{ schedule.topic }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- No Bookings Template -->
+    <ng-template #noBookings>
+      <div class="flex flex-col items-center justify-center h-96 p-4">
+        <img src="../../../../../../assets/no-booking.png" alt="No Bookings Found" class="max-w-xs max-h-xs" style="width: 30em; height: 30em;">
+        <p class="text-center text-gray-500 mt-4">Tidak ada jadwal booking untuk ruangan ini saat ini</p>
+      </div>
+    </ng-template>
+  </div>
+
+
+  <!-- Footer -->
+  <div class="footer-background" [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
+    <img src="../../../../../../assets/banner-footer.png" alt="qr-scan-booking" style="width: 100%; height: auto;">
+    <!-- <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p> -->
+  </div>
+</div>

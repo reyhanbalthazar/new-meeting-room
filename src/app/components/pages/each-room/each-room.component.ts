@@ -127,4 +127,10 @@ export class EachRoomComponent implements OnInit {
     const [hours, minutes] = time.split(':');
     return `${hours}:${minutes}`;
   }
+
+  openVerificationModal(booking: any) {
+    // Placeholder implementation - in a real app, this would open a modal
+    console.log('Opening verification modal for booking:', booking);
+    // In a real implementation, you would open a modal dialog here
+  }
 }
