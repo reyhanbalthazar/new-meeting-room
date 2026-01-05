@@ -79,15 +79,27 @@
 
     <!-- Right Section: Timeline/Schedule -->
     <div class="bg-white/50 p-6 border h-full flex flex-col">
-      <div class="flex justify-between items-center mb-5">
+      <div class="flex items-end  justify-between mb-4">
         <div class="flex flex-col">
-          <label for="date-picker" class="text-sm text-gray-600">Select Date</label>
-          <input type="date" id="date-picker" [value]="formatDate(selectedDate)" (change)="onDateChange($event)"
-            class="ml-2 border border-gray-300 rounded px-2 py-1 text-sm">
+          <label class="text-sm font-semibold text-gray-800 ml-1 mb-1">Select Date</label>
+          <div class="flex items-center bg-white/20 backdrop-blur-sm px-3 rounded-lg border border-gray-200">
+            <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
+              class="bg-transparent outline-none text-sm font-semibold text-gray-800 w-32" readonly>
+            <mat-datepicker-toggle matSuffix [for]="datePicker" class="scale-90"></mat-datepicker-toggle>
+            <mat-datepicker #datePicker></mat-datepicker>
+          </div>
         </div>
-        <span class="bg-dmm-green text-white px-3 py-1 rounded-full text-sm font-medium">
-          {{ getTotalScheduleCount() }} Jadwal
-        </span>
+
+        <div class="flex items-center gap-2">
+          <div
+            class="bg-white/20 backdrop-blur-sm px-4 py-3.5 rounded-lg text-lg font-bold text-gray-800 border border-gray-100 shadow-sm">
+            {{ getTotalScheduleCount() }}
+          </div>
+          <div class="flex flex-col leading-tight text-xs font-bold text-gray-800 tracking-tight">
+            <span>Meetings</span>
+            <span>remaining</span>
+          </div>
+        </div>
       </div>
 
       <ng-container *ngIf="filteredBookings.length > 0; else noBookings">

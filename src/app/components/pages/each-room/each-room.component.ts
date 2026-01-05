@@ -191,7 +191,11 @@ export class EachRoomComponent implements OnInit {
   }
 
   onDateChange(event: any): void {
-    this.selectedDate = new Date(event.target.value);
+    // Handle Material datepicker change
+    if (event.value) {
+      this.selectedDate = event.value;
+    }
+
     if (this.selectedRoom) {
       this.filterBookingsByRoomId(this.selectedRoom);
     }
