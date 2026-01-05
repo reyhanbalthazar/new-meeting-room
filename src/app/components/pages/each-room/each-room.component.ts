@@ -100,27 +100,33 @@ export class EachRoomComponent implements OnInit {
     }
   }
 
-  filterBookingsByRoomId(roomId: number | null): void {
+  filterBookingsByRoomId(roomId: number | null, targetDate?: string): void {
     if (roomId === null || isNaN(roomId)) {
-      this.filteredBookings = []; // Reset filteredBookings if no valid room ID is provided
-      console.warn('Invalid roomId:', roomId); // Debug log
+      this.filteredBookings = [];
+      console.warn('Invalid roomId:', roomId);
       return;
     }
 
-    // Process the nested structure (grouped by month and date)
+    // Use provided date or default to today
+    const filterDate = targetDate || new Date().toISOString().split('T')[0];
+
+    // Process the nested structure
     this.filteredBookings = this.dataBookings
       .map((monthGroup) => ({
         ...monthGroup,
         dates: monthGroup.dates
           .map((dateGroup: any) => ({
             ...dateGroup,
-            schedules: dateGroup.schedules.filter((schedule: any) => schedule.room_id === roomId),
+            schedules: dateGroup.schedules.filter((schedule: any) =>
+              schedule.room_id === roomId
+            ),
           }))
-          .filter((dateGroup: any) => dateGroup.schedules.length > 0), // Only include dates with matching schedules
+          .filter((dateGroup: any) =>
+            dateGroup.schedules.length > 0 && dateGroup.date === filterDate
+          ),
       }))
-      .filter((monthGroup) => monthGroup.dates.length > 0); // Only include months with matching dates
+      .filter((monthGroup) => monthGroup.dates.length > 0);
 
-    // Log the result
     console.log('Filtered bookings:', this.filteredBookings);
   }
 
