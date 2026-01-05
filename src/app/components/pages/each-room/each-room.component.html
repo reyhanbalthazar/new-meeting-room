@@ -89,15 +89,15 @@
       <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
         <div class="space-y-4 flex-grow overflow-y-auto relative">
           <!-- Vertical timeline line -->
-          <div class="absolute left-4 top-0 h-full w-0.5 bg-gray-300 z-0"></div>
+          <div class="absolute left-4 top-0 h-full w-0.5 bg-black z-0"></div>
 
           <div *ngFor="let monthGroup of filteredBookings" class="space-y-4">
             <div *ngFor="let dateGroup of monthGroup.dates" class="space-y-3 relative">
               <div *ngFor="let schedule of dateGroup.schedules"
                 class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow pl-10 relative">
                 <!-- Bullet point for each booking -->
-                <div class="absolute left-2.5 top-6 w-3 h-3 rounded-full bg-dmm-green z-10"></div>
-                <div class="flex justify-between items-start">
+                <div class="absolute left-2.5 top-11 w-3 h-3 rounded-full bg-black z-10"></div>
+                <div class="flex justify-between text-center">
                   <div>
                     <div class="font-semibold text-dmm-green">{{ formatTime(schedule.start_time) }} - {{
                       formatTime(schedule.end_time) }}</div>

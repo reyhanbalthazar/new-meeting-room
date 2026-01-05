@@ -24,6 +24,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   --info-color: #17a2b8;             /* Info blue */
   --background-light: #f8f9fa;       /* Light background */
   --background-white: #ffffff;       /* White background */
+  --background-black: #000000;       /* Black background */
 
   /* Font Sizes */
   --font-size-xs: 0.75rem;           /* 12px */
@@ -141,6 +142,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .bg-light { background-color: var(--background-light); }
 .bg-white { background-color: var(--background-white); }
+.bg-black { background-color: var(--background-black); }
 
 /* Font size utility classes */
 .text-xs { font-size: var(--font-size-xs); }
