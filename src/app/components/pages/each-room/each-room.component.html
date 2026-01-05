@@ -81,7 +81,9 @@
     <div class="bg-white/50 p-6 border h-full flex flex-col">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-gray-800">Jadwal Hari Ini</h2>
-        <button class="btn-primary px-4 py-2 text-sm">Booking Sekarang</button>
+        <h2 class="bg-dmm-green text-white px-3 py-1 rounded-full text-sm font-medium">
+          {{ getTotalScheduleCount() }} Jadwal
+        </h2>
       </div>
 
       <ng-container *ngIf="filteredBookings.length > 0; else noBookings">

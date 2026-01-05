@@ -134,4 +134,12 @@ export class EachRoomComponent implements OnInit {
     console.log('Opening verification modal for booking:', booking);
     // In a real implementation, you would open a modal dialog here
   }
+
+  getTotalScheduleCount(): number {
+    return this.filteredBookings.reduce((total, monthGroup) => {
+      return total + monthGroup.dates.reduce((dateTotal: number, dateGroup: any) => {
+        return dateTotal + dateGroup.schedules.length;
+      }, 0);
+    }, 0);
+  }
 }
