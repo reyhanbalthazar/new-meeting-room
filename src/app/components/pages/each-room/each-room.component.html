@@ -22,6 +22,24 @@
   <div class="bg-black/50 grid grid-cols-1 sm:grid-cols-2 h-full text-white">
     <!-- Left Section: Room Description -->
     <div class="p-6 border h-full flex flex-col">
+      <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
+        <!-- TIME section -->
+        <div class="flex-shrink-0">
+          <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
+            {{ getTimePart() }}
+          </p>
+        </div>
+
+        <!-- DAY and DATE section -->
+        <div class="flex flex-col justify-center">
+          <p class="text-sm md:text-base lg:text-lg">
+            {{ getDayPart() }},
+          </p>
+          <p class="text-sm md:text-base lg:text-lg">
+            {{ getDatePart() }}
+          </p>
+        </div>
+      </div>
       <h2 class="text-xl font-bold mb-4">Deskripsi Ruangan</h2>
       <div class="space-y-4 flex-grow">
         <div class="flex items-start">
@@ -82,7 +100,7 @@
       <div class="flex items-end  justify-between mb-4">
         <div class="flex flex-col">
           <label class="text-sm font-semibold text-gray-800 ml-1 mb-1">Select Date</label>
-          <div class="flex items-center bg-white/20 backdrop-blur-sm px-3 rounded-lg border border-gray-200">
+          <div class="flex items-center bg-gray-200 backdrop-blur-sm px-3 rounded-lg border border-gray-200">
             <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
               class="bg-transparent outline-none text-sm font-semibold text-gray-800 w-32" readonly>
             <mat-datepicker-toggle matSuffix [for]="datePicker" class="scale-90"></mat-datepicker-toggle>
@@ -92,7 +110,7 @@
 
         <div class="flex items-center gap-2">
           <div
-            class="bg-white/20 backdrop-blur-sm px-4 py-3.5 rounded-lg text-lg font-bold text-gray-800 border border-gray-100 shadow-sm">
+            class="bg-gray-200 backdrop-blur-sm px-4 py-3.5 rounded-lg text-lg font-bold text-gray-800 border border-gray-100 shadow-sm">
             {{ getTotalScheduleCount() }}
           </div>
           <div class="flex flex-col leading-tight text-xs font-bold text-gray-800 tracking-tight">

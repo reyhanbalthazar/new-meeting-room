@@ -200,4 +200,37 @@ export class EachRoomComponent implements OnInit {
       this.filterBookingsByRoomId(this.selectedRoom);
     }
   }
+
+  getTimePart(): string {
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    };
+
+    return this.selectedDate.toLocaleTimeString('en-US', timeOptions);
+  }
+
+  getDayPart(): string {
+    const dayOptions: Intl.DateTimeFormatOptions = {
+      weekday: 'long'
+    };
+
+    return this.selectedDate.toLocaleDateString('en-US', dayOptions);
+  }
+
+  getDatePart(): string {
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+
+    return this.selectedDate.toLocaleDateString('en-US', dateOptions);
+  }
+
+  // Optional: Keep the original method if you still need it elsewhere
+  getFormattedDateTime(): string {
+    return `${this.getDayPart()}, ${this.getDatePart()} ${this.getTimePart()}`;
+  }
 }
