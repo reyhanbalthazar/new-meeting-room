@@ -15,6 +15,7 @@ export class EachRoomComponent implements OnInit {
   selectedRoom: number | null = null; // Currently selected room ID
   selectedRoomName: string = ''; // Selected room name
   isAdsEnable: boolean = true; // Variable to toggle ads visibility (will be from API later)
+  selectedDate: Date = new Date(); // Default to current date
 
   constructor(private apiService: ApiService, private route: ActivatedRoute) { }
 
@@ -100,17 +101,17 @@ export class EachRoomComponent implements OnInit {
     }
   }
 
-  filterBookingsByRoomId(roomId: number | null, targetDate?: string): void {
+  filterBookingsByRoomId(roomId: number | null): void {
     if (roomId === null || isNaN(roomId)) {
-      this.filteredBookings = [];
-      console.warn('Invalid roomId:', roomId);
+      this.filteredBookings = []; // Reset filteredBookings if no valid room ID is provided
+      console.warn('Invalid roomId:', roomId); // Debug log
       return;
     }
 
-    // Use provided date or default to today
-    const filterDate = targetDate || new Date().toISOString().split('T')[0];
+    // Format the selected date to match the date format in the data
+    const selectedDateString = this.formatDate(this.selectedDate);
 
-    // Process the nested structure
+    // Process the nested structure (grouped by month and date)
     this.filteredBookings = this.dataBookings
       .map((monthGroup) => ({
         ...monthGroup,
@@ -121,14 +122,46 @@ export class EachRoomComponent implements OnInit {
               schedule.room_id === roomId
             ),
           }))
-          .filter((dateGroup: any) =>
-            dateGroup.schedules.length > 0 && dateGroup.date === filterDate
-          ),
+          .filter((dateGroup: any) => {
+            // Only include dates that match the selected date
+            return dateGroup.date === selectedDateString && dateGroup.schedules.length > 0;
+          }),
       }))
-      .filter((monthGroup) => monthGroup.dates.length > 0);
+      .filter((monthGroup) => monthGroup.dates.length > 0); // Only include months with matching dates
 
+    // Log the result
     console.log('Filtered bookings:', this.filteredBookings);
   }
+
+  // filterBookingsByRoomId(roomId: number | null, targetDate?: string): void {
+  //   if (roomId === null || isNaN(roomId)) {
+  //     this.filteredBookings = [];
+  //     console.warn('Invalid roomId:', roomId);
+  //     return;
+  //   }
+
+  //   // Use provided date or default to today
+  //   const filterDate = targetDate || new Datje().toISOString().split('T')[0];
+
+  //   // Process the nested structure
+  //   this.filteredBookings = this.dataBookings
+  //     .map((monthGroup) => ({
+  //       ...monthGroup,
+  //       dates: monthGroup.dates
+  //         .map((dateGroup: any) => ({
+  //           ...dateGroup,
+  //           schedules: dateGroup.schedules.filter((schedule: any) =>
+  //             schedule.room_id === roomId
+  //           ),
+  //         }))
+  //         .filter((dateGroup: any) =>
+  //           dateGroup.schedules.length > 0 && dateGroup.date === filterDate
+  //         ),
+  //     }))
+  //     .filter((monthGroup) => monthGroup.dates.length > 0);
+
+  //   console.log('Filtered bookings:', this.filteredBookings);
+  // }
 
   formatTime(time: string): string {
     const [hours, minutes] = time.split(':');
@@ -147,5 +180,20 @@ export class EachRoomComponent implements OnInit {
         return dateTotal + dateGroup.schedules.length;
       }, 0);
     }, 0);
+  }
+
+  formatDate(date: Date): string {
+    // Format date as YYYY-MM-DD to match the expected format in the data
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onDateChange(event: any): void {
+    this.selectedDate = new Date(event.target.value);
+    if (this.selectedRoom) {
+      this.filterBookingsByRoomId(this.selectedRoom);
+    }
   }
 }
