@@ -17,8 +17,8 @@
 </div>
 
 <!-- Content Section with Split Layout -->
-<div [class]="isAdsEnable ? 'mx-auto h-2/3 min-h-[66vh]' : 'mx-auto h-full min-h-[100vh]'"
-  class="bg-cover bg-center" [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
+<div [class]="isAdsEnable ? 'mx-auto h-2/3 min-h-[66vh]' : 'mx-auto h-full min-h-[100vh]'" class="bg-cover bg-center"
+  [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
   <div class="bg-black/50 grid grid-cols-1 sm:grid-cols-2 h-full text-white">
     <!-- Left Section: Room Description -->
     <div class="p-6 border h-full flex flex-col">
@@ -89,14 +89,14 @@
       <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
         <div class="space-y-4 flex-grow overflow-y-auto relative">
           <!-- Vertical timeline line -->
-          <div class="absolute left-4 top-0 h-full w-0.5 bg-black z-0"></div>
+          <div class="absolute left-3 top-0 h-full w-0.5 bg-black z-0"></div>
 
           <div *ngFor="let monthGroup of filteredBookings" class="space-y-4">
             <div *ngFor="let dateGroup of monthGroup.dates" class="space-y-3 relative">
               <div *ngFor="let schedule of dateGroup.schedules"
-                class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow pl-10 relative">
+                class="border border-black rounded-lg p-4 hover:shadow-md transition-shadow pl-10 ml-10 relative">
                 <!-- Bullet point for each booking -->
-                <div class="absolute left-2.5 top-11 w-3 h-3 rounded-full bg-black z-10"></div>
+                <div class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10"></div>
                 <div class="flex justify-between text-center">
                   <div>
                     <div class="font-semibold text-dmm-green">{{ formatTime(schedule.start_time) }} - {{
