@@ -92,7 +92,7 @@ export class BookingFormComponent {
     this.openConfirmationModal().afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
         // Proceed with booking if user confirmed
-        this.http.post<BookingResponse>(environment.apiUrl + '/bookings', this.bookingData)
+        this.apiService.createBooking(this.bookingData)
           .subscribe(
             (response) => {
               if (response.statusCode === 201) {

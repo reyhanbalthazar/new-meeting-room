@@ -1,0 +1,1081 @@
+{
+	"info": {
+		"_postman_id": "db9c1096-ac54-4e24-b3d6-1c4404a60457",
+		"name": "VizionGuard",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29056007",
+		"_collection_link": "https://dmmx-meeting-room.postman.co/workspace/DMMX-Meeting-Room-Workspace~2df8b157-655a-420a-8d65-31b5c8a1e1b4/collection/29056007-db9c1096-ac54-4e24-b3d6-1c4404a60457?action=share&source=collection_link&creator=29056007"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ Token }}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/auth/logout",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"admin@dmmx.com\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/auth/login",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ Token }}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"karedoxk21@gmail.com\",\r\n    \"password\": \"farhan123\",\r\n    \"role\": \"super_admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/auth/register",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rooms",
+			"item": [
+				{
+					"name": "Get All Rooms",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/rooms",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Room",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Superman\",\r\n    \"capacity\": 20\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/rooms",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Room",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Deadpool\",\r\n    \"capacity\": 99,\r\n    \"is_active\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/rooms/2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"rooms",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Room By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/rooms/5",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"rooms",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Room",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/rooms/1",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"rooms",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "Get All Bookings",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/bookings",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"bookings"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get All Bookings",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{Token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{BaseUrl}}/api/bookings",
+									"host": [
+										"{{BaseUrl}}"
+									],
+									"path": [
+										"api",
+										"bookings"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 08 Jan 2026 03:48:22 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "721"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "RateLimit-Limit",
+									"value": "HttpRequestRatePerPort:1500/m"
+								},
+								{
+									"key": "RateLimit-Limit",
+									"value": "ClientConnectionsPerPort"
+								},
+								{
+									"key": "RateLimit-Remaining",
+									"value": "HttpRequestRatePerPort:1498"
+								},
+								{
+									"key": "RateLimit-Reset",
+									"value": "HttpRequestRatePerPort:40s"
+								},
+								{
+									"key": "X-Report-Abuse",
+									"value": "https://msrc.microsoft.com/report/abuse"
+								},
+								{
+									"key": "x-ms-ratelimit-limit",
+									"value": ""
+								},
+								{
+									"key": "x-ms-ratelimit-remaining",
+									"value": ""
+								},
+								{
+									"key": "x-ms-ratelimit-used",
+									"value": "1"
+								},
+								{
+									"key": "x-ms-ratelimit-reset",
+									"value": ""
+								},
+								{
+									"key": "X-Request-ID",
+									"value": "e73a36d54cac193005ce54a463d6e7e1"
+								},
+								{
+									"key": "X-Robots-Tag",
+									"value": "noindex, nofollow"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "VsSaaS-Request-Id",
+									"value": "b2db974e-ffc2-4955-8bec-7ba0f19df573"
+								},
+								{
+									"key": "Strict-Transport-Security",
+									"value": "max-age=31536000; includeSubDomains"
+								},
+								{
+									"key": "X-Served-By",
+									"value": "tunnels-prod-rel-asse-v3-cluster"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"bookings\": [\n            {\n                \"id\": 9,\n                \"room_id\": 3,\n                \"user_id\": 1,\n                \"date\": \"2025-12-30T00:00:00+07:00\",\n                \"start_time\": \"2025-12-30T16:00:00+07:00\",\n                \"end_time\": \"2025-12-30T17:00:00+07:00\",\n                \"pic\": \"Jane Doe\",\n                \"email\": \"jane@example.com\",\n                \"topic\": \"Kickoff meeting\",\n                \"status\": \"pending\",\n                \"created_at\": \"2025-12-31T11:56:54.778+07:00\",\n                \"updated_at\": \"2025-12-31T11:56:54.778+07:00\"\n            },\n            {\n                \"id\": 10,\n                \"room_id\": 2,\n                \"user_id\": 2,\n                \"date\": \"2026-01-08T00:00:00+07:00\",\n                \"start_time\": \"2026-01-08T17:00:00+07:00\",\n                \"end_time\": \"2026-01-08T19:00:00+07:00\",\n                \"pic\": \"John Doe\",\n                \"email\": \"john.doe@example.com\",\n                \"topic\": \"Team Meeting\",\n                \"status\": \"pending\",\n                \"created_at\": \"2026-01-08T10:42:20.56+07:00\",\n                \"updated_at\": \"2026-01-08T10:42:20.56+07:00\"\n            }\n        ]\n    },\n    \"message\": \"Bookings retrieved successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Booking",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"room_id\": 2,\r\n    \"user_id\": 2,\r\n    \"date\": \"2024-01-15T00:00:00Z\",\r\n    \"start_time\": \"2024-01-15T10:00:00Z\",\r\n    \"end_time\": \"2024-01-15T12:00:00Z\",\r\n    \"pic\": \"John Doe\",\r\n    \"email\": \"john.doe@example.com\",\r\n    \"topic\": \"Team Meeting\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/bookings",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Booking",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"room_id\": 3,\r\n    \"user_id\": 1,\r\n    \"date\": \"2024-01-15T00:00:00Z\",\r\n    \"start_time\": \"2024-01-15T10:00:00Z\",\r\n    \"end_time\": \"2024-01-15T12:00:00Z\",\r\n    \"pic\": \"John Doe\",\r\n    \"email\": \"john.doe@example.com\",\r\n    \"topic\": \"Team Meeting\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/bookings/5",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bookings Today",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"room_id\": 3,\r\n    \"user_id\": 1,\r\n    \"date\": \"2024-01-15T00:00:00Z\",\r\n    \"start_time\": \"2024-01-15T10:00:00Z\",\r\n    \"end_time\": \"2024-01-15T12:00:00Z\",\r\n    \"pic\": \"John Doe\",\r\n    \"email\": \"john.doe@example.com\",\r\n    \"topic\": \"Team Meeting\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/bookings/5/today",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"5",
+								"today"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Booking",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{Token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/bookings/5",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ads",
+			"item": [
+				{
+					"name": "Backgrounds - List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/backgrounds",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"backgrounds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Backgrounds - Upload",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"value": "",
+									"type": "file"
+								},
+								{
+									"key": "orientation",
+									"value": "LANDSCAPE",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/backgrounds",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"backgrounds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Backgrounds - Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/backgrounds/:id",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"backgrounds",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - List Settings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings?name=&orientation=&layout=",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": ""
+								},
+								{
+									"key": "orientation",
+									"value": ""
+								},
+								{
+									"key": "layout",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - Get By Room",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings/:roomId",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings",
+								":roomId"
+							],
+							"variable": [
+								{
+									"key": "roomId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - Update Layout",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"layout\": \"ADS\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings/:roomId/layout",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings",
+								":roomId",
+								"layout"
+							],
+							"variable": [
+								{
+									"key": "roomId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - Update Background",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"background_asset_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings/:roomId/background",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings",
+								":roomId",
+								"background"
+							],
+							"variable": [
+								{
+									"key": "roomId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - Update Ads",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"items\": [\n    { \"ads_asset_id\": 10, \"order_index\": 1, \"duration_seconds\": 12 },\n    { \"ads_asset_id\": 15, \"order_index\": 2 },\n    { \"ads_asset_id\": 21, \"order_index\": 3, \"duration_seconds\": 8 }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings/:roomId/ads",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings",
+								":roomId",
+								"ads"
+							],
+							"variable": [
+								{
+									"key": "roomId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - Bulk Layout",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"room_ids\": [3,4,7],\n  \"layout\": \"ADS\"\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings/bulk/layout",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings",
+								"bulk",
+								"layout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - Bulk Background",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"room_ids\": [3,4,7],\n  \"background_asset_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings/bulk/background",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings",
+								"bulk",
+								"background"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signage - Bulk Ads",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"room_ids\": [3,4,7],\n  \"items\": [\n    { \"ads_asset_id\": 10, \"order_index\": 1, \"duration_seconds\": 12 },\n    { \"ads_asset_id\": 15, \"order_index\": 2 },\n    { \"ads_asset_id\": 21, \"order_index\": 3, \"duration_seconds\": 8 }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/signage/settings/bulk/ads",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"signage",
+								"settings",
+								"bulk",
+								"ads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Participants - List Pending by Meeting",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/meetings/:meetingId/participants/pending",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"meetings",
+								":meetingId",
+								"participants",
+								"pending"
+							],
+							"variable": [
+								{
+									"key": "meetingId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Participants - Approve",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"participant_ids\": [1,2,3]\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/participants/approve",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"participants",
+								"approve"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Participants - Reject",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"participant_ids\": [1,2,3]\n}"
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/ads/participants/reject",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"ads",
+								"participants",
+								"reject"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Token",
+			"value": ""
+		},
+		{
+			"key": "BaseUrl",
+			"value": ""
+		}
+	]
+}

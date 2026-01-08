@@ -14,30 +14,21 @@ export class EachRoomComponent implements OnInit {
   filteredBookings: any[] = []; // Filtered bookings for the selected room
   selectedRoom: number | null = null; // Currently selected room ID
   selectedRoomName: string = ''; // Selected room name
-  isAdsEnable: boolean = true; // Variable to toggle ads visibility (will be from API later)
+  isAdsEnable: boolean = false; // Variable to toggle ads visibility (will be from API later)
   selectedDate: Date = new Date(); // Default to current date
 
   constructor(private apiService: ApiService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    // Fetch rooms once on initialization
-    this.fetchRooms();
-
     // Check if a room ID is passed in the route
     const roomId = this.route.snapshot.paramMap.get('id');
     if (roomId) {
       this.selectedRoom = Number(roomId);
-
-      // Wait until dataRooms is fetched
-      const intervalId = setInterval(() => {
-        if (this.dataRooms && this.dataRooms.length > 0) {
-          this.setRoomName(roomId); // Fetch the room name based on roomId
-          clearInterval(intervalId); // Stop polling
-        }
-      }, 100);
+      this.setRoomName(roomId); // Set room name immediately, we'll update when rooms are fetched
     }
 
-    // Fetch initial bookings and start periodic updates
+    // Fetch rooms and bookings
+    this.fetchRooms();
     this.fetchBookings(); // Initial fetch
     this.setupPeriodicUpdates(); // Start periodic updates
   }
@@ -57,6 +48,7 @@ export class EachRoomComponent implements OnInit {
     this.apiService.getDataBookings().subscribe(
       (bookings) => {
         this.dataBookings = bookings;
+        console.log('Fetched bookings:', bookings);
         if (this.selectedRoom) {
           this.filterBookingsByRoomId(this.selectedRoom);
         }
@@ -85,18 +77,33 @@ export class EachRoomComponent implements OnInit {
   }
 
   setRoomName(roomId: string): void {
-    if (!this.dataRooms || this.dataRooms.length === 0) {
-      console.error('Rooms data is not yet loaded.');
-      this.selectedRoomName = 'Room not found';
-      return;
-    }
+    // Initially set a temporary name while waiting for rooms to load
+    this.selectedRoomName = `Room ${roomId}`;
 
-    const room = this.dataRooms.find((room) => room.id == roomId); // Match roomId with the correct field in dataRooms
+    // Check if rooms are already loaded
+    if (this.dataRooms && this.dataRooms.length > 0) {
+      this.updateRoomName(roomId);
+    } else {
+      // Wait for rooms to load with a timeout
+      const startTime = Date.now();
+      const checkRooms = () => {
+        if (this.dataRooms && this.dataRooms.length > 0) {
+          this.updateRoomName(roomId);
+        } else if (Date.now() - startTime < 5000) { // 5 second timeout
+          setTimeout(checkRooms, 100);
+        }
+      };
+      checkRooms();
+    }
+  }
+
+  private updateRoomName(roomId: string): void {
+    const room = this.dataRooms.find((room) => room.id == Number(roomId));
     if (room) {
-      this.selectedRoomName = room.name; // Set the selected room name
+      this.selectedRoomName = room.name;
       console.log('Selected Room Name:', this.selectedRoomName);
     } else {
-      this.selectedRoomName = 'Room not found'; // Default if room not found
+      this.selectedRoomName = `Room ${roomId} (not found)`;
       console.log('Selected Room Name:', this.selectedRoomName);
     }
   }
@@ -116,14 +123,19 @@ export class EachRoomComponent implements OnInit {
       .map((monthGroup) => ({
         ...monthGroup,
         dates: monthGroup.dates
-          .map((dateGroup: any) => ({
-            ...dateGroup,
-            schedules: dateGroup.schedules.filter((schedule: any) =>
+          .map((dateGroup: any) => {
+            // Filter schedules by room_id
+            const filteredSchedules = dateGroup.schedules.filter((schedule: any) =>
               schedule.room_id === roomId
-            ),
-          }))
+            );
+
+            return {
+              ...dateGroup,
+              schedules: filteredSchedules
+            };
+          })
           .filter((dateGroup: any) => {
-            // Only include dates that match the selected date
+            // Only include dates that match the selected date AND have schedules after filtering
             return dateGroup.date === selectedDateString && dateGroup.schedules.length > 0;
           }),
       }))
@@ -131,6 +143,8 @@ export class EachRoomComponent implements OnInit {
 
     // Log the result
     console.log('Filtered bookings:', this.filteredBookings);
+    console.log('Selected date string:', selectedDateString);
+    console.log('All data bookings:', this.dataBookings);
   }
 
   // filterBookingsByRoomId(roomId: number | null, targetDate?: string): void {
@@ -163,8 +177,11 @@ export class EachRoomComponent implements OnInit {
   //   console.log('Filtered bookings:', this.filteredBookings);
   // }
 
-  formatTime(time: string): string {
-    const [hours, minutes] = time.split(':');
+  formatTime(dateTimeString: string): string {
+    // The API returns datetime strings, so we need to extract time from them
+    const date = new Date(dateTimeString);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
   }
 
@@ -184,10 +201,8 @@ export class EachRoomComponent implements OnInit {
 
   formatDate(date: Date): string {
     // Format date as YYYY-MM-DD to match the expected format in the data
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+    // Using toISOString to ensure consistent date formatting regardless of timezone
+    return date.toISOString().split('T')[0];
   }
 
   onDateChange(event: any): void {

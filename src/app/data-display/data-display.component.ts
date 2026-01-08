@@ -27,9 +27,9 @@ export class DataDisplayComponent implements OnInit {
     interval(10000)
       .pipe(switchMap(() => this.apiService.getDataBookings()))
       .subscribe(
-        (response) => {
-          console.log('Updated dataBookings:', response);
-          this.dataBookings = response;
+        (bookings) => {
+          console.log('Updated dataBookings:', bookings);
+          this.dataBookings = bookings;
           this.filterBookingsByRoom({ id: this.selectedRoom.id || null, name: this.selectedRoom.name || 'Semua Jadwal Ruangan Meeting' });
         },
         (error) => {
@@ -51,9 +51,9 @@ export class DataDisplayComponent implements OnInit {
   // Helper method for initial fetch
   private fetchBookings(): void {
     this.apiService.getDataBookings().subscribe(
-      (response) => {
-        console.log('Initial dataBookings:', response);
-        this.dataBookings = response;
+      (bookings) => {
+        console.log('Initial dataBookings:', bookings);
+        this.dataBookings = bookings;
         this.filterBookingsByRoom({ name: 'Semua Jadwal Ruangan Meeting' }); // Show all bookings by default
       },
       (error) => {

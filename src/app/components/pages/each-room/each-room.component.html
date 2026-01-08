@@ -1,164 +1,329 @@
-<!-- Ads Section -->
-<div *ngIf="isAdsEnable" class="bg-cover bg-center text-white h-1/3 min-h-[33vh] flex items-center"
-  [style.background-image]="'url(../../../../assets/landscape-bg.jpg)'">
-  <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-4 py-8">
-    <div class="text-center md:text-left mb-6 md:mb-0">
-      <h1 class="text-2xl font-bold">{{ selectedRoomName }}</h1>
-      <p class="text-sm opacity-90 mt-2">Ruang meeting eksklusif untuk kebutuhan kolaborasi Anda</p>
+<!-- Landscape Layout: LEFT CONTENT | RIGHT CONTENT | ADS CONTENT -->
+<div class="hidden md:flex h-screen">
+  <!-- Left Content: Room Description -->
+  <div class="w-1/3 bg-black/50 text-white p-6 border-r border-white/20 flex flex-col">
+    <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
+      <!-- TIME section -->
+      <div class="flex-shrink-0">
+        <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
+          {{ getTimePart() }}
+        </p>
+      </div>
+
+      <!-- DAY and DATE section -->
+      <div class="flex flex-col justify-center">
+        <p class="text-sm md:text-base lg:text-lg">
+          {{ getDayPart() }},
+        </p>
+        <p class="text-sm md:text-base lg:text-lg">
+          {{ getDatePart() }}
+        </p>
+      </div>
     </div>
-    <div class="flex items-center space-x-3">
-      <img src="../../../../../../assets/dmmx-logo-white.png" alt="DMM Logo" class="w-16">
-      <div class="text-left">
-        <p class="text-xs">Pindai QR ini untuk memesan ruang meeting</p>
-        <img src="../../../../../../assets/qr-scan-booking.png" alt="QR Code" class="w-16 h-16 mt-1">
+    <h2 class="text-xl font-bold mb-4">Deskripsi Ruangan</h2>
+    <div class="space-y-4 flex-grow overflow-y-auto">
+      <div class="flex items-start">
+        <div class="bg-gray-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold ">Kapasitas</h3>
+          <p>10-15 orang</p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="bg-gray-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold">Fasilitas</h3>
+          <p>Proyektor, whiteboard, AC, koneksi internet cepat</p>
+        </div>
+      </div>
+
+      <div class="flex items-start">
+        <div class="bg-gray-100 p-3 rounded-lg mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold">Lokasi</h3>
+          <p>Lantai 3, Gedung Utama</p>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="font-semibold mb-2">Gambaran Umum</h3>
+        <p>
+          Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
+          dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
+          ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
+        </p>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Content Section with Split Layout -->
-<div [class]="isAdsEnable ? 'mx-auto h-2/3 min-h-[66vh]' : 'mx-auto h-full min-h-[100vh]'" class="bg-cover bg-center"
-  [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
-  <div class="bg-black/50 grid grid-cols-1 sm:grid-cols-2 h-full text-white">
-    <!-- Left Section: Room Description -->
-    <div class="p-6 border h-full flex flex-col">
-      <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
-        <!-- TIME section -->
-        <div class="flex-shrink-0">
-          <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
-            {{ getTimePart() }}
-          </p>
-        </div>
-
-        <!-- DAY and DATE section -->
-        <div class="flex flex-col justify-center">
-          <p class="text-sm md:text-base lg:text-lg">
-            {{ getDayPart() }},
-          </p>
-          <p class="text-sm md:text-base lg:text-lg">
-            {{ getDatePart() }}
-          </p>
+  <!-- Right Content: Timeline/Schedule -->
+  <div class="w-1/3 bg-white/50 p-6 border-r border-gray-300 flex flex-col">
+    <div class="flex items-end justify-between mb-4">
+      <div class="flex flex-col">
+        <label class="text-sm font-semibold text-gray-800 ml-1 mb-1">Select Date</label>
+        <div class="flex items-center bg-gray-200 backdrop-blur-sm px-3 rounded-lg border border-gray-200">
+          <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
+            class="bg-transparent outline-none text-sm font-semibold text-gray-800 w-32" readonly>
+          <mat-datepicker-toggle matSuffix [for]="datePicker" class="scale-90"></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
         </div>
       </div>
-      <h2 class="text-xl font-bold mb-4">Deskripsi Ruangan</h2>
-      <div class="space-y-4 flex-grow">
-        <div class="flex items-start">
-          <div class="bg-gray-100 p-3 rounded-lg mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-semibold ">Kapasitas</h3>
-            <p>10-15 orang</p>
-          </div>
-        </div>
 
-        <div class="flex items-start">
-          <div class="bg-gray-100 p-3 rounded-lg mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-semibold">Fasilitas</h3>
-            <p>Proyektor, whiteboard, AC, koneksi internet cepat</p>
-          </div>
+      <div class="flex items-center gap-2">
+        <div
+          class="bg-gray-200 backdrop-blur-sm px-4 py-3.5 rounded-lg text-lg font-bold text-gray-800 border border-gray-100 shadow-sm">
+          {{ getTotalScheduleCount() }}
         </div>
-
-        <div class="flex items-start">
-          <div class="bg-gray-100 p-3 rounded-lg mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-semibold">Lokasi</h3>
-            <p>Lantai 3, Gedung Utama</p>
-          </div>
-        </div>
-
-        <div class="mt-6">
-          <h3 class="font-semibold mb-2">Gambaran Umum</h3>
-          <p>
-            Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
-            dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
-            ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
-          </p>
+        <div class="flex flex-col leading-tight text-xs font-bold text-gray-800 tracking-tight">
+          <span>Meetings</span>
+          <span>remaining</span>
         </div>
       </div>
     </div>
 
-    <!-- Right Section: Timeline/Schedule -->
-    <div class="bg-white/50 p-6 border h-full flex flex-col">
-      <div class="flex items-end  justify-between mb-4">
-        <div class="flex flex-col">
-          <label class="text-sm font-semibold text-gray-800 ml-1 mb-1">Select Date</label>
-          <div class="flex items-center bg-gray-200 backdrop-blur-sm px-3 rounded-lg border border-gray-200">
-            <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
-              class="bg-transparent outline-none text-sm font-semibold text-gray-800 w-32" readonly>
-            <mat-datepicker-toggle matSuffix [for]="datePicker" class="scale-90"></mat-datepicker-toggle>
-            <mat-datepicker #datePicker></mat-datepicker>
-          </div>
-        </div>
+    <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
+      <div class="space-y-4 flex-grow overflow-y-auto relative">
+        <!-- Vertical timeline line -->
+        <div class="absolute left-3 top-0 h-full w-0.5 bg-black z-0"></div>
 
-        <div class="flex items-center gap-2">
-          <div
-            class="bg-gray-200 backdrop-blur-sm px-4 py-3.5 rounded-lg text-lg font-bold text-gray-800 border border-gray-100 shadow-sm">
-            {{ getTotalScheduleCount() }}
-          </div>
-          <div class="flex flex-col leading-tight text-xs font-bold text-gray-800 tracking-tight">
-            <span>Meetings</span>
-            <span>remaining</span>
-          </div>
-        </div>
-      </div>
-
-      <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
-        <div class="space-y-4 flex-grow overflow-y-auto relative">
-          <!-- Vertical timeline line -->
-          <div class="absolute left-3 top-0 h-full w-0.5 bg-black z-0"></div>
-
-          <div *ngFor="let monthGroup of filteredBookings" class="space-y-4">
-            <div *ngFor="let dateGroup of monthGroup.dates" class="space-y-3 relative">
-              <div *ngFor="let schedule of dateGroup.schedules"
-                class="bg-gray-300 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative"
-                (click)="openVerificationModal(schedule)">
-                <!-- Bullet point for each booking -->
-                <div class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10"></div>
-                <div class="flex justify-between text-center">
-                  <div class="mx-auto">
-                    <div class="font-semibold text-gray-800">{{ formatTime(schedule.start_time) }} - {{
-                      formatTime(schedule.end_time) }}</div>
-                    <div class="font-medium text-gray-800 mt-1">{{ schedule.topic }}</div>
-                    <div class="font-small text-gray-800 mt-1">PIC: {{ schedule.pic }}</div>
-                  </div>
+        <div *ngFor="let monthGroup of filteredBookings" class="space-y-4">
+          <div *ngFor="let dateGroup of monthGroup.dates" class="space-y-3 relative">
+            <div *ngFor="let schedule of dateGroup.schedules"
+              class="bg-gray-300 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative"
+              (click)="openVerificationModal(schedule)">
+              <!-- Bullet point for each booking -->
+              <div class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10"></div>
+              <div class="flex justify-between text-center">
+                <div class="mx-auto">
+                  <div class="font-semibold text-gray-800">{{ formatTime(schedule.start_time) }} - {{
+                    formatTime(schedule.end_time) }}</div>
+                  <div class="font-medium text-gray-800 mt-1">{{ schedule.topic }}</div>
+                  <div class="font-small text-gray-800 mt-1">PIC: {{ schedule.pic }}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </ng-container>
+      </div>
+    </ng-container>
 
-      <!-- No Bookings Template -->
-      <ng-template #noBookings>
-        <div class="flex flex-col items-center justify-center py-12">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <h3 class="text-lg font-medium text-gray-700 mb-1">Tidak Ada Jadwal Hari Ini</h3>
-          <p class="text-gray-500 text-center">Belum ada booking untuk ruangan ini pada tanggal ini.</p>
-          <button class="mt-4 btn-primary px-6 py-2">Booking Jadwal Baru</button>
+    <!-- No Bookings Template -->
+    <ng-template #noBookings>
+      <div class="flex flex-col items-center justify-center py-12">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <h3 class="text-lg font-medium text-gray-700 mb-1">Tidak Ada Jadwal Hari Ini</h3>
+        <p class="text-gray-500 text-center">Belum ada booking untuk ruangan ini pada tanggal ini.</p>
+        <button class="mt-4 btn-primary px-6 py-2">Booking Jadwal Baru</button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Ads Content -->
+  <div *ngIf="isAdsEnable" class="w-1/3 bg-cover bg-center text-white flex items-center"
+    [style.background-image]="'url(../../../../assets/landscape-bg.jpg)'">
+    <div class="container mx-auto flex flex-col items-center justify-center px-4 py-8 h-full">
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold">{{ selectedRoomName }}</h1>
+        <p class="text-sm opacity-90 mt-2">Ruang meeting eksklusif untuk kebutuhan kolaborasi Anda</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <img src="../../../../../../assets/dmmx-logo-white.png" alt="DMM Logo" class="w-16 mb-4">
+        <div class="text-center">
+          <p class="text-xs mb-2">Pindai QR ini untuk memesan ruang meeting</p>
+          <img src="../../../../../../assets/qr-scan-booking.png" alt="QR Code" class="w-16 h-16">
         </div>
-      </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Portrait Layout: ADS TOP | CONTENT BOTTOM -->
+<div class="md:hidden flex flex-col h-screen">
+  <!-- Ads Section -->
+  <div *ngIf="isAdsEnable" class="bg-cover bg-center text-white h-1/3 min-h-[33vh] flex items-center"
+    [style.background-image]="'url(../../../../assets/landscape-bg.jpg)'">
+    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-4 py-8">
+      <div class="text-center md:text-left mb-6 md:mb-0">
+        <h1 class="text-2xl font-bold">{{ selectedRoomName }}</h1>
+        <p class="text-sm opacity-90 mt-2">Ruang meeting eksklusif untuk kebutuhan kolaborasi Anda</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <img src="../../../../../../assets/dmmx-logo-white.png" alt="DMM Logo" class="w-16">
+        <div class="text-left">
+          <p class="text-xs">Pindai QR ini untuk memesan ruang meeting</p>
+          <img src="../../../../../../assets/qr-scan-booking.png" alt="QR Code" class="w-16 h-16 mt-1">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Section with Split Layout -->
+  <div [class]="isAdsEnable ? 'h-2/3 min-h-[66vh]' : 'h-full min-h-[100vh]'" class="bg-cover bg-center flex-grow"
+    [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
+    <div class="bg-black/50 grid grid-cols-1 sm:grid-cols-2 h-full text-white">
+      <!-- Left Section: Room Description -->
+      <div class="p-6 border h-full flex flex-col">
+        <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
+          <!-- TIME section -->
+          <div class="flex-shrink-0">
+            <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
+              {{ getTimePart() }}
+            </p>
+          </div>
+
+          <!-- DAY and DATE section -->
+          <div class="flex flex-col justify-center">
+            <p class="text-sm md:text-base lg:text-lg">
+              {{ getDayPart() }},
+            </p>
+            <p class="text-sm md:text-base lg:text-lg">
+              {{ getDatePart() }}
+            </p>
+          </div>
+        </div>
+        <h2 class="text-xl font-bold mb-4">Deskripsi Ruangan</h2>
+        <div class="space-y-4 flex-grow">
+          <div class="flex items-start">
+            <div class="bg-gray-100 p-3 rounded-lg mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold ">Kapasitas</h3>
+              <p>10-15 orang</p>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <div class="bg-gray-100 p-3 rounded-lg mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold">Fasilitas</h3>
+              <p>Proyektor, whiteboard, AC, koneksi internet cepat</p>
+            </div>
+          </div>
+
+          <div class="flex items-start">
+            <div class="bg-gray-100 p-3 rounded-lg mr-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold">Lokasi</h3>
+              <p>Lantai 3, Gedung Utama</p>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <h3 class="font-semibold mb-2">Gambaran Umum</h3>
+            <p>
+              Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
+              dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
+              ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: Timeline/Schedule -->
+      <div class="bg-white/50 p-6 border h-full flex flex-col">
+        <div class="flex items-end justify-between mb-4">
+          <div class="flex flex-col">
+            <label class="text-sm font-semibold text-gray-800 ml-1 mb-1">Select Date</label>
+            <div class="flex items-center bg-gray-200 backdrop-blur-sm px-3 rounded-lg border border-gray-200">
+              <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
+                class="bg-transparent outline-none text-sm font-semibold text-gray-800 w-32" readonly>
+              <mat-datepicker-toggle matSuffix [for]="datePicker" class="scale-90"></mat-datepicker-toggle>
+              <mat-datepicker #datePicker></mat-datepicker>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <div
+              class="bg-gray-200 backdrop-blur-sm px-4 py-3.5 rounded-lg text-lg font-bold text-gray-800 border border-gray-100 shadow-sm">
+              {{ getTotalScheduleCount() }}
+            </div>
+            <div class="flex flex-col leading-tight text-xs font-bold text-gray-800 tracking-tight">
+              <span>Meetings</span>
+              <span>remaining</span>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
+          <div class="space-y-4 flex-grow overflow-y-auto relative">
+            <!-- Vertical timeline line -->
+            <div class="absolute left-3 top-0 h-full w-0.5 bg-black z-0"></div>
+
+            <div *ngFor="let monthGroup of filteredBookings" class="space-y-4">
+              <div *ngFor="let dateGroup of monthGroup.dates" class="space-y-3 relative">
+                <div *ngFor="let schedule of dateGroup.schedules"
+                  class="bg-gray-300 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative"
+                  (click)="openVerificationModal(schedule)">
+                  <!-- Bullet point for each booking -->
+                  <div class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10"></div>
+                  <div class="flex justify-between text-center">
+                    <div class="mx-auto">
+                      <div class="font-semibold text-gray-800">{{ formatTime(schedule.start_time) }} - {{
+                        formatTime(schedule.end_time) }}</div>
+                      <div class="font-medium text-gray-800 mt-1">{{ schedule.topic }}</div>
+                      <div class="font-small text-gray-800 mt-1">PIC: {{ schedule.pic }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- No Bookings Template -->
+        <ng-template #noBookings>
+          <div class="flex flex-col items-center justify-center py-12">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3 class="text-lg font-medium text-gray-700 mb-1">Tidak Ada Jadwal Hari Ini</h3>
+            <p class="text-gray-500 text-center">Belum ada booking untuk ruangan ini pada tanggal ini.</p>
+            <button class="mt-4 btn-primary px-6 py-2">Booking Jadwal Baru</button>
+          </div>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>
