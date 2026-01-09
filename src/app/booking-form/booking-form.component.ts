@@ -3,6 +3,7 @@ import { ApiService } from '../api.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { BookingResponse } from '../models/booking-response.model';
+import { Room } from '../models/room.model';
 // Modal
 import { MatDialog } from '@angular/material/dialog';
 import { BookingModalComponent } from '../booking-modal/booking-modal.component';
@@ -15,10 +16,10 @@ import { BookingModalComponent } from '../booking-modal/booking-modal.component'
 })
 export class BookingFormComponent {
   isOpen = false; // Track the dropdown state
-  rooms: any[] = []; // Array to hold the fetched room data
+  rooms: Room[] = []; // Array to hold the fetched room data
   selectedRoomName = 'Pilih Ruangan'; // Default button text
   bookingData = {
-    room_id: '',
+    room_id: 0, // Changed from string to number
     user_id: 1,
     date: '',
     start_time: '',
@@ -41,7 +42,8 @@ export class BookingFormComponent {
   fetchRooms(): void {
     this.apiService.getDataRooms().subscribe(
       (response) => {
-        this.rooms = response.filter((room: any) => room.id !== 1);
+        // Filter out room with ID 1 (possibly reserved or unavailable)
+        this.rooms = response.filter((room: Room) => room.id !== 1);
       },
       (error) => {
         console.error('Error fetching data:', error);
@@ -53,8 +55,8 @@ export class BookingFormComponent {
     this.isOpen = !this.isOpen;
   }
 
-  selectRoom(room: any) {
-    this.bookingData.room_id = room.id;
+  selectRoom(room: Room) {
+    this.bookingData.room_id = room.id; // This is already a number
     this.selectedRoomName = room.name; // Update the button text
     this.isOpen = false; // Close the dropdown
   }
@@ -62,12 +64,11 @@ export class BookingFormComponent {
   onDateChange(event: any) {
     const selectedDate = new Date(event.value);
 
-    // Get the local date components
+    // Format the date as YYYY-MM-DD (without time component)
     const year = selectedDate.getFullYear();
     const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
     const day = String(selectedDate.getDate()).padStart(2, '0');
 
-    // Format the date as YYYY-MM-DD
     this.bookingData.date = `${year}-${month}-${day}`;
 
     console.log(this.bookingData);
@@ -75,7 +76,7 @@ export class BookingFormComponent {
 
   // Helper method to validate bookingData
   isBookingDataValid(): boolean {
-    return this.bookingData.room_id !== '' &&
+    return this.bookingData.room_id !== 0 &&
       this.bookingData.date !== '' &&
       this.bookingData.start_time !== '' &&
       this.bookingData.end_time !== '' &&
@@ -91,12 +92,26 @@ export class BookingFormComponent {
     // Open confirmation modal before proceeding
     this.openConfirmationModal().afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
+        // Format the date and time in ISO format as expected by the API
+        const bookingPayload = {
+          ...this.bookingData,
+          // Ensure room_id is a number and format date and time in ISO format: YYYY-MM-DDTHH:mm:ssZ
+          room_id: Number(this.bookingData.room_id),
+          date: `${this.bookingData.date}T00:00:00Z`,
+          start_time: `${this.bookingData.date}T${this.bookingData.start_time}:00Z`,
+          end_time: `${this.bookingData.date}T${this.bookingData.end_time}:00Z`
+        };
+
         // Proceed with booking if user confirmed
-        this.apiService.createBooking(this.bookingData)
+        this.apiService.createBooking(bookingPayload)
           .subscribe(
             (response) => {
-              if (response.statusCode === 201) {
-                this.openSuccessModal();
+              // The API returns the created booking in the 'data' property
+              if (response && response.data) {
+                this.openSuccessModal(response.data);
+              } else {
+                // Fallback - use the original booking data
+                this.openSuccessModal(bookingPayload);
               }
             },
             (error) => {
@@ -130,18 +145,30 @@ export class BookingFormComponent {
   }
 
   // Success modal
-  openSuccessModal() {
+  openSuccessModal(bookingData?: any) {
+    // Use the response data if available, otherwise fallback to form data
+    let roomName = this.selectedRoomName; // Default to selected room name
+    if (bookingData && bookingData.room_id) {
+      // Try to find the room name from the rooms array, fallback to using the room_id
+      const foundRoom = this.rooms.find(r => r.id === bookingData.room_id);
+      roomName = foundRoom ? foundRoom.name : `Room ${bookingData.room_id}`;
+    }
+
+    const date = bookingData ? new Date(bookingData.date).toISOString().split('T')[0] : this.bookingData.date;
+    const startTime = bookingData ? new Date(bookingData.start_time).toTimeString().substring(0, 5) : this.bookingData.start_time;
+    const endTime = bookingData ? new Date(bookingData.end_time).toTimeString().substring(0, 5) : this.bookingData.end_time;
+
     this.dialog.open(BookingModalComponent, {
       data: {
         type: 'success',
         title: 'Reservasi Berhasil',
-        message: 'Reservasi untuk ruangan ' + this.selectedRoomName + ' pada ' + this.bookingData.date + ' dari ' + this.bookingData.start_time + ' hingga ' + this.bookingData.end_time + ' telah berhasil.',
+        message: 'Reservasi untuk ruangan ' + roomName + ' pada ' + date + ' dari ' + startTime + ' hingga ' + endTime + ' telah berhasil.',
         subMessage: 'Mohon segera berikan informasi reservasi ini kepada resepsionis untuk konfirmasi ruangan. Terima kasih',
         button1: 'Selesai',
         btnWaMe: 'Konfirmasi',
-        roomName: this.selectedRoomName,
-        startTime: this.bookingData.start_time,
-        endTime: this.bookingData.end_time
+        roomName: roomName,
+        startTime: startTime,
+        endTime: endTime
       },
       width: '300px'
     });
@@ -200,5 +227,36 @@ export class BookingFormComponent {
       // Format the time back to HH:mm
       this.bookingData.end_time = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
+  }
+
+  getTimePart(): string {
+    const now = new Date();
+    const timeOptions: Intl.DateTimeFormatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    };
+
+    return now.toLocaleTimeString('en-US', timeOptions);
+  }
+
+  getDayPart(): string {
+    const now = new Date();
+    const dayOptions: Intl.DateTimeFormatOptions = {
+      weekday: 'long'
+    };
+
+    return now.toLocaleDateString('en-US', dayOptions);
+  }
+
+  getDatePart(): string {
+    const now = new Date();
+    const dateOptions: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+
+    return now.toLocaleDateString('en-US', dateOptions);
   }
 }

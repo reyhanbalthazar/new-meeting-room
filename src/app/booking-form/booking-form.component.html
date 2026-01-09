@@ -1,70 +1,333 @@
-<app-header></app-header>
-<form (ngSubmit)="onSubmit()" class="max-w-md mx-auto mt-5 px-5">
-    <div class="form-group">
-        <label for="room" class="form-label">Pilih Ruangan</label>
+<!-- <app-header></app-header> -->
+
+<!-- Landscape Layout: LEFT CONTENT (Room Info) | RIGHT CONTENT (Booking Form) -->
+<div class="hidden md:flex h-screen">
+  <!-- Left Content: Room Description with Background -->
+  <div class="w-1/2 bg-cover bg-center text-white flex flex-col" [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
+    <div class="bg-black/50 p-6 border-r border-white/20 flex flex-col flex-grow">
+      <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
+        <!-- TIME section -->
+        <div class="flex-shrink-0">
+          <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
+            {{ getTimePart() }}
+          </p>
+        </div>
+
+        <!-- DAY and DATE section -->
+        <div class="flex flex-col justify-center">
+          <p class="text-sm md:text-base lg:text-lg">
+            {{ getDayPart() }},
+          </p>
+          <p class="text-sm md:text-base lg:text-lg">
+            {{ getDatePart() }}
+          </p>
+        </div>
+      </div>
+      <h2 class="text-xl font-bold mb-4">Deskripsi Ruangan</h2>
+      <div class="space-y-4 flex-grow overflow-y-auto">
+        <div class="flex items-start">
+          <div class="bg-gray-100 p-3 rounded-lg mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold">Kapasitas</h3>
+            <p>10-15 orang</p>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="bg-gray-100 p-3 rounded-lg mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold">Fasilitas</h3>
+            <p>Proyektor, whiteboard, AC, koneksi internet cepat</p>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="bg-gray-100 p-3 rounded-lg mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold">Lokasi</h3>
+            <p>Lantai 3, Gedung Utama</p>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <h3 class="font-semibold mb-2">Gambaran Umum</h3>
+          <p>
+            Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
+            dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
+            ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Content: Booking Form -->
+  <div class="w-1/2 bg-white/50 p-6 flex flex-col">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Form Pemesanan Ruangan</h2>
+
+    <form (ngSubmit)="onSubmit()" class="space-y-6 flex-grow overflow-y-auto">
+      <div class="form-group">
+        <label for="room" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Pilih Ruangan</label>
         <div class="relative w-full inline-block text-left">
-            <button type="button" class="form-input w-full justify-center gap-x-1.5 text-left" id="menu-button"
-                aria-expanded="isOpen" aria-haspopup="true" (click)="toggleMenu()">
-                {{ selectedRoomName }}
-                <svg class="-mr-1 ml-auto h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd"
-                        d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-                        clip-rule="evenodd" />
-                </svg>
-            </button>
+          <button type="button" class="w-full justify-center gap-x-1.5 text-left bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-800 font-medium"
+            id="menu-button" aria-expanded="isOpen" aria-haspopup="true" (click)="toggleMenu()">
+            {{ selectedRoomName }}
+            <svg class="-mr-1 ml-auto h-5 w-5 text-gray-800" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd"
+                d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        <div *ngIf="isOpen" class="absolute z-10 mt-1 w-1/2 rounded-md bg-white shadow-lg border border-gray-200">
+          <ul class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+            <li *ngFor="let room of rooms">
+              <button type="button" (click)="selectRoom(room)"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" role="menuitem">
+                {{ room.name }}
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="choose-date" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Pilih Tanggal</label>
+        <mat-form-field appearance="fill" class="w-full">
+          <input matInput [matDatepicker]="picker" placeholder="Pilih Tanggal"
+            class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+            (dateChange)="onDateChange($event)" />
+          <mat-datepicker-toggle matSuffix [for]="picker" class="scale-90"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="grid grid-cols-2 gap-5">
+        <div class="form-group">
+          <label for="choose-start-time" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Jam Mulai</label>
+          <input type="time" id="choose-start-time" [(ngModel)]="bookingData.start_time" name="start_time"
+            (change)="updateEndTime()"
+            class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium text-center"
+            required />
+        </div>
+        <div class="form-group">
+          <label for="choose-end-time" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Jam Selesai</label>
+          <input type="time" id="choose-end-time" [(ngModel)]="bookingData.end_time" name="end_time"
+            class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium text-center"
+            required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="pic" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">PIC</label>
+        <input type="text" id="pic" [(ngModel)]="bookingData.pic" name="pic"
+          class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+          required />
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Email</label>
+        <input type="text" id="email" [(ngModel)]="bookingData.email" name="email"
+          class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+          required />
+      </div>
+
+      <div class="form-group">
+        <label for="meeting-topic" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Topik Meeting</label>
+        <input type="text" id="meeting-topic" [(ngModel)]="bookingData.topic" name="topic"
+          class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+          required />
+      </div>
+
+      <div class="pt-4">
+        <button type="submit" class="w-full bg-dmm-green hover:bg-dmm-green/90 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300">
+          Booking Sekarang
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Portrait Layout: FORM TOP | ROOM INFO BOTTOM -->
+<div class="md:hidden flex flex-col h-screen">
+  <!-- Booking Form Section -->
+  <div class="bg-white/50 p-6 border-b border-gray-300 flex-grow overflow-y-auto">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Form Pemesanan Ruangan</h2>
+
+    <form (ngSubmit)="onSubmit()" class="space-y-6">
+      <div class="form-group">
+        <label for="room" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Pilih Ruangan</label>
+        <div class="relative w-full inline-block text-left">
+          <button type="button" class="w-full justify-center gap-x-1.5 text-left bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-800 font-medium"
+            id="menu-button" aria-expanded="isOpen" aria-haspopup="true" (click)="toggleMenu()">
+            {{ selectedRoomName }}
+            <svg class="-mr-1 ml-auto h-5 w-5 text-gray-800" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd"
+                d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
         </div>
         <div *ngIf="isOpen" class="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg border border-gray-200">
-            <ul class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
-                <li *ngFor="let room of rooms">
-                    <button type="button" (click)="selectRoom(room)"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" role="menuitem">
-                        {{ room.name }}
-                    </button>
-                </li>
-            </ul>
+          <ul class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+            <li *ngFor="let room of rooms">
+              <button type="button" (click)="selectRoom(room)"
+                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50" role="menuitem">
+                {{ room.name }}
+              </button>
+            </li>
+          </ul>
         </div>
-    </div>
+      </div>
 
-    <div class="form-group">
-        <label for="choose-date" class="form-label">Pilih Waktu</label>
+      <div class="form-group">
+        <label for="choose-date" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Pilih Tanggal</label>
         <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Pilih Tanggal</mat-label>
-            <input matInput [matDatepicker]="picker" placeholder="Pilih Tanggal" class="form-input"
-                (dateChange)="onDateChange($event)" />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+          <input matInput [matDatepicker]="picker" placeholder="Pilih Tanggal"
+            class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+            (dateChange)="onDateChange($event)" />
+          <mat-datepicker-toggle matSuffix [for]="picker" class="scale-90"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
-    </div>
+      </div>
 
-    <div class="grid grid-cols-2 gap-5">
+      <div class="grid grid-cols-2 gap-5">
         <div class="form-group">
-            <label for="choose-start-time" class="form-label">Jam Mulai</label>
-            <input type="time" id="choose-start-time" [(ngModel)]="bookingData.start_time" name="start_time"
-                (change)="updateEndTime()" class="form-input w-full text-center" required />
-        </div>
-        <div class="form-group">
-            <label for="choose-end-time" class="form-label">Jam Selesai</label>
-            <input type="time" id="choose-end-time" [(ngModel)]="bookingData.end_time" name="end_time"
-                class="form-input w-full text-center" required />
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label for="pic" class="form-label">PIC</label>
-        <input type="text" id="pic" [(ngModel)]="bookingData.pic" name="pic" class="form-input w-full" required />
-    </div>
-
-    <div class="form-group">
-        <label for="email" class="form-label">Email</label>
-        <input type="text" id="email" [(ngModel)]="bookingData.email" name="email" class="form-input w-full" required />
-    </div>
-
-    <div class="form-group">
-        <label for="meeting-topic" class="form-label">Topik Meeting</label>
-        <input type="text" id="meeting-topic" [(ngModel)]="bookingData.topic" name="topic" class="form-input w-full"
+          <label for="choose-start-time" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Jam Mulai</label>
+          <input type="time" id="choose-start-time" [(ngModel)]="bookingData.start_time" name="start_time"
+            (change)="updateEndTime()"
+            class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium text-center"
             required />
+        </div>
+        <div class="form-group">
+          <label for="choose-end-time" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Jam Selesai</label>
+          <input type="time" id="choose-end-time" [(ngModel)]="bookingData.end_time" name="end_time"
+            class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium text-center"
+            required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="pic" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">PIC</label>
+        <input type="text" id="pic" [(ngModel)]="bookingData.pic" name="pic"
+          class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+          required />
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Email</label>
+        <input type="text" id="email" [(ngModel)]="bookingData.email" name="email"
+          class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+          required />
+      </div>
+
+      <div class="form-group">
+        <label for="meeting-topic" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Topik Meeting</label>
+        <input type="text" id="meeting-topic" [(ngModel)]="bookingData.topic" name="topic"
+          class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium"
+          required />
+      </div>
+
+      <div class="pt-4">
+        <button type="submit" class="w-full bg-dmm-green hover:bg-dmm-green/90 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300">
+          Booking Sekarang
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Room Info Section with Background -->
+  <div class="bg-cover bg-center flex-grow" [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
+    <div class="bg-black/50 text-white p-6 h-full">
+      <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
+        <!-- TIME section -->
+        <div class="flex-shrink-0">
+          <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
+            {{ getTimePart() }}
+          </p>
+        </div>
+
+        <!-- DAY and DATE section -->
+        <div class="flex flex-col justify-center">
+          <p class="text-sm md:text-base lg:text-lg">
+            {{ getDayPart() }},
+          </p>
+          <p class="text-sm md:text-base lg:text-lg">
+            {{ getDatePart() }}
+          </p>
+        </div>
+      </div>
+      <h2 class="text-xl font-bold mb-4">Deskripsi Ruangan</h2>
+      <div class="space-y-4">
+        <div class="flex items-start">
+          <div class="bg-gray-100 p-3 rounded-lg mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold">Kapasitas</h3>
+            <p>10-15 orang</p>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="bg-gray-100 p-3 rounded-lg mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold">Fasilitas</h3>
+            <p>Proyektor, whiteboard, AC, koneksi internet cepat</p>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="bg-gray-100 p-3 rounded-lg mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-dmm-green" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold">Lokasi</h3>
+            <p>Lantai 3, Gedung Utama</p>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <h3 class="font-semibold mb-2">Gambaran Umum</h3>
+          <p>
+            Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
+            dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
+            ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
+          </p>
+        </div>
+      </div>
     </div>
-
-    <button type="submit" class="btn-primary w-full py-3">Booking Sekarang</button>
-
-</form>
+  </div>
+</div>

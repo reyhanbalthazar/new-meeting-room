@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Booking, BookingGroup } from './models/booking.model';
 import { BookingResponse } from './models/booking-response.model';
+import { Room } from './models/room.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class ApiService {
   }
 
   getDataBookings(): Observable<BookingGroup[]> {
-    return this.http.get<BookingResponse>(this.apiUrlBookings, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<BookingResponse>(this.apiUrlBookings).pipe(
       map(response => {
         const bookings = response.data?.bookings || [];
 
@@ -82,16 +83,30 @@ export class ApiService {
     );
   }
 
-  getDataRooms(): Observable<any> {
-    return this.http.get<any>(this.apiUrlRooms, { headers: this.getAuthHeaders() });
+  getDataRooms(): Observable<Room[]> {
+    return this.http.get<any>(this.apiUrlRooms).pipe(
+      map(response => {
+        // Handle response with nested data.rooms structure
+        if (response && response.data && Array.isArray(response.data.rooms)) {
+          return response.data.rooms as Room[];
+        } else if (Array.isArray(response)) {
+          return response as Room[];
+        } else if (response && response.data && Array.isArray(response.data)) {
+          return response.data as Room[];
+        } else {
+          console.warn('Unexpected response format for rooms:', response);
+          return [];
+        }
+      })
+    );
   }
 
   createBooking(bookingData: any): Observable<any> {
-    return this.http.post<any>(this.apiUrlBookings, bookingData, { headers: this.getAuthHeaders() });
+    return this.http.post<any>(this.apiUrlBookings, bookingData);
   }
 
   deleteBooking(bookingId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrlBookings}-delete/${bookingId}`, { headers: this.getAuthHeaders() });
+    return this.http.delete<any>(`${this.apiUrlBookings}/${bookingId}`);
   }
 
 }

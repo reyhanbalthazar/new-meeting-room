@@ -14,7 +14,7 @@ export class EachRoomComponent implements OnInit {
   filteredBookings: any[] = []; // Filtered bookings for the selected room
   selectedRoom: number | null = null; // Currently selected room ID
   selectedRoomName: string = ''; // Selected room name
-  isAdsEnable: boolean = false; // Variable to toggle ads visibility (will be from API later)
+  isAdsEnable: boolean = true; // Variable to toggle ads visibility (will be from API later)
   selectedDate: Date = new Date(); // Default to current date
 
   constructor(private apiService: ApiService, private route: ActivatedRoute) { }
