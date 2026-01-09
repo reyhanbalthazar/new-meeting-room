@@ -16,6 +16,7 @@ export class EachRoomComponent implements OnInit {
   selectedRoomName: string = ''; // Selected room name
   isAdsEnable: boolean = true; // Variable to toggle ads visibility (will be from API later)
   selectedDate: Date = new Date(); // Default to current date
+  useTouchUi: boolean = false; // Flag to determine if touch UI should be used
 
   constructor(private apiService: ApiService, private route: ActivatedRoute) { }
 
@@ -26,6 +27,9 @@ export class EachRoomComponent implements OnInit {
       this.selectedRoom = Number(roomId);
       this.setRoomName(roomId); // Set room name immediately, we'll update when rooms are fetched
     }
+
+    // Determine if touch UI should be used based on screen size
+    this.useTouchUi = window.innerWidth < 768 || window.innerHeight > window.innerWidth;
 
     // Fetch rooms and bookings
     this.fetchRooms();

@@ -81,12 +81,12 @@
     <div class="flex items-end justify-between mb-4 landscape:mb-6 1080p:mb-8">
       <div class="flex flex-col">
         <label class="text-sm font-semibold text-gray-800 ml-1 mb-1 landscape:text-base 1080p:text-lg">Select Date</label>
-        <div class="flex items-center bg-gray-200 backdrop-blur-sm px-3 rounded-lg border border-gray-200 landscape:px-4 1080p:px-5">
+        <mat-form-field appearance="fill" class="w-full">
           <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
-            class="bg-transparent outline-none text-sm font-semibold text-gray-800 w-32 landscape:text-base 1080p:text-lg" readonly>
-          <mat-datepicker-toggle matSuffix [for]="datePicker" class="scale-90 landscape:scale-100 1080p:scale-110"></mat-datepicker-toggle>
-          <mat-datepicker #datePicker></mat-datepicker>
-        </div>
+            class="bg-transparent outline-none text-sm font-semibold text-gray-800" readonly>
+          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+          <mat-datepicker #datePicker [touchUi]="useTouchUi" panelClass="custom-datepicker-panel"></mat-datepicker>
+        </mat-form-field>
       </div>
 
       <div class="flex items-center gap-2">
@@ -265,12 +265,12 @@
         <div class="flex items-end justify-between mb-4 mobile-portrait:mb-6 landscape:mb-8">
           <div class="flex flex-col">
             <label class="text-sm font-semibold text-gray-800 ml-1 mb-1 mobile-portrait:text-base landscape:text-lg">Select Date</label>
-            <div class="flex items-center bg-gray-200 backdrop-blur-sm px-3 rounded-lg border border-gray-200 mobile-portrait:px-4 landscape:px-5">
+            <mat-form-field appearance="fill" class="w-full">
               <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
-                class="bg-transparent outline-none text-sm font-semibold text-gray-800 w-32 mobile-portrait:text-base landscape:text-lg" readonly>
-              <mat-datepicker-toggle matSuffix [for]="datePicker" class="scale-90 mobile-portrait:scale-100 landscape:scale-110"></mat-datepicker-toggle>
-              <mat-datepicker #datePicker></mat-datepicker>
-            </div>
+                class="bg-transparent outline-none text-sm font-semibold text-gray-800" readonly>
+              <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+              <mat-datepicker #datePicker [touchUi]="useTouchUi" panelClass="custom-datepicker-panel"></mat-datepicker>
+            </mat-form-field>
           </div>
 
           <div class="flex items-center gap-2">
