@@ -109,11 +109,11 @@
       </div>
     </div>
 
-    <ng-container *ngIf="dataBookings.length > 0; else noBookings">
+    <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
       <div class="space-y-4 flex-grow overflow-y-auto relative landscape:space-y-6 1080p:space-y-8">
         <!-- Vertical timeline line -->
         <div class="absolute left-3 top-0 h-full w-0.5 bg-black z-0"></div>
-        <div *ngFor="let booking of dataBookings"
+        <div *ngFor="let booking of filteredBookings"
           class="bg-gray-300 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative landscape:p-6 1080p:p-8"
           (click)="openVerificationModal(booking)">
           <!-- Bullet point for each booking -->
@@ -320,11 +320,11 @@
           </div>
         </div>
 
-        <ng-container *ngIf="dataBookings.length > 0; else noBookings">
+        <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
           <div class="space-y-4 flex-grow overflow-y-auto relative mobile-portrait:space-y-6 landscape:space-y-8">
             <!-- Vertical timeline line -->
             <div class="absolute left-3 top-0 h-full w-0.5 bg-black z-0"></div>
-            <div *ngFor="let booking of dataBookings"
+            <div *ngFor="let booking of filteredBookings"
               class="bg-gray-300 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative mobile-portrait:p-6 landscape:p-8"
               (click)="openVerificationModal(booking)">
               <!-- Bullet point for each booking -->

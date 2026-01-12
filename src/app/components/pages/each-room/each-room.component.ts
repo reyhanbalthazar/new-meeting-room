@@ -8,6 +8,7 @@ interface Booking {
   end_time: string;
   topic: string;
   pic: string;
+  date: string; // Date field for the booking
   [key: string]: any; // For any additional properties
 }
 
@@ -25,6 +26,7 @@ interface DateFormatOptions {
 export class EachRoomComponent implements OnInit, OnDestroy {
   // Data
   dataBookings: Booking[] = [];
+  filteredBookings: Booking[] = []; // Bookings filtered by selected date
 
   // State
   selectedRoom: number | null = null;
@@ -96,11 +98,13 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     this.apiService.getDataBookingsByRoomId(this.selectedRoom).subscribe({
       next: (bookings: Booking[]) => {
         this.dataBookings = bookings;
+        this.filterBookingsByDate(); // Filter by selected date
         console.debug('Fetched bookings for room:', bookings);
       },
       error: (error) => {
         console.error('Error fetching bookings:', error);
         this.dataBookings = []; // Clear data on error
+        this.filteredBookings = []; // Also clear filtered bookings
       }
     });
   }
@@ -117,6 +121,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (bookings: Booking[]) => {
           this.dataBookings = bookings;
+          this.filterBookingsByDate(); // Filter by selected date
           console.debug('Updated bookings:', bookings);
         },
         error: (error) => {
@@ -169,10 +174,8 @@ export class EachRoomComponent implements OnInit, OnDestroy {
 
     this.selectedDate = event.value;
 
-    // Refresh bookings if we have a selected room
-    if (this.selectedRoom) {
-      this.fetchBookings();
-    }
+    // Filter existing bookings by the new selected date
+    this.filterBookingsByDate();
   }
 
   /**
@@ -228,13 +231,41 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    * Get total number of scheduled bookings
    */
   getTotalScheduleCount(): number {
-    return this.dataBookings.length;
+    return this.filteredBookings.length;
+  }
+
+  /**
+   * Filter bookings by the selected date
+   */
+  private filterBookingsByDate(): void {
+    const selectedDateString = this.formatDate(this.selectedDate);
+
+    this.filteredBookings = this.dataBookings.filter(booking => {
+      // Extract date from the booking's date field
+      const bookingDate = new Date(booking.date);
+      const bookingDateString = this.formatDate(bookingDate);
+
+      // Compare the dates
+      return bookingDateString === selectedDateString;
+    });
+
+    console.debug(`Filtered bookings for date ${selectedDateString}:`, this.filteredBookings);
+  }
+
+  /**
+   * Format date as YYYY-MM-DD string
+   */
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   /**
    * Check if there are any bookings
    */
   get hasBookings(): boolean {
-    return this.dataBookings.length > 0;
+    return this.filteredBookings.length > 0;
   }
 }
