@@ -27,6 +27,7 @@ export class BookingFormComponent {
     pic: '',
     email: '',
     topic: '',
+    attendees: [] as { name: string; email: string }[]
   }
 
   constructor(
@@ -37,6 +38,8 @@ export class BookingFormComponent {
 
   ngOnInit(): void {
     this.fetchRooms();
+    // Initialize attendees array
+    this.bookingData.attendees = [];
   }
 
   fetchRooms(): void {
@@ -76,12 +79,23 @@ export class BookingFormComponent {
 
   // Helper method to validate bookingData
   isBookingDataValid(): boolean {
-    return this.bookingData.room_id !== 0 &&
+    // Check if all required fields are filled
+    const basicFieldsValid = this.bookingData.room_id !== 0 &&
       this.bookingData.date !== '' &&
       this.bookingData.start_time !== '' &&
       this.bookingData.end_time !== '' &&
       this.bookingData.pic !== '' &&
-      this.bookingData.topic !== ''; // Adjust as needed based on required fields
+      this.bookingData.topic !== '';
+
+    // Validate attendees if there are any
+    let attendeesValid = true;
+    if (this.bookingData.attendees.length > 0) {
+      attendeesValid = this.bookingData.attendees.every(attendee =>
+        attendee.name.trim() !== '' && attendee.email.trim() !== ''
+      );
+    }
+
+    return basicFieldsValid && attendeesValid;
   }
 
   onSubmit() {
@@ -99,8 +113,12 @@ export class BookingFormComponent {
           room_id: Number(this.bookingData.room_id),
           date: `${this.bookingData.date}T00:00:00Z`,
           start_time: `${this.bookingData.date}T${this.bookingData.start_time}:00Z`,
-          end_time: `${this.bookingData.date}T${this.bookingData.end_time}:00Z`
+          end_time: `${this.bookingData.date}T${this.bookingData.end_time}:00Z`,
+          attendees: this.bookingData.attendees // Include attendees in the payload
         };
+
+        // Log the data being sent to the backend
+        console.log('Sending booking data to backend:', bookingPayload);
 
         // Proceed with booking if user confirmed
         this.apiService.createBooking(bookingPayload)
@@ -227,6 +245,14 @@ export class BookingFormComponent {
       // Format the time back to HH:mm
       this.bookingData.end_time = `${endHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
+  }
+
+  addAttendee(): void {
+    this.bookingData.attendees.push({ name: '', email: '' });
+  }
+
+  removeAttendee(index: number): void {
+    this.bookingData.attendees.splice(index, 1);
   }
 
   getTimePart(): string {
