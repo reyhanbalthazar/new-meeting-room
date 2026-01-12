@@ -89,10 +89,10 @@
           Select Date
         </label>
         <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-          <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
+          <input matInput [matDatepicker]="landscapeDatePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
             class="bg-transparent outline-none text-sm font-semibold text-gray-800" readonly>
-          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-          <mat-datepicker #datePicker [touchUi]="useTouchUi" panelClass="custom-datepicker-panel"></mat-datepicker>
+          <mat-datepicker-toggle matSuffix [for]="landscapeDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #landscapeDatePicker [touchUi]="useTouchUi" panelClass="custom-datepicker-panel"></mat-datepicker>
         </mat-form-field>
       </div>
 
@@ -300,10 +300,10 @@
               Select Date
             </label>
             <mat-form-field appearance="fill" class="w-full" subscriptSizing="dynamic">
-              <input matInput [matDatepicker]="datePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
+              <input matInput [matDatepicker]="portraitDatePicker" [value]="selectedDate" (dateChange)="onDateChange($event)"
                 class="bg-transparent outline-none text-sm font-semibold text-gray-800" readonly>
-              <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-              <mat-datepicker #datePicker [touchUi]="useTouchUi" panelClass="custom-datepicker-panel"></mat-datepicker>
+              <mat-datepicker-toggle matSuffix [for]="portraitDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #portraitDatePicker [touchUi]="useTouchUi" panelClass="custom-datepicker-panel"></mat-datepicker>
             </mat-form-field>
           </div>
 
