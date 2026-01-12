@@ -14,15 +14,8 @@ export class ApiService {
 
   private apiUrlBookings = environment.apiUrl + '/bookings';
   private apiUrlRooms = environment.apiUrl + '/rooms';
-  private authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGRtbXguY29tIiwiZXhwIjoxNzY3OTI5OTU4LCJpYXQiOjE3Njc4NDM1NTgsInJvbGUiOiJzdXBlcl9hZG1pbiIsInN1YiI6NH0.1V4rFycGGqMQEKKcc0O-PkNmTu3ZyojRO9Il5m415oI';
 
   constructor(private http: HttpClient) { }
-
-  private getAuthHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Authorization': `Bearer ${this.authToken}`
-    });
-  }
 
   getDataBookings(): Observable<BookingGroup[]> {
     return this.http.get<BookingResponse>(this.apiUrlBookings).pipe(
@@ -80,6 +73,12 @@ export class ApiService {
 
         return groupedBookings;
       })
+    );
+  }
+
+  getDataBookingsByRoomId(roomId: number): Observable<Booking[]> {
+    return this.http.get<BookingResponse>(`${this.apiUrlBookings}?room_id=${roomId}`).pipe(
+      map(response => response.data?.bookings || [])
     );
   }
 

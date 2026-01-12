@@ -1,264 +1,240 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../api.service';
-import { interval, switchMap } from 'rxjs';
+import { interval, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+
+interface Booking {
+  start_time: string;
+  end_time: string;
+  topic: string;
+  pic: string;
+  [key: string]: any; // For any additional properties
+}
+
+interface DateFormatOptions {
+  time: Intl.DateTimeFormatOptions;
+  day: Intl.DateTimeFormatOptions;
+  date: Intl.DateTimeFormatOptions;
+}
 
 @Component({
   selector: 'app-each-room',
   templateUrl: './each-room.component.html',
   styleUrls: ['./each-room.component.css'],
 })
-export class EachRoomComponent implements OnInit {
-  dataRooms: any[] = []; // Holds room data
-  dataBookings: any[] = []; // Holds all bookings (grouped by month and date)
-  filteredBookings: any[] = []; // Filtered bookings for the selected room
-  selectedRoom: number | null = null; // Currently selected room ID
-  selectedRoomName: string = ''; // Selected room name
-  isAdsEnable: boolean = true; // Variable to toggle ads visibility (will be from API later)
-  selectedDate: Date = new Date(); // Default to current date
-  useTouchUi: boolean = false; // Flag to determine if touch UI should be used
-  selectedBooking: any = null; // Store selected booking details
+export class EachRoomComponent implements OnInit, OnDestroy {
+  // Data
+  dataBookings: Booking[] = [];
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) { }
+  // State
+  selectedRoom: number | null = null;
+  selectedRoomName: string = '';
+  isAdsEnable: boolean = true;
+  selectedDate: Date = new Date();
+  useTouchUi: boolean = false;
+  selectedBooking: Booking | null = null;
+
+  // Configuration
+  private readonly UPDATE_INTERVAL_MS = 10000;
+  private readonly destroy$ = new Subject<void>();
+
+  // Date formatting options
+  private readonly dateFormatOptions: DateFormatOptions = {
+    time: { hour: '2-digit', minute: '2-digit', hour12: false },
+    day: { weekday: 'long' },
+    date: { year: 'numeric', month: 'long', day: 'numeric' }
+  };
+
+  constructor(
+    private apiService: ApiService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
-    // Check if a room ID is passed in the route
+    this.initializeComponent();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Initialize component state and start data fetching
+   */
+  private initializeComponent(): void {
+    this.initializeRoomFromRoute();
+    this.initializeTouchUi();
+    this.fetchBookings();
+    this.setupPeriodicUpdates();
+  }
+
+  /**
+   * Get room ID from route parameters
+   */
+  private initializeRoomFromRoute(): void {
     const roomId = this.route.snapshot.paramMap.get('id');
-    if (roomId) {
-      this.selectedRoom = Number(roomId);
-      this.setRoomName(roomId); // Set room name immediately, we'll update when rooms are fetched
-    }
+    this.selectedRoom = roomId ? Number(roomId) : null;
+  }
 
-    // Determine if touch UI should be used based on screen size
+  /**
+   * Determine if touch UI should be used based on screen size
+   */
+  private initializeTouchUi(): void {
     this.useTouchUi = window.innerWidth < 768 || window.innerHeight > window.innerWidth;
-
-    // Fetch rooms and bookings
-    this.fetchRooms();
-    this.fetchBookings(); // Initial fetch
-    this.setupPeriodicUpdates(); // Start periodic updates
   }
 
-  fetchRooms(): void {
-    this.apiService.getDataRooms().subscribe(
-      (rooms) => {
-        this.dataRooms = rooms;
-      },
-      (error) => {
-        console.error('Error fetching rooms:', error);
-      }
-    );
-  }
-
+  /**
+   * Fetch bookings for the selected room
+   */
   fetchBookings(): void {
-    this.apiService.getDataBookings().subscribe(
-      (bookings) => {
-        this.dataBookings = bookings;
-        console.log('Fetched bookings:', bookings);
-        if (this.selectedRoom) {
-          this.filterBookingsByRoomId(this.selectedRoom);
-        }
-      },
-      (error) => {
-        console.error('Error fetching bookings:', error);
-      }
-    );
-  }
-
-  setupPeriodicUpdates(): void {
-    interval(10000) // Update every 10 seconds
-      .pipe(switchMap(() => this.apiService.getDataBookings()))
-      .subscribe(
-        (bookings) => {
-          console.log('Updated bookings:', bookings);
-          this.dataBookings = bookings;
-          if (this.selectedRoom) {
-            this.filterBookingsByRoomId(this.selectedRoom);
-          }
-        },
-        (error) => {
-          console.error('Error during periodic updates:', error);
-        }
-      );
-  }
-
-  setRoomName(roomId: string): void {
-    // Initially set a temporary name while waiting for rooms to load
-    this.selectedRoomName = `Room ${roomId}`;
-
-    // Check if rooms are already loaded
-    if (this.dataRooms && this.dataRooms.length > 0) {
-      this.updateRoomName(roomId);
-    } else {
-      // Wait for rooms to load with a timeout
-      const startTime = Date.now();
-      const checkRooms = () => {
-        if (this.dataRooms && this.dataRooms.length > 0) {
-          this.updateRoomName(roomId);
-        } else if (Date.now() - startTime < 5000) { // 5 second timeout
-          setTimeout(checkRooms, 100);
-        }
-      };
-      checkRooms();
-    }
-  }
-
-  private updateRoomName(roomId: string): void {
-    const room = this.dataRooms.find((room) => room.id == Number(roomId));
-    if (room) {
-      this.selectedRoomName = room.name;
-      console.log('Selected Room Name:', this.selectedRoomName);
-    } else {
-      this.selectedRoomName = `Room ${roomId} (not found)`;
-      console.log('Selected Room Name:', this.selectedRoomName);
-    }
-  }
-
-  filterBookingsByRoomId(roomId: number | null): void {
-    if (roomId === null || isNaN(roomId)) {
-      this.filteredBookings = []; // Reset filteredBookings if no valid room ID is provided
-      console.warn('Invalid roomId:', roomId); // Debug log
+    if (!this.selectedRoom) {
       return;
     }
 
-    // Format the selected date to match the date format in the data
-    const selectedDateString = this.formatDate(this.selectedDate);
-
-    // Process the nested structure (grouped by month and date)
-    this.filteredBookings = this.dataBookings
-      .map((monthGroup) => ({
-        ...monthGroup,
-        dates: monthGroup.dates
-          .map((dateGroup: any) => {
-            // Filter schedules by room_id
-            const filteredSchedules = dateGroup.schedules.filter((schedule: any) =>
-              schedule.room_id === roomId
-            );
-
-            return {
-              ...dateGroup,
-              schedules: filteredSchedules
-            };
-          })
-          .filter((dateGroup: any) => {
-            // Only include dates that match the selected date AND have schedules after filtering
-            return dateGroup.date === selectedDateString && dateGroup.schedules.length > 0;
-          }),
-      }))
-      .filter((monthGroup) => monthGroup.dates.length > 0); // Only include months with matching dates
-
-    // Log the result
-    console.log('Filtered bookings:', this.filteredBookings);
-    console.log('Selected date string:', selectedDateString);
-    console.log('All data bookings:', this.dataBookings);
+    this.apiService.getDataBookingsByRoomId(this.selectedRoom).subscribe({
+      next: (bookings: Booking[]) => {
+        this.dataBookings = bookings;
+        console.debug('Fetched bookings for room:', bookings);
+      },
+      error: (error) => {
+        console.error('Error fetching bookings:', error);
+        this.dataBookings = []; // Clear data on error
+      }
+    });
   }
 
-  // filterBookingsByRoomId(roomId: number | null, targetDate?: string): void {
-  //   if (roomId === null || isNaN(roomId)) {
-  //     this.filteredBookings = [];
-  //     console.warn('Invalid roomId:', roomId);
-  //     return;
-  //   }
+  /**
+   * Set up periodic updates for bookings
+   */
+  private setupPeriodicUpdates(): void {
+    interval(this.UPDATE_INTERVAL_MS)
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(() => this.getUpdatedBookings())
+      )
+      .subscribe({
+        next: (bookings: Booking[]) => {
+          this.dataBookings = bookings;
+          console.debug('Updated bookings:', bookings);
+        },
+        error: (error) => {
+          console.error('Error during periodic updates:', error);
+        }
+      });
+  }
 
-  //   // Use provided date or default to today
-  //   const filterDate = targetDate || new Datje().toISOString().split('T')[0];
+  /**
+   * Get updated bookings observable
+   */
+  private getUpdatedBookings(): Observable<Booking[]> {
+    if (!this.selectedRoom) {
+      return new Observable<Booking[]>(observer => {
+        observer.next([]);
+        observer.complete();
+      });
+    }
+    return this.apiService.getDataBookingsByRoomId(this.selectedRoom);
+  }
 
-  //   // Process the nested structure
-  //   this.filteredBookings = this.dataBookings
-  //     .map((monthGroup) => ({
-  //       ...monthGroup,
-  //       dates: monthGroup.dates
-  //         .map((dateGroup: any) => ({
-  //           ...dateGroup,
-  //           schedules: dateGroup.schedules.filter((schedule: any) =>
-  //             schedule.room_id === roomId
-  //           ),
-  //         }))
-  //         .filter((dateGroup: any) =>
-  //           dateGroup.schedules.length > 0 && dateGroup.date === filterDate
-  //         ),
-  //     }))
-  //     .filter((monthGroup) => monthGroup.dates.length > 0);
-
-  //   console.log('Filtered bookings:', this.filteredBookings);
-  // }
-
+  /**
+   * Format time string from ISO datetime
+   */
   formatTime(dateTimeString: string): string {
-    // The API returns datetime strings, so we need to extract time from them
-    const date = new Date(dateTimeString);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+    try {
+      const date = new Date(dateTimeString);
+      return date.toLocaleTimeString('en-US', this.dateFormatOptions.time);
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return dateTimeString; // Fallback to original string
+    }
   }
 
-  openVerificationModal(booking: any) {
-    // Set the selected booking to display its details in the left section
+  /**
+   * Open verification modal with booking details
+   */
+  openVerificationModal(booking: Booking): void {
     this.selectedBooking = booking;
-    console.log('Selected booking for verification:', booking);
+    console.debug('Selected booking for verification:', booking);
   }
 
-  getTotalScheduleCount(): number {
-    return this.filteredBookings.reduce((total, monthGroup) => {
-      return total + monthGroup.dates.reduce((dateTotal: number, dateGroup: any) => {
-        return dateTotal + dateGroup.schedules.length;
-      }, 0);
-    }, 0);
-  }
-
-  formatDate(date: Date): string {
-    // Format date as YYYY-MM-DD to match the expected format in the data
-    // Using toISOString to ensure consistent date formatting regardless of timezone
-    return date.toISOString().split('T')[0];
-  }
-
+  /**
+   * Handle date picker change
+   */
   onDateChange(event: any): void {
-    // Handle Material datepicker change
-    if (event.value) {
-      this.selectedDate = event.value;
+    if (!event.value) {
+      return;
     }
 
+    this.selectedDate = event.value;
+
+    // Refresh bookings if we have a selected room
     if (this.selectedRoom) {
-      this.filterBookingsByRoomId(this.selectedRoom);
+      this.fetchBookings();
     }
   }
 
+  /**
+   * Get formatted time part from selected date
+   */
   getTimePart(): string {
-    const timeOptions: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    };
-
-    return this.selectedDate.toLocaleTimeString('en-US', timeOptions);
+    return this.selectedDate.toLocaleTimeString('en-US', this.dateFormatOptions.time);
   }
 
+  /**
+   * Get formatted day part from selected date
+   */
   getDayPart(): string {
-    const dayOptions: Intl.DateTimeFormatOptions = {
-      weekday: 'long'
-    };
-
-    return this.selectedDate.toLocaleDateString('en-US', dayOptions);
+    return this.selectedDate.toLocaleDateString('en-US', this.dateFormatOptions.day);
   }
 
+  /**
+   * Get formatted date part from selected date
+   */
   getDatePart(): string {
-    const dateOptions: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    };
-
-    return this.selectedDate.toLocaleDateString('en-US', dateOptions);
+    return this.selectedDate.toLocaleDateString('en-US', this.dateFormatOptions.date);
   }
 
-  // Optional: Keep the original method if you still need it elsewhere
+  /**
+   * Get complete formatted date-time string
+   */
   getFormattedDateTime(): string {
     return `${this.getDayPart()}, ${this.getDatePart()} ${this.getTimePart()}`;
   }
 
+  /**
+   * Navigate to booking form
+   */
   navigateToBookingForm(): void {
-    this.router.navigate(['/form-booking'], { queryParams: { roomId: this.selectedRoom } });
+    if (!this.selectedRoom) {
+      console.warn('No room selected for booking');
+      return;
+    }
+
+    this.router.navigate(['/form-booking'], {
+      queryParams: { roomId: this.selectedRoom }
+    });
   }
 
+  /**
+   * Clear selected booking and go back to room description
+   */
   goBackToRoomDescription(): void {
     this.selectedBooking = null;
+  }
+
+  /**
+   * Get total number of scheduled bookings
+   */
+  getTotalScheduleCount(): number {
+    return this.dataBookings.length;
+  }
+
+  /**
+   * Check if there are any bookings
+   */
+  get hasBookings(): boolean {
+    return this.dataBookings.length > 0;
   }
 }
