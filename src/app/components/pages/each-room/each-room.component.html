@@ -137,7 +137,7 @@
         </svg>
         <h3 class="text-lg font-medium text-gray-700 mb-1 landscape:text-xl 1080p:text-2xl">Tidak Ada Jadwal Hari Ini</h3>
         <p class="text-gray-500 text-center landscape:text-lg 1080p:text-xl">Belum ada booking untuk ruangan ini pada tanggal ini.</p>
-        <button class="mt-4 btn-primary px-6 py-2 landscape:px-8 landscape:py-3 1080p:px-10 1080p:py-4 landscape:text-lg 1080p:text-xl">Booking Jadwal Baru</button>
+        <button class="mt-4 btn-primary px-6 py-2 landscape:px-8 landscape:py-3 1080p:px-10 1080p:py-4 landscape:text-lg 1080p:text-xl" (click)="navigateToBookingForm()">Booking Jadwal Baru</button>
       </div>
     </ng-template>
   </div>
@@ -321,7 +321,7 @@
             </svg>
             <h3 class="text-lg font-medium text-gray-700 mb-1 mobile-portrait:text-xl landscape:text-2xl">Tidak Ada Jadwal Hari Ini</h3>
             <p class="text-gray-500 text-center mobile-portrait:text-lg landscape:text-xl">Belum ada booking untuk ruangan ini pada tanggal ini.</p>
-            <button class="mt-4 btn-primary px-6 py-2 mobile-portrait:px-8 mobile-portrait:py-3 landscape:px-10 landscape:py-4 mobile-portrait:text-lg landscape:text-xl">Booking Jadwal Baru</button>
+            <button class="mt-4 btn-primary px-6 py-2 mobile-portrait:px-8 mobile-portrait:py-3 landscape:px-10 landscape:py-4 mobile-portrait:text-lg landscape:text-xl" (click)="navigateToBookingForm()">Booking Jadwal Baru</button>
           </div>
         </ng-template>
       </div>

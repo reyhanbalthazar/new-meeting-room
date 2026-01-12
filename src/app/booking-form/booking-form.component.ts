@@ -27,7 +27,7 @@ export class BookingFormComponent {
     pic: '',
     email: '',
     topic: '',
-    attendees: [] as { name: string; email: string }[]
+    participants: [] as { name: string; email: string }[]
   }
 
   constructor(
@@ -38,8 +38,8 @@ export class BookingFormComponent {
 
   ngOnInit(): void {
     this.fetchRooms();
-    // Initialize attendees array
-    this.bookingData.attendees = [];
+    // Initialize participants array
+    this.bookingData.participants = [];
   }
 
   fetchRooms(): void {
@@ -87,15 +87,15 @@ export class BookingFormComponent {
       this.bookingData.pic !== '' &&
       this.bookingData.topic !== '';
 
-    // Validate attendees if there are any
-    let attendeesValid = true;
-    if (this.bookingData.attendees.length > 0) {
-      attendeesValid = this.bookingData.attendees.every(attendee =>
+    // Validate participants if there are any
+    let participantsValid = true;
+    if (this.bookingData.participants.length > 0) {
+      participantsValid = this.bookingData.participants.every(attendee =>
         attendee.name.trim() !== '' && attendee.email.trim() !== ''
       );
     }
 
-    return basicFieldsValid && attendeesValid;
+    return basicFieldsValid && participantsValid;
   }
 
   onSubmit() {
@@ -114,7 +114,7 @@ export class BookingFormComponent {
           date: `${this.bookingData.date}T00:00:00Z`,
           start_time: `${this.bookingData.date}T${this.bookingData.start_time}:00Z`,
           end_time: `${this.bookingData.date}T${this.bookingData.end_time}:00Z`,
-          attendees: this.bookingData.attendees // Include attendees in the payload
+          participants: this.bookingData.participants // Include participants in the payload
         };
 
         // Log the data being sent to the backend
@@ -248,11 +248,11 @@ export class BookingFormComponent {
   }
 
   addAttendee(): void {
-    this.bookingData.attendees.push({ name: '', email: '' });
+    this.bookingData.participants.push({ name: '', email: '' });
   }
 
   removeAttendee(index: number): void {
-    this.bookingData.attendees.splice(index, 1);
+    this.bookingData.participants.splice(index, 1);
   }
 
   getTimePart(): string {

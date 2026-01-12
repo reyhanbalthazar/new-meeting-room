@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../api.service';
 import { interval, switchMap } from 'rxjs';
 
@@ -17,8 +17,9 @@ export class EachRoomComponent implements OnInit {
   isAdsEnable: boolean = true; // Variable to toggle ads visibility (will be from API later)
   selectedDate: Date = new Date(); // Default to current date
   useTouchUi: boolean = false; // Flag to determine if touch UI should be used
+  selectedBooking: any = null; // Store selected booking details
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute) { }
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit(): void {
     // Check if a room ID is passed in the route
@@ -190,9 +191,9 @@ export class EachRoomComponent implements OnInit {
   }
 
   openVerificationModal(booking: any) {
-    // Placeholder implementation - in a real app, this would open a modal
-    console.log('Opening verification modal for booking:', booking);
-    // In a real implementation, you would open a modal dialog here
+    // Set the selected booking to display its details in the left section
+    this.selectedBooking = booking;
+    console.log('Selected booking for verification:', booking);
   }
 
   getTotalScheduleCount(): number {
@@ -251,5 +252,13 @@ export class EachRoomComponent implements OnInit {
   // Optional: Keep the original method if you still need it elsewhere
   getFormattedDateTime(): string {
     return `${this.getDayPart()}, ${this.getDatePart()} ${this.getTimePart()}`;
+  }
+
+  navigateToBookingForm(): void {
+    this.router.navigate(['/form-booking'], { queryParams: { roomId: this.selectedRoom } });
+  }
+
+  goBackToRoomDescription(): void {
+    this.selectedBooking = null;
   }
 }
