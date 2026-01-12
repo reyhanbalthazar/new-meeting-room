@@ -1,16 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../api.service';
+import { Booking } from '../../../models/booking.model'; // Import the shared Booking interface
 import { interval, Observable, Subject, switchMap, takeUntil } from 'rxjs';
-
-interface Booking {
-  start_time: string;
-  end_time: string;
-  topic: string;
-  pic: string;
-  date: string; // Date field for the booking
-  [key: string]: any; // For any additional properties
-}
 
 interface DateFormatOptions {
   time: Intl.DateTimeFormatOptions;
@@ -255,7 +247,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   /**
    * Format date as YYYY-MM-DD string
    */
-  private formatDate(date: Date): string {
+  formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');

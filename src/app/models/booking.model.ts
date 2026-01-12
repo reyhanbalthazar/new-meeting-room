@@ -1,3 +1,10 @@
+export interface Participant {
+  id: number;
+  email: string;
+  name: string;
+  status: string;
+}
+
 export interface Booking {
   id: number;
   room_id: number;
@@ -9,6 +16,7 @@ export interface Booking {
   email: string;
   topic: string;
   status: string;
+  participants: Participant[]; // Array of participants
   created_at: string; // ISO datetime string
   updated_at: string; // ISO datetime string
 }
