@@ -23,7 +23,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   // State
   selectedRoom: number | null = null;
   selectedRoomName: string = '';
-  isAdsEnable: boolean = true;
+  isAdsEnable: boolean = false;
   selectedDate: Date = new Date();
   useTouchUi: boolean = false;
   selectedBooking: Booking | null = null;
