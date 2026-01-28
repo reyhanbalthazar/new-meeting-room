@@ -94,3 +94,15 @@
 		font-size: 12pt;
 	}
 }
+
+/* Dropdown button styling */
+.more-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: -8px;
+  margin-right: -8px;
+  opacity: 1 !important;
+  transition: opacity 0.2s ease;
+  color: black !important;
+}

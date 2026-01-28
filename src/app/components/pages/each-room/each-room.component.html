@@ -24,7 +24,7 @@
     </div>
 
     <!-- Show booking details if a booking is selected, otherwise show room description -->
-    <div *ngIf="selectedBooking; else roomDescription">
+    <!-- <div *ngIf="selectedBooking; else roomDescription">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold landscape:text-2xl 1080p:text-3xl">Detail Booking</h2>
         <button (click)="goBackToRoomDescription()" class="text-gray-300 hover:text-white">
@@ -146,70 +146,71 @@
           </ul>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Room Description Template -->
-    <ng-template #roomDescription>
-      <h2 class="text-xl font-bold mb-4 landscape:text-2xl 1080p:text-3xl">Deskripsi Ruangan</h2>
-      <div class="space-y-4 flex-grow overflow-y-auto landscape:space-y-6 1080p:space-y-8">
-        <div class="flex items-start landscape:items-center">
-          <div class="bg-gray-100 p-3 rounded-lg mr-4 landscape:p-4 landscape:mr-6 1080p:p-5 1080p:mr-8">
-            <svg xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 landscape:h-8 landscape:w-8 1080p:h-10 1080p:w-10 text-dmm-green" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-semibold landscape:text-lg 1080p:text-xl">Kapasitas</h3>
-            <p class="landscape:text-base 1080p:text-lg">10-15 orang</p>
-          </div>
-        </div>
 
-        <div class="flex items-start landscape:items-center">
-          <div class="bg-gray-100 p-3 rounded-lg mr-4 landscape:p-4 landscape:mr-6 1080p:p-5 1080p:mr-8">
-            <svg xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 landscape:h-8 landscape:w-8 1080p:h-10 1080p:w-10 text-dmm-green" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-semibold landscape:text-lg 1080p:text-xl">Fasilitas</h3>
-            <p class="landscape:text-base 1080p:text-lg">Proyektor, whiteboard, AC, koneksi internet cepat</p>
-          </div>
+    <h2 class="text-xl font-bold mb-4 landscape:text-2xl 1080p:text-3xl">Deskripsi Ruangan</h2>
+    <div class="space-y-4 flex-grow overflow-y-auto landscape:space-y-6 1080p:space-y-8">
+      <div class="flex items-start landscape:items-center">
+        <div class="bg-gray-100 p-3 rounded-lg mr-4 landscape:p-4 landscape:mr-6 1080p:p-5 1080p:mr-8">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 landscape:h-8 landscape:w-8 1080p:h-10 1080p:w-10 text-dmm-green" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
         </div>
-
-        <div class="flex items-start landscape:items-center">
-          <div class="bg-gray-100 p-3 rounded-lg mr-4 landscape:p-4 landscape:mr-6 1080p:p-5 1080p:mr-8">
-            <svg xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 landscape:h-8 landscape:w-8 1080p:h-10 1080p:w-10 text-dmm-green" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-semibold landscape:text-lg 1080p:text-xl">Lokasi</h3>
-            <p class="landscape:text-base 1080p:text-lg">Lantai 3, Gedung Utama</p>
-          </div>
-        </div>
-
-        <div class="mt-6 landscape:mt-8 1080p:mt-10">
-          <h3 class="font-semibold mb-2 landscape:text-lg 1080p:text-xl">Gambaran Umum</h3>
-          <p class="landscape:text-base 1080p:text-lg">
-            Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
-            dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
-            ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
-          </p>
-          <div class="flex justify-center mt-6">
-            <img src="../../../../assets/qr-code.png" alt="QR Code" class="w-32 h-32 landscape:w-40 landscape:h-40 1080p:w-48 1080p:h-48">
-          </div>
+        <div>
+          <h3 class="font-semibold landscape:text-lg 1080p:text-xl">Kapasitas</h3>
+          <p class="landscape:text-base 1080p:text-lg">10-15 orang</p>
         </div>
       </div>
-    </ng-template>
+
+      <div class="flex items-start landscape:items-center">
+        <div class="bg-gray-100 p-3 rounded-lg mr-4 landscape:p-4 landscape:mr-6 1080p:p-5 1080p:mr-8">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 landscape:h-8 landscape:w-8 1080p:h-10 1080p:w-10 text-dmm-green" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold landscape:text-lg 1080p:text-xl">Fasilitas</h3>
+          <p class="landscape:text-base 1080p:text-lg">Proyektor, whiteboard, AC, koneksi internet cepat</p>
+        </div>
+      </div>
+
+      <div class="flex items-start landscape:items-center">
+        <div class="bg-gray-100 p-3 rounded-lg mr-4 landscape:p-4 landscape:mr-6 1080p:p-5 1080p:mr-8">
+          <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 landscape:h-8 landscape:w-8 1080p:h-10 1080p:w-10 text-dmm-green" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold landscape:text-lg 1080p:text-xl">Lokasi</h3>
+          <p class="landscape:text-base 1080p:text-lg">Lantai 3, Gedung Utama</p>
+        </div>
+      </div>
+
+      <div class="mt-6 landscape:mt-8 1080p:mt-10">
+        <h3 class="font-semibold mb-2 landscape:text-lg 1080p:text-xl">Gambaran Umum</h3>
+        <p class="landscape:text-base 1080p:text-lg">
+          Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
+          dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
+          ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
+        </p>
+        <div class="flex justify-center mt-6">
+          <img src="../../../../assets/qr-code.png" alt="QR Code"
+            class="w-32 h-32 landscape:w-40 landscape:h-40 1080p:w-48 1080p:h-48">
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Right Content: Timeline/Schedule -->
@@ -254,14 +255,29 @@
           <div
             class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10 landscape:w-4 landscape:h-4 1080p:w-5 1080p:h-5">
           </div>
-          <div class="flex justify-between text-center">
-            <div class="mx-auto">
+          <div class="flex justify-between">
+            <div class="mx-auto flex-1">
               <div class="font-semibold text-gray-800 landscape:text-lg 1080p:text-xl">{{
                 formatTime(booking.start_time) }} - {{
                 formatTime(booking.end_time) }}</div>
               <div class="font-medium text-gray-800 mt-1 landscape:text-lg 1080p:text-xl">{{ booking.topic }}</div>
-              <div class="font-small text-gray-800 mt-1 landscape:text-base 1080p:text-lg">PIC: {{ booking.pic }}
-              </div>
+              <div class="font-small text-gray-800 mt-1 landscape:text-base 1080p:text-lg">PIC: {{ booking.pic }}</div>
+              <div class="font-small text-gray-800 mt-1 landscape:text-base 1080p:text-lg">{{ booking.status }}</div>
+            </div>
+            <div class="relative">
+              <button mat-icon-button [matMenuTriggerFor]="bookingMenu" class="more-btn">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #bookingMenu="matMenu">
+                <button mat-menu-item (click)="addParticipantToBooking(booking); $event.stopPropagation()">
+                  <mat-icon>person_add</mat-icon>
+                  <span>Add Participant to Booking</span>
+                </button>
+                <button mat-menu-item (click)="cancelBooking(booking); $event.stopPropagation()">
+                  <mat-icon>cancel</mat-icon>
+                  <span>Cancel Booking</span>
+                </button>
+              </mat-menu>
             </div>
           </div>
         </div>
@@ -366,7 +382,7 @@
         </div>
 
         <!-- Add the same conditional logic as in landscape layout -->
-        <div *ngIf="selectedBooking; else roomDescription">
+        <!-- <div *ngIf="selectedBooking; else roomDescription">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold mobile-portrait:text-2xl landscape:text-3xl">Detail Booking</h2>
             <button (click)="goBackToRoomDescription()" class="text-gray-300 hover:text-white">
@@ -495,75 +511,76 @@
               </ul>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Room Description Template -->
-        <ng-template #roomDescription>
-          <h2 class="text-xl font-bold mb-4 mobile-portrait:text-2xl landscape:text-3xl">Deskripsi Ruangan</h2>
-          <div class="space-y-4 flex-grow mobile-portrait:space-y-6 landscape:space-y-8">
-            <!-- ... rest of the existing room description content ... -->
-            <div class="flex items-start mobile-portrait:items-center">
-              <div
-                class="bg-gray-100 p-3 rounded-lg mr-4 mobile-portrait:p-4 mobile-portrait:mr-6 landscape:p-5 landscape:mr-8">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6 mobile-portrait:h-8 mobile-portrait:w-8 landscape:h-10 landscape:w-10 text-dmm-green"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-semibold mobile-portrait:text-lg landscape:text-xl">Kapasitas</h3>
-                <p class="mobile-portrait:text-base landscape:text-lg">10-15 orang</p>
-              </div>
-            </div>
 
-            <div class="flex items-start mobile-portrait:items-center">
-              <div
-                class="bg-gray-100 p-3 rounded-lg mr-4 mobile-portrait:p-4 mobile-portrait:mr-6 landscape:p-5 landscape:mr-8">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6 mobile-portrait:h-8 mobile-portrait:w-8 landscape:h-10 landscape:w-10 text-dmm-green"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-semibold mobile-portrait:text-lg landscape:text-xl">Fasilitas</h3>
-                <p class="mobile-portrait:text-base landscape:text-lg">Proyektor, whiteboard, AC, koneksi internet cepat
-                </p>
-              </div>
+        <h2 class="text-xl font-bold mb-4 mobile-portrait:text-2xl landscape:text-3xl">Deskripsi Ruangan</h2>
+        <div class="space-y-4 flex-grow mobile-portrait:space-y-6 landscape:space-y-8">
+          <!-- ... rest of the existing room description content ... -->
+          <div class="flex items-start mobile-portrait:items-center">
+            <div
+              class="bg-gray-100 p-3 rounded-lg mr-4 mobile-portrait:p-4 mobile-portrait:mr-6 landscape:p-5 landscape:mr-8">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 mobile-portrait:h-8 mobile-portrait:w-8 landscape:h-10 landscape:w-10 text-dmm-green"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
             </div>
-
-            <div class="flex items-start mobile-portrait:items-center">
-              <div
-                class="bg-gray-100 p-3 rounded-lg mr-4 mobile-portrait:p-4 mobile-portrait:mr-6 landscape:p-5 landscape:mr-8">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6 mobile-portrait:h-8 mobile-portrait:w-8 landscape:h-10 landscape:w-10 text-dmm-green"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 class="font-semibold mobile-portrait:text-lg landscape:text-xl">Lokasi</h3>
-                <p class="mobile-portrait:text-base landscape:text-lg">Lantai 3, Gedung Utama</p>
-              </div>
-            </div>
-
-            <div class="mt-6 mobile-portrait:mt-8 landscape:mt-10">
-              <h3 class="font-semibold mb-2 mobile-portrait:text-lg landscape:text-xl">Gambaran Umum</h3>
-              <p class="mobile-portrait:text-base landscape:text-lg">
-                Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
-                dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
-                ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
-              </p>
-              <div class="flex justify-center mt-6">
-                <img src="../../../../assets/qr-code.png" alt="QR Code" class="w-32 h-32 mobile-portrait:w-40 mobile-portrait:h-40 landscape:w-48 landscape:h-48">
-              </div>
+            <div>
+              <h3 class="font-semibold mobile-portrait:text-lg landscape:text-xl">Kapasitas</h3>
+              <p class="mobile-portrait:text-base landscape:text-lg">10-15 orang</p>
             </div>
           </div>
-        </ng-template>
+
+          <div class="flex items-start mobile-portrait:items-center">
+            <div
+              class="bg-gray-100 p-3 rounded-lg mr-4 mobile-portrait:p-4 mobile-portrait:mr-6 landscape:p-5 landscape:mr-8">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 mobile-portrait:h-8 mobile-portrait:w-8 landscape:h-10 landscape:w-10 text-dmm-green"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mobile-portrait:text-lg landscape:text-xl">Fasilitas</h3>
+              <p class="mobile-portrait:text-base landscape:text-lg">Proyektor, whiteboard, AC, koneksi internet cepat
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start mobile-portrait:items-center">
+            <div
+              class="bg-gray-100 p-3 rounded-lg mr-4 mobile-portrait:p-4 mobile-portrait:mr-6 landscape:p-5 landscape:mr-8">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 mobile-portrait:h-8 mobile-portrait:w-8 landscape:h-10 landscape:w-10 text-dmm-green"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mobile-portrait:text-lg landscape:text-xl">Lokasi</h3>
+              <p class="mobile-portrait:text-base landscape:text-lg">Lantai 3, Gedung Utama</p>
+            </div>
+          </div>
+
+          <div class="mt-6 mobile-portrait:mt-8 landscape:mt-10">
+            <h3 class="font-semibold mb-2 mobile-portrait:text-lg landscape:text-xl">Gambaran Umum</h3>
+            <p class="mobile-portrait:text-base landscape:text-lg">
+              Ruang meeting ini dirancang untuk mendukung pertemuan tim, presentasi klien,
+              dan sesi kolaborasi kreatif. Dengan suasana yang nyaman dan fasilitas lengkap,
+              ruangan ini ideal untuk berbagai jenis pertemuan bisnis.
+            </p>
+            <div class="flex justify-center mt-6">
+              <img src="../../../../assets/qr-code.png" alt="QR Code"
+                class="w-32 h-32 mobile-portrait:w-40 mobile-portrait:h-40 landscape:w-48 landscape:h-48">
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Right Section: Timeline/Schedule -->
@@ -608,8 +625,8 @@
               <div
                 class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10 mobile-portrait:w-4 mobile-portrait:h-4 landscape:w-5 landscape:h-5">
               </div>
-              <div class="flex justify-between text-center">
-                <div class="mx-auto">
+              <div class="flex justify-between">
+                <div class="mx-auto flex-1">
                   <div class="font-semibold text-gray-800 mobile-portrait:text-lg landscape:text-xl">{{
                     formatTime(booking.start_time) }} - {{
                     formatTime(booking.end_time) }}</div>
@@ -617,6 +634,23 @@
                     booking.topic }}</div>
                   <div class="font-small text-gray-800 mt-1 mobile-portrait:text-base landscape:text-lg">PIC: {{
                     booking.pic }}</div>
+                  <div class="font-small text-gray-800 mt-1 mobile-portrait:text-base landscape:text-lg">{{
+                    booking.status }}</div>
+                </div>
+                <div class="relative">
+                  <button mat-icon-button [matMenuTriggerFor]="bookingMenuPortrait" class="more-btn">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #bookingMenuPortrait="matMenu">
+                    <button mat-menu-item (click)="addParticipantToBooking(booking); $event.stopPropagation()">
+                      <mat-icon>person_add</mat-icon>
+                      <span>Add Participant to Booking</span>
+                    </button>
+                    <button mat-menu-item (click)="cancelBooking(booking); $event.stopPropagation()">
+                      <mat-icon>cancel</mat-icon>
+                      <span>Cancel Booking</span>
+                    </button>
+                  </mat-menu>
                 </div>
               </div>
             </div>

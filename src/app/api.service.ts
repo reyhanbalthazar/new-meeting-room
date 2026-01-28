@@ -77,7 +77,7 @@ export class ApiService {
   }
 
   getDataBookingsByRoomId(roomId: number): Observable<Booking[]> {
-    return this.http.get<BookingResponse>(`${this.apiUrlBookings}?room_id=${roomId}`).pipe(
+    return this.http.get<BookingResponse>(`${this.apiUrlBookings}/${roomId}/byroom`).pipe(
       map(response => response.data?.bookings || [])
     );
   }

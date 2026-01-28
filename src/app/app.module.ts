@@ -16,6 +16,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { BookingModalComponent } from './booking-modal/booking-modal.component';
@@ -45,6 +47,8 @@ import { CancelModalComponent } from './cancel-modal/cancel-modal.component';
     MatInputModule,
     MatNativeDateModule,
     MatDialogModule,
+    MatMenuModule,
+    MatIconModule,
     FormsModule,
     BrowserAnimationsModule
   ],

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../api.service';
 import { Booking } from '../../../models/booking.model'; // Import the shared Booking interface
 import { interval, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 
 interface DateFormatOptions {
   time: Intl.DateTimeFormatOptions;
@@ -42,7 +43,8 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -90,7 +92,17 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     this.apiService.getDataBookingsByRoomId(this.selectedRoom).subscribe({
       next: (bookings: Booking[]) => {
         this.dataBookings = bookings;
-        this.filterBookingsByDate(); // Filter by selected date
+        // Filter by selected date
+        const selectedDateString = this.formatDate(this.selectedDate);
+        this.filteredBookings = this.dataBookings.filter(booking => {
+          // Extract date from the booking's date field
+          const bookingDate = new Date(booking.date);
+          const bookingDateString = this.formatDate(bookingDate);
+
+          // Compare the dates
+          // return bookingDateString === selectedDateString; // current date
+          return bookingDate; // all date
+        });
         console.debug('Fetched bookings for room:', bookings);
       },
       error: (error) => {
@@ -113,7 +125,17 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (bookings: Booking[]) => {
           this.dataBookings = bookings;
-          this.filterBookingsByDate(); // Filter by selected date
+          // Filter by selected date
+          const selectedDateString = this.formatDate(this.selectedDate);
+          this.filteredBookings = this.dataBookings.filter(booking => {
+            // Extract date from the booking's date field
+            const bookingDate = new Date(booking.date);
+            const bookingDateString = this.formatDate(bookingDate);
+
+            // Compare the dates
+            // return bookingDateString === selectedDateString; // current date
+            return bookingDate; // all date
+          });
           console.debug('Updated bookings:', bookings);
         },
         error: (error) => {
@@ -167,7 +189,15 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     this.selectedDate = event.value;
 
     // Filter existing bookings by the new selected date
-    this.filterBookingsByDate();
+    const selectedDateString = this.formatDate(this.selectedDate);
+    this.filteredBookings = this.dataBookings.filter(booking => {
+      // Extract date from the booking's date field
+      const bookingDate = new Date(booking.date);
+      const bookingDateString = this.formatDate(bookingDate);
+
+      // Compare the dates
+      return bookingDateString === selectedDateString;
+    });
   }
 
   /**
@@ -226,23 +256,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     return this.filteredBookings.length;
   }
 
-  /**
-   * Filter bookings by the selected date
-   */
-  private filterBookingsByDate(): void {
-    const selectedDateString = this.formatDate(this.selectedDate);
-
-    this.filteredBookings = this.dataBookings.filter(booking => {
-      // Extract date from the booking's date field
-      const bookingDate = new Date(booking.date);
-      const bookingDateString = this.formatDate(bookingDate);
-
-      // Compare the dates
-      return bookingDateString === selectedDateString;
-    });
-
-    console.debug(`Filtered bookings for date ${selectedDateString}:`, this.filteredBookings);
-  }
 
   /**
    * Format date as YYYY-MM-DD string
@@ -259,5 +272,51 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   get hasBookings(): boolean {
     return this.filteredBookings.length > 0;
+  }
+
+  /**
+   * Add participant to a booking
+   */
+  addParticipantToBooking(booking: Booking): void {
+    console.log('Add participant to booking:', booking);
+    // For now, we'll just show a simple prompt to get participant details
+    // In a real implementation, you would open a modal with a form
+
+    const participantName = prompt('Enter participant name:');
+    if (!participantName) {
+      return; // User cancelled
+    }
+
+    const participantEmail = prompt('Enter participant email:');
+    if (!participantEmail) {
+      return; // User cancelled
+    }
+
+    // In a real implementation, you would call an API to add participant to the booking
+    // Since there's no specific API method for adding participants, we'll just show a message
+    alert(`In a real implementation, we would add ${participantName} (${participantEmail}) to booking: ${booking.topic}`);
+
+    console.log('Would add participant to booking:', { name: participantName, email: participantEmail, bookingId: booking.id });
+  }
+
+  /**
+   * Cancel a booking
+   */
+  cancelBooking(booking: Booking): void {
+    console.log('Cancel booking:', booking);
+
+    if (confirm(`Are you sure you want to cancel the booking "${booking.topic}"?`)) {
+      this.apiService.deleteBooking(booking.id).subscribe({
+        next: (response) => {
+          console.log('Booking cancelled successfully:', response);
+          // Refresh the bookings list
+          this.fetchBookings();
+        },
+        error: (error) => {
+          console.error('Error cancelling booking:', error);
+          alert('Failed to cancel booking. Please try again.');
+        }
+      });
+    }
   }
 }
