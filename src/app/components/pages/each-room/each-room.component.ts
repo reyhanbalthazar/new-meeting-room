@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../api.service';
 import { Booking } from '../../../models/booking.model'; // Import the shared Booking interface
-import { interval, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import { interval, Observable, Subject, switchMap, takeUntil, map } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
 interface DateFormatOptions {
@@ -18,8 +18,8 @@ interface DateFormatOptions {
 })
 export class EachRoomComponent implements OnInit, OnDestroy {
   // Data
-  dataBookings: Booking[] = [];
-  filteredBookings: Booking[] = []; // Bookings filtered by selected date
+  dataBookings: any[] = []; // Calendar data with months and dates
+  filteredBookings: any[] = []; // Filtered calendar data
 
   // State
   selectedRoom: number | null = null;
@@ -89,24 +89,15 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.apiService.getDataBookingsByRoomId(this.selectedRoom).subscribe({
-      next: (bookings: Booking[]) => {
-        this.dataBookings = bookings;
-        // Filter by selected date
-        const selectedDateString = this.formatDate(this.selectedDate);
-        this.filteredBookings = this.dataBookings.filter(booking => {
-          // Extract date from the booking's date field
-          const bookingDate = new Date(booking.date);
-          const bookingDateString = this.formatDate(bookingDate);
-
-          // Compare the dates
-          // return bookingDateString === selectedDateString; // current date
-          return bookingDate; // all date
-        });
-        console.debug('Fetched bookings for room:', bookings);
+    this.apiService.getDataBookingsByRoomIdCalendar(this.selectedRoom).subscribe({
+      next: (response: any) => {
+        // Ensure response.data is an array before assigning
+        this.dataBookings = Array.isArray(response?.data) ? response.data : [];
+        this.filterBookingsByDate(); // Show all bookings
+        console.debug('Fetched calendar bookings for room:', response);
       },
       error: (error) => {
-        console.error('Error fetching bookings:', error);
+        console.error('Error fetching calendar bookings:', error);
         this.dataBookings = []; // Clear data on error
         this.filteredBookings = []; // Also clear filtered bookings
       }
@@ -123,20 +114,10 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         switchMap(() => this.getUpdatedBookings())
       )
       .subscribe({
-        next: (bookings: Booking[]) => {
-          this.dataBookings = bookings;
-          // Filter by selected date
-          const selectedDateString = this.formatDate(this.selectedDate);
-          this.filteredBookings = this.dataBookings.filter(booking => {
-            // Extract date from the booking's date field
-            const bookingDate = new Date(booking.date);
-            const bookingDateString = this.formatDate(bookingDate);
-
-            // Compare the dates
-            // return bookingDateString === selectedDateString; // current date
-            return bookingDate; // all date
-          });
-          console.debug('Updated bookings:', bookings);
+        next: (calendarData: any[]) => {
+          this.dataBookings = calendarData;
+          this.filterBookingsByDate(); // Show all bookings (no date filter)
+          console.debug('Updated calendar bookings:', calendarData);
         },
         error: (error) => {
           console.error('Error during periodic updates:', error);
@@ -147,26 +128,43 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   /**
    * Get updated bookings observable
    */
-  private getUpdatedBookings(): Observable<Booking[]> {
+  private getUpdatedBookings(): Observable<any> {
     if (!this.selectedRoom) {
-      return new Observable<Booking[]>(observer => {
-        observer.next([]);
+      return new Observable<any>(observer => {
+        observer.next({ data: [] });
         observer.complete();
       });
     }
-    return this.apiService.getDataBookingsByRoomId(this.selectedRoom);
+    return this.apiService.getDataBookingsByRoomIdCalendar(this.selectedRoom).pipe(
+      map((response: any) => {
+        // Ensure response.data is an array before returning
+        return Array.isArray(response?.data) ? response.data : [];
+      })
+    );
   }
 
   /**
-   * Format time string from ISO datetime
+   * Format time string - handles both ISO datetime and time-only strings
    */
-  formatTime(dateTimeString: string): string {
+  formatTime(timeString: string): string {
     try {
-      const date = new Date(dateTimeString);
+      // Check if it's a time-only string (HH:mm:ss format)
+      if (/^\d{2}:\d{2}:\d{2}$/.test(timeString)) {
+        // Just return the time portion without seconds
+        return timeString.substring(0, 5); // Returns HH:mm
+      }
+
+      // For ISO datetime strings, convert to time
+      const date = new Date(timeString);
+      if (isNaN(date.getTime())) {
+        // If it's an invalid date, return the original string
+        return timeString;
+      }
+
       return date.toLocaleTimeString('en-US', this.dateFormatOptions.time);
     } catch (error) {
       console.error('Error formatting time:', error);
-      return dateTimeString; // Fallback to original string
+      return timeString; // Fallback to original string
     }
   }
 
@@ -253,9 +251,25 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    * Get total number of scheduled bookings
    */
   getTotalScheduleCount(): number {
-    return this.filteredBookings.length;
+    let count = 0;
+    this.filteredBookings.forEach((monthData: any) => {
+      monthData.dates.forEach((dateData: any) => {
+        count += dateData.schedules.length;
+      });
+    });
+    return count;
   }
 
+
+  /**
+   * Show all bookings without filtering by date
+   */
+  private filterBookingsByDate(): void {
+    // Assign all calendar data to filteredBookings to show everything
+    this.filteredBookings = [...this.dataBookings]; // Create a copy to avoid reference issues
+
+    console.debug(`Showing all bookings (no date filter applied):`, this.filteredBookings);
+  }
 
   /**
    * Format date as YYYY-MM-DD string
@@ -271,7 +285,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    * Check if there are any bookings
    */
   get hasBookings(): boolean {
-    return this.filteredBookings.length > 0;
+    return this.getTotalScheduleCount() > 0;
   }
 
   /**

@@ -108,4 +108,8 @@ export class ApiService {
     return this.http.delete<any>(`${this.apiUrlBookings}/${bookingId}`);
   }
 
+  getDataBookingsByRoomIdCalendar(roomId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrlBookings}/${roomId}/calendar`);
+  }
+
 }
