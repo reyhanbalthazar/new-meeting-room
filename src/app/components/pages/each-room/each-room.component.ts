@@ -227,20 +227,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Navigate to booking form
-   */
-  navigateToBookingForm(): void {
-    if (!this.selectedRoom) {
-      console.warn('No room selected for booking');
-      return;
-    }
-
-    this.router.navigate(['/form-booking'], {
-      queryParams: { roomId: this.selectedRoom }
-    });
-  }
-
-  /**
    * Clear selected booking and go back to room description
    */
   goBackToRoomDescription(): void {
