@@ -63,7 +63,8 @@ export class DataDisplayComponent implements OnInit {
   }
 
   formatTime(time: string): string {
-    return time.slice(0, 5); // Get "HH:mm" by slicing the first 5 characters
+    // Split by 'T' and take the time part, then split by ':' and take HH:mm
+    return time.split('T')[1]?.split(':').slice(0, 2).join(':') || time;
   }
 
   // Method to filter bookings by room name
@@ -97,7 +98,7 @@ export class DataDisplayComponent implements OnInit {
     const dialogRef = this.dialog.open(CancelModalComponent, {
       width: '400px',
       data: {
-        id : booking.id,
+        id: booking.id,
         bookingEmail: booking.email, // Pass the email from the selected booking
         title: 'Batalkan Meeting',
         message: 'Anda akan menghapus jadwal meeting yang telah Anda buat.',

@@ -34,7 +34,7 @@
             <span
               *ngIf="selectedRoom.name === 'Semua Jadwal Ruangan Meeting' && (i === 0 || schedule.room !== dateGroup.schedules[i - 1].room)"
               class="badge badge-secondary text-xs rounded flex items-center justify-center" style="height: 2em;">
-              {{ schedule.room }}
+              {{ schedule.room.name }}
             </span>
 
             <div style="display: flex;">
