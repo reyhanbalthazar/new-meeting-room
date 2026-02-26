@@ -1,14 +1,26 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../api.service';
 import { Booking } from '../../../models/booking.model'; // Import the shared Booking interface
 import { interval, Observable, Subject, switchMap, takeUntil, map } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AddParticipantModalComponent } from '../../../add-participant-modal/add-participant-modal.component';
+import { CancelBookingModalComponent } from '../../../cancel-booking-modal/cancel-booking-modal.component';
+import { DisasterAlertModalComponent } from '../../../disaster-alert-modal/disaster-alert-modal.component';
 
 interface DateFormatOptions {
   time: Intl.DateTimeFormatOptions;
   day: Intl.DateTimeFormatOptions;
   date: Intl.DateTimeFormatOptions;
+}
+
+interface RoomAdsItem {
+  orderIndex: number;
+  durationSeconds: number;
+  name: string;
+  type: string;
+  fileUrl: string;
+  mimeType: string;
 }
 
 @Component({
@@ -17,6 +29,8 @@ interface DateFormatOptions {
   styleUrls: ['./each-room.component.css'],
 })
 export class EachRoomComponent implements OnInit, OnDestroy {
+  @ViewChild('currentAdVideoEl') currentAdVideoEl?: ElementRef<HTMLVideoElement>;
+
   // Data
   dataBookings: any[] = []; // Calendar data with months and dates
   filteredBookings: any[] = []; // Filtered calendar data
@@ -24,14 +38,37 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   // State
   selectedRoom: number | null = null;
   selectedRoomName: string = '';
-  isAdsEnable: boolean = false;
+  isAdsEnable: boolean = true;
   selectedDate: Date = new Date();
   useTouchUi: boolean = false;
   selectedBooking: Booking | null = null;
+  roomBackgroundImage: string = '../../../../assets/landscape-bg.jpg';
+  portraitBackgroundImage: string = '../../../../assets/potrait-bg.jpg';
+  roomCapacity: number | null = null;
+  roomDescription: string = 'Belum ada deskripsi ruangan.';
+  roomAdsItems: RoomAdsItem[] = [];
+  currentAdIndex: number = 0;
+  currentAdFileUrl: string = '';
+  currentAdType: string = '';
+  currentAdName: string = '';
+  currentAdMimeType: string = '';
+  currentAdVideoError: string = '';
+  private stopCurrentVideoAutoplayRetry: boolean = false;
+  signageOrientation: 'LANDSCAPE' | 'PORTRAIT' = 'LANDSCAPE';
 
   // Configuration
   private readonly UPDATE_INTERVAL_MS = 10000;
+  private readonly DISASTER_UPDATE_INTERVAL_MS = 1000;
+  private readonly PREPARE_VIDEO_MAX_RETRIES = 6;
+  private readonly PREPARE_VIDEO_RETRY_DELAY_MS = 50;
+  private readonly AUTOPLAY_MAX_ATTEMPTS = 4;
+  private readonly AUTOPLAY_RETRY_DELAY_MS = 250;
+  private readonly AUTOPLAY_PROBE_MAX_RETRIES = 2;
+  private readonly AUTOPLAY_PROBE_RETRY_DELAY_MS = 300;
   private readonly destroy$ = new Subject<void>();
+  private adRotationTimeout: ReturnType<typeof setTimeout> | null = null;
+  private lastDisasterChangedAt: string = '';
+  private disasterDialogRef: MatDialogRef<DisasterAlertModalComponent> | null = null;
 
   // Date formatting options
   private readonly dateFormatOptions: DateFormatOptions = {
@@ -43,7 +80,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private router: Router,
     private dialog: MatDialog
   ) { }
 
@@ -52,6 +88,9 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearAdRotationTimeout();
+    this.closeDisasterDialog();
+    this.stopCurrentVideoAutoplayRetry = true;
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -62,8 +101,11 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private initializeComponent(): void {
     this.initializeRoomFromRoute();
     this.initializeTouchUi();
+    this.fetchRoomSettings();
     this.fetchBookings();
+    this.fetchDisasterStatus();
     this.setupPeriodicUpdates();
+    this.setupDisasterPolling();
   }
 
   /**
@@ -105,6 +147,40 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Fetch room settings and map signage background to UI background
+   */
+  private fetchRoomSettings(): void {
+    if (!this.selectedRoom) {
+      return;
+    }
+
+    this.apiService.getRoomById(this.selectedRoom).subscribe({
+      next: (response: any) => {
+        const room = response?.data;
+        this.selectedRoomName = room?.name ?? '';
+        this.roomCapacity = typeof room?.capacity === 'number' ? room.capacity : null;
+        this.roomDescription = typeof room?.description === 'string' && room.description.trim().length > 0
+          ? room.description
+          : 'Belum ada deskripsi ruangan.';
+        this.signageOrientation = room?.signage?.orientation === 'PORTRAIT' ? 'PORTRAIT' : 'LANDSCAPE';
+        this.roomAdsItems = this.mapRoomAdsItems(room?.signage?.ads_items);
+        this.isAdsEnable = this.roomAdsItems.length > 0;
+        this.startAdsRotation();
+
+        const backgroundUrl = room?.signage?.background?.file_url;
+        if (typeof backgroundUrl === 'string' && backgroundUrl.trim().length > 0) {
+          const normalizedBackgroundUrl = this.normalizeMediaUrl(backgroundUrl);
+          this.roomBackgroundImage = normalizedBackgroundUrl;
+          this.portraitBackgroundImage = normalizedBackgroundUrl;
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching room settings:', error);
+      }
+    });
+  }
+
+  /**
    * Set up periodic updates for bookings
    */
   private setupPeriodicUpdates(): void {
@@ -123,6 +199,68 @@ export class EachRoomComponent implements OnInit, OnDestroy {
           console.error('Error during periodic updates:', error);
         }
       });
+  }
+
+  /**
+   * Set up periodic updates for disaster status
+   */
+  private setupDisasterPolling(): void {
+    interval(this.DISASTER_UPDATE_INTERVAL_MS)
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(() => this.apiService.getDisasterStatus())
+      )
+      .subscribe({
+        next: (response: any) => {
+          this.handleDisasterStatusResponse(response);
+        },
+        error: (error) => {
+          console.error('Error during disaster status polling:', error);
+        }
+      });
+  }
+
+  /**
+   * Fetch disaster status once on init
+   */
+  private fetchDisasterStatus(): void {
+    this.apiService.getDisasterStatus().subscribe({
+      next: (response: any) => {
+        this.handleDisasterStatusResponse(response);
+      },
+      error: (error) => {
+        console.error('Error fetching disaster status:', error);
+      }
+    });
+  }
+
+  /**
+   * Show alert popup when disaster is active
+   */
+  private handleDisasterStatusResponse(response: any): void {
+    const disasterData = response?.data;
+    const isDisaster = disasterData?.is_disaster === true;
+    const changedAt = typeof disasterData?.last_changed_at === 'string' ? disasterData.last_changed_at : '';
+
+    // Reset tracker when disaster state is cleared, so a future true state can alert again.
+    if (!isDisaster) {
+      this.lastDisasterChangedAt = '';
+      this.closeDisasterDialog();
+      return;
+    }
+
+    // Avoid repeated alerts for the same disaster status snapshot.
+    if (changedAt && this.lastDisasterChangedAt === changedAt) {
+      return;
+    }
+
+    this.lastDisasterChangedAt = changedAt || new Date().toISOString();
+
+    const note = typeof disasterData?.note === 'string' && disasterData.note.trim().length > 0
+      ? disasterData.note
+      : 'Emergency status is active.';
+
+    this.openDisasterDialog(note);
   }
 
   /**
@@ -279,24 +417,31 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   addParticipantToBooking(booking: Booking): void {
     console.log('Add participant to booking:', booking);
-    // For now, we'll just show a simple prompt to get participant details
-    // In a real implementation, you would open a modal with a form
 
-    const participantName = prompt('Enter participant name:');
-    if (!participantName) {
-      return; // User cancelled
-    }
+    const dialogRef = this.dialog.open(AddParticipantModalComponent, {
+      width: '400px',
+      data: {
+        bookingId: booking.id,
+        bookingEmail: booking.email, // Use the email of the booking owner for confirmation
+        title: 'Tambah Peserta Meeting',
+        message: 'Silakan masukkan detail peserta yang ingin ditambahkan',
+        subMessage: 'Untuk melanjutkan, silahkan masukkan alamat email PIC yang digunakan saat melakukan reservasi.',
+        button1: 'Tambahkan',
+        button2: 'Batal',
+        type: 'confirmation',
+      }
+    });
 
-    const participantEmail = prompt('Enter participant email:');
-    if (!participantEmail) {
-      return; // User cancelled
-    }
-
-    // In a real implementation, you would call an API to add participant to the booking
-    // Since there's no specific API method for adding participants, we'll just show a message
-    alert(`In a real implementation, we would add ${participantName} (${participantEmail}) to booking: ${booking.topic}`);
-
-    console.log('Would add participant to booking:', { name: participantName, email: participantEmail, bookingId: booking.id });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Participant added successfully:', result);
+        // Refresh the bookings list to show the updated participant list
+        this.fetchBookings();
+        alert(`Peserta ${result.participantName} (${result.participantEmail}) berhasil ditambahkan ke booking: ${booking.topic}`);
+      } else {
+        console.log('Add participant cancelled');
+      }
+    });
   }
 
   /**
@@ -305,18 +450,383 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   cancelBooking(booking: Booking): void {
     console.log('Cancel booking:', booking);
 
-    if (confirm(`Are you sure you want to cancel the booking "${booking.topic}"?`)) {
-      this.apiService.deleteBooking(booking.id).subscribe({
-        next: (response) => {
-          console.log('Booking cancelled successfully:', response);
-          // Refresh the bookings list
-          this.fetchBookings();
-        },
-        error: (error) => {
-          console.error('Error cancelling booking:', error);
-          alert('Failed to cancel booking. Please try again.');
+    const dialogRef = this.dialog.open(CancelBookingModalComponent, {
+      width: '400px',
+      data: {
+        bookingId: booking.id,
+        bookingEmail: booking.email, // Use the email of the booking owner for confirmation
+        title: 'Batalkan Meeting',
+        message: 'Anda akan menghapus jadwal meeting yang telah Anda buat.',
+        subMessage: 'Untuk melanjutkan, silahkan masukkan alamat email yang digunakan saat melakukan reservasi.',
+        button1: 'Lanjutkan',
+        button2: 'Kembali',
+        type: 'confirmation',
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Booking cancelled successfully');
+        // Refresh the bookings list
+        this.fetchBookings();
+      } else {
+        console.log('Cancellation cancelled');
+      }
+    });
+  }
+
+  /**
+   * Check if current ad is image type
+   */
+  get isCurrentAdImage(): boolean {
+    return this.currentAdType === 'IMAGE';
+  }
+
+  /**
+   * Check if current ad is video type
+   */
+  get isCurrentAdVideo(): boolean {
+    return this.currentAdType === 'VIDEO';
+  }
+
+  /**
+   * Move to the next ad item in slideshow
+   */
+  moveToNextAd(): void {
+    if (!this.isAdsEnable || this.roomAdsItems.length === 0) {
+      return;
+    }
+
+    this.currentAdIndex = (this.currentAdIndex + 1) % this.roomAdsItems.length;
+    this.setCurrentAdAndScheduleNext();
+  }
+
+  /**
+   * Handle video ended event for current ad
+   */
+  onCurrentAdVideoEnded(): void {
+    if (!this.isCurrentAdVideo) {
+      return;
+    }
+
+    this.clearAdRotationTimeout();
+    this.moveToNextAd();
+  }
+
+  /**
+   * Map raw API ads_items into normalized ads list
+   */
+  private mapRoomAdsItems(rawAdsItems: any): RoomAdsItem[] {
+    if (!Array.isArray(rawAdsItems)) {
+      return [];
+    }
+
+    return rawAdsItems
+      .map((item: any): RoomAdsItem | null => {
+        const ads = item?.ads;
+        const fileUrl = typeof ads?.file_url === 'string' ? this.normalizeMediaUrl(ads.file_url) : '';
+        const isActive = ads?.is_active !== false;
+        const mimeType = typeof ads?.mime_type === 'string' ? ads.mime_type.toLowerCase() : '';
+        const type = this.resolveAdsType(ads?.type, mimeType, fileUrl);
+
+        if (!fileUrl || !isActive) {
+          return null;
         }
-      });
+
+        return {
+          orderIndex: typeof item?.order_index === 'number' ? item.order_index : Number.MAX_SAFE_INTEGER,
+          durationSeconds: typeof item?.duration_seconds === 'number' && item.duration_seconds > 0 ? item.duration_seconds : 5,
+          name: typeof ads?.name === 'string' ? ads.name : '',
+          type,
+          fileUrl,
+          mimeType
+        };
+      })
+      .filter((item: RoomAdsItem | null): item is RoomAdsItem => item !== null)
+      .sort((a: RoomAdsItem, b: RoomAdsItem) => a.orderIndex - b.orderIndex);
+  }
+
+  /**
+   * Start automatic ads slideshow rotation
+   */
+  private startAdsRotation(): void {
+    this.clearAdRotationTimeout();
+
+    if (!this.isAdsEnable || this.roomAdsItems.length === 0) {
+      this.resetCurrentAdState();
+      return;
+    }
+
+    this.currentAdIndex = 0;
+    this.setCurrentAdAndScheduleNext();
+  }
+
+  /**
+   * Set the current ad and schedule the next item
+   */
+  private setCurrentAdAndScheduleNext(): void {
+    this.clearAdRotationTimeout();
+
+    const currentAd = this.roomAdsItems[this.currentAdIndex];
+    if (!currentAd) {
+      return;
+    }
+
+    this.applyCurrentAd(currentAd);
+
+    if (currentAd.type === 'VIDEO') {
+      // Prime and autoplay after element/source is rendered.
+      setTimeout(() => this.prepareCurrentAdVideo(0), this.PREPARE_VIDEO_RETRY_DELAY_MS);
+    }
+
+    // Image slideshow always uses timer.
+    if (currentAd.type === 'IMAGE') {
+      this.scheduleNextAdAfter(currentAd.durationSeconds);
+      return;
+    }
+
+    // Video slideshow advances from "ended" event.
+    // Keep fallback timer only when there are multiple ads.
+    if (this.roomAdsItems.length > 1) {
+      this.scheduleNextAdAfter(currentAd.durationSeconds);
+    }
+  }
+
+  /**
+   * Reset current ad state when slideshow has no playable item.
+   */
+  private resetCurrentAdState(): void {
+    this.currentAdIndex = 0;
+    this.currentAdFileUrl = '';
+    this.currentAdType = '';
+    this.currentAdName = '';
+    this.currentAdMimeType = '';
+    this.currentAdVideoError = '';
+  }
+
+  /**
+   * Apply active ad data into component state.
+   */
+  private applyCurrentAd(currentAd: RoomAdsItem): void {
+    this.currentAdFileUrl = currentAd.fileUrl;
+    this.currentAdType = currentAd.type;
+    this.currentAdName = currentAd.name;
+    this.currentAdMimeType = currentAd.mimeType || '';
+    this.currentAdVideoError = '';
+    this.stopCurrentVideoAutoplayRetry = false;
+  }
+
+  /**
+   * Schedule slideshow advance by ad duration.
+   */
+  private scheduleNextAdAfter(durationSeconds: number): void {
+    this.adRotationTimeout = setTimeout(() => {
+      this.moveToNextAd();
+    }, durationSeconds * 1000);
+  }
+
+  /**
+   * Clear slideshow timeout safely
+   */
+  private clearAdRotationTimeout(): void {
+    if (this.adRotationTimeout) {
+      clearTimeout(this.adRotationTimeout);
+      this.adRotationTimeout = null;
+    }
+  }
+
+  /**
+   * Resolve media type from ads.type with mime-type fallback
+   */
+  private resolveAdsType(rawType: any, mimeType: string, fileUrl: string): 'IMAGE' | 'VIDEO' {
+    const type = typeof rawType === 'string' ? rawType.toUpperCase() : '';
+    if (type === 'VIDEO' || type === 'IMAGE') {
+      return type;
+    }
+
+    if (mimeType.startsWith('video/')) {
+      return 'VIDEO';
+    }
+
+    if (this.isVideoFileUrl(fileUrl)) {
+      return 'VIDEO';
+    }
+
+    return 'IMAGE';
+  }
+
+  /**
+   * Detect video media when API type/mime is missing but URL uses video extension.
+   */
+  private isVideoFileUrl(fileUrl: string): boolean {
+    return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(fileUrl);
+  }
+
+  /**
+   * Normalize media URL.
+   */
+  private normalizeMediaUrl(rawUrl: string): string {
+    const url = rawUrl.trim();
+    if (!url) {
+      return '';
+    }
+
+    try {
+      const parsedUrl = new URL(url, window.location.origin);
+      return parsedUrl.toString();
+    } catch {
+      // Fallback for malformed/non-standard URLs.
+    }
+
+    return url;
+  }
+
+  /**
+   * Ensure the current video element is loaded before autoplay attempts.
+   */
+  private prepareCurrentAdVideo(retryAttempt: number): void {
+    const video = this.currentAdVideoEl?.nativeElement;
+    if (!video) {
+      if (retryAttempt < this.PREPARE_VIDEO_MAX_RETRIES) {
+        setTimeout(() => this.prepareCurrentAdVideo(retryAttempt + 1), this.PREPARE_VIDEO_RETRY_DELAY_MS);
+      }
+      return;
+    }
+
+    if (this.currentAdType !== 'VIDEO' || this.stopCurrentVideoAutoplayRetry) {
+      return;
+    }
+
+    // Reload source once after ad switch, then let autoplay retries handle policy timing.
+    video.load();
+    this.forceVideoAutoplay(video);
+    this.tryAutoplayCurrentVideo(0);
+  }
+
+  /**
+   * Retry playback as soon as metadata exists.
+   */
+  onCurrentAdVideoLoadedMetadata(event: Event): void {
+    const video = event.target as HTMLVideoElement | null;
+    if (!video) {
+      return;
+    }
+
+    this.forceVideoAutoplay(video);
+  }
+
+  /**
+   * Start playback as soon as browser reports enough buffered data.
+   */
+  onCurrentAdVideoCanPlay(event: Event): void {
+    const video = event.target as HTMLVideoElement | null;
+    if (!video) {
+      return;
+    }
+    this.forceVideoAutoplay(video);
+  }
+
+  /**
+   * Capture media error for easier diagnosis (codec/CORS/source issue).
+   */
+  onCurrentAdVideoError(event: Event): void {
+    const video = event.target as HTMLVideoElement | null;
+    if (!video) {
+      return;
+    }
+
+    this.currentAdVideoError = 'Video ads gagal diputar.';
+    this.stopCurrentVideoAutoplayRetry = true;
+
+    console.error(
+      'Current ad video failed to load/play.',
+      'Error code:', video.error?.code ?? 'unknown',
+      'Source:', video.currentSrc || video.src
+    );
+  }
+
+  /**
+   * Force autoplay with retries to satisfy strict autoplay policies.
+   */
+  private forceVideoAutoplay(video: HTMLVideoElement): void {
+    video.muted = true;
+    video.defaultMuted = true;
+    video.volume = 0;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('autoplay', '');
+    video.setAttribute('playsinline', '');
+
+    const attemptPlay = (attempt: number): void => {
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch((error) => {
+          const isAbortError = error instanceof DOMException && error.name === 'AbortError';
+          if (attempt < this.AUTOPLAY_MAX_ATTEMPTS) {
+            setTimeout(() => attemptPlay(attempt + 1), this.AUTOPLAY_RETRY_DELAY_MS);
+            return;
+          }
+          if (!isAbortError) {
+            console.warn('Unable to autoplay current ad video after retries:', error);
+          }
+        });
+      }
+    };
+
+    attemptPlay(1);
+  }
+
+  /**
+   * Aggressive autoplay retries on current rendered ad video element.
+   */
+  private tryAutoplayCurrentVideo(retryAttempt: number): void {
+    const video = this.currentAdVideoEl?.nativeElement;
+    if (!video || this.currentAdType !== 'VIDEO' || this.stopCurrentVideoAutoplayRetry) {
+      return;
+    }
+
+    this.forceVideoAutoplay(video);
+
+    if (retryAttempt >= this.AUTOPLAY_PROBE_MAX_RETRIES) {
+      return;
+    }
+
+    setTimeout(() => {
+      if (this.currentAdType === 'VIDEO' && video.paused) {
+        this.tryAutoplayCurrentVideo(retryAttempt + 1);
+      }
+    }, this.AUTOPLAY_PROBE_RETRY_DELAY_MS);
+  }
+
+  /**
+   * Open disaster alert dialog
+   */
+  private openDisasterDialog(note: string): void {
+    if (this.disasterDialogRef) {
+      this.disasterDialogRef.componentInstance.data = { note };
+      return;
+    }
+
+    this.disasterDialogRef = this.dialog.open(DisasterAlertModalComponent, {
+      width: '900px',
+      maxWidth: '96vw',
+      disableClose: true,
+      data: { note }
+    });
+
+    this.disasterDialogRef.afterClosed().subscribe(() => {
+      this.disasterDialogRef = null;
+    });
+  }
+
+  /**
+   * Close disaster alert dialog if opened
+   */
+  private closeDisasterDialog(): void {
+    if (this.disasterDialogRef) {
+      this.disasterDialogRef.close();
+      this.disasterDialogRef = null;
     }
   }
 }

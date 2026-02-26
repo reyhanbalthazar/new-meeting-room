@@ -14,6 +14,7 @@ export class ApiService {
 
   private apiUrlBookings = environment.apiUrl + '/bookings';
   private apiUrlRooms = environment.apiUrl + '/rooms';
+  private apiUrlDisaster = environment.apiUrl + '/disaster';
 
   constructor(private http: HttpClient) { }
 
@@ -110,6 +111,22 @@ export class ApiService {
 
   getDataBookingsByRoomIdCalendar(roomId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrlBookings}/${roomId}/calendar`);
+  }
+
+  getRoomById(roomId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrlRooms}/${roomId}`);
+  }
+
+  getBookingById(bookingId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrlBookings}/${bookingId}`);
+  }
+
+  updateBooking(bookingId: number, bookingData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrlBookings}/${bookingId}`, bookingData);
+  }
+
+  getDisasterStatus(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrlDisaster}/status`);
   }
 
 }

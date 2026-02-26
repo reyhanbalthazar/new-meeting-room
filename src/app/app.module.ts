@@ -2,6 +2,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 // COMPONENTS IMPORT
 import { AppRoutingModule } from './app-routing.module';
@@ -24,6 +25,9 @@ import { BookingModalComponent } from './booking-modal/booking-modal.component';
 import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { EachRoomComponent } from './components/pages/each-room/each-room.component';
 import { CancelModalComponent } from './cancel-modal/cancel-modal.component';
+import { AddParticipantModalComponent } from './add-participant-modal/add-participant-modal.component';
+import { CancelBookingModalComponent } from './cancel-booking-modal/cancel-booking-modal.component';
+import { DisasterAlertModalComponent } from './disaster-alert-modal/disaster-alert-modal.component';
 
 
 @NgModule({
@@ -37,12 +41,16 @@ import { CancelModalComponent } from './cancel-modal/cancel-modal.component';
     FooterComponent,
     DeleteSuccessComponent,
     EachRoomComponent,
-    CancelModalComponent
+    CancelModalComponent,
+    AddParticipantModalComponent,
+    CancelBookingModalComponent,
+    DisasterAlertModalComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    ReactiveFormsModule,
     MatDatepickerModule,
     MatInputModule,
     MatNativeDateModule,
