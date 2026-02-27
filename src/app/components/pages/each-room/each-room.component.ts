@@ -65,9 +65,12 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private readonly AUTOPLAY_RETRY_DELAY_MS = 250;
   private readonly AUTOPLAY_PROBE_MAX_RETRIES = 2;
   private readonly AUTOPLAY_PROBE_RETRY_DELAY_MS = 300;
+  private readonly defaultLandscapeBackgroundImage = '../../../../assets/landscape-bg.jpg';
+  private readonly defaultPortraitBackgroundImage = '../../../../assets/potrait-bg.jpg';
   private readonly destroy$ = new Subject<void>();
   private adRotationTimeout: ReturnType<typeof setTimeout> | null = null;
   private lastDisasterChangedAt: string = '';
+  private lastSignageSignature: string = '';
   private disasterDialogRef: MatDialogRef<DisasterAlertModalComponent> | null = null;
 
   // Date formatting options
@@ -101,10 +104,13 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private initializeComponent(): void {
     this.initializeRoomFromRoute();
     this.initializeTouchUi();
+    this.roomBackgroundImage = this.defaultLandscapeBackgroundImage;
+    this.portraitBackgroundImage = this.defaultPortraitBackgroundImage;
     this.fetchRoomSettings();
     this.fetchBookings();
     this.fetchDisasterStatus();
     this.setupPeriodicUpdates();
+    this.setupRoomSettingsPolling();
     this.setupDisasterPolling();
   }
 
@@ -156,28 +162,31 @@ export class EachRoomComponent implements OnInit, OnDestroy {
 
     this.apiService.getRoomById(this.selectedRoom).subscribe({
       next: (response: any) => {
-        const room = response?.data;
-        this.selectedRoomName = room?.name ?? '';
-        this.roomCapacity = typeof room?.capacity === 'number' ? room.capacity : null;
-        this.roomDescription = typeof room?.description === 'string' && room.description.trim().length > 0
-          ? room.description
-          : 'Belum ada deskripsi ruangan.';
-        this.signageOrientation = room?.signage?.orientation === 'PORTRAIT' ? 'PORTRAIT' : 'LANDSCAPE';
-        this.roomAdsItems = this.mapRoomAdsItems(room?.signage?.ads_items);
-        this.isAdsEnable = this.roomAdsItems.length > 0;
-        this.startAdsRotation();
-
-        const backgroundUrl = room?.signage?.background?.file_url;
-        if (typeof backgroundUrl === 'string' && backgroundUrl.trim().length > 0) {
-          const normalizedBackgroundUrl = this.normalizeMediaUrl(backgroundUrl);
-          this.roomBackgroundImage = normalizedBackgroundUrl;
-          this.portraitBackgroundImage = normalizedBackgroundUrl;
-        }
+        this.applyRoomSettings(response?.data);
       },
       error: (error) => {
         console.error('Error fetching room settings:', error);
       }
     });
+  }
+
+  /**
+   * Set up periodic updates for room settings/signage changes
+   */
+  private setupRoomSettingsPolling(): void {
+    interval(this.UPDATE_INTERVAL_MS)
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(() => this.getUpdatedRoomSettings())
+      )
+      .subscribe({
+        next: (room: any) => {
+          this.applyRoomSettings(room);
+        },
+        error: (error) => {
+          console.error('Error during room settings polling:', error);
+        }
+      });
   }
 
   /**
@@ -279,6 +288,87 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         return Array.isArray(response?.data) ? response.data : [];
       })
     );
+  }
+
+  /**
+   * Get updated room settings observable
+   */
+  private getUpdatedRoomSettings(): Observable<any> {
+    if (!this.selectedRoom) {
+      return new Observable<any>(observer => {
+        observer.next(null);
+        observer.complete();
+      });
+    }
+
+    return this.apiService.getRoomById(this.selectedRoom).pipe(
+      map((response: any) => response?.data ?? null)
+    );
+  }
+
+  /**
+   * Apply room settings and react only when signage payload changes
+   */
+  private applyRoomSettings(room: any): void {
+    this.selectedRoomName = room?.name ?? '';
+    this.roomCapacity = typeof room?.capacity === 'number' ? room.capacity : null;
+    this.roomDescription = typeof room?.description === 'string' && room.description.trim().length > 0
+      ? room.description
+      : 'Belum ada deskripsi ruangan.';
+
+    const nextSignageSignature = this.buildSignageSignature(room?.signage);
+    if (nextSignageSignature === this.lastSignageSignature) {
+      return;
+    }
+
+    this.lastSignageSignature = nextSignageSignature;
+    this.signageOrientation = room?.signage?.orientation === 'PORTRAIT' ? 'PORTRAIT' : 'LANDSCAPE';
+    this.roomAdsItems = this.mapRoomAdsItems(room?.signage?.ads_items);
+    this.isAdsEnable = this.roomAdsItems.length > 0;
+    this.startAdsRotation();
+
+    const backgroundUrl = room?.signage?.background?.file_url;
+    if (typeof backgroundUrl === 'string' && backgroundUrl.trim().length > 0) {
+      const normalizedBackgroundUrl = this.normalizeMediaUrl(backgroundUrl);
+      this.roomBackgroundImage = normalizedBackgroundUrl;
+      this.portraitBackgroundImage = normalizedBackgroundUrl;
+      return;
+    }
+
+    this.roomBackgroundImage = this.defaultLandscapeBackgroundImage;
+    this.portraitBackgroundImage = this.defaultPortraitBackgroundImage;
+  }
+
+  /**
+   * Create a stable signature for signage payload change detection.
+   */
+  private buildSignageSignature(signage: any): string {
+    if (!signage) {
+      return '';
+    }
+
+    const adsItems = Array.isArray(signage?.ads_items)
+      ? signage.ads_items.map((item: any) => ({
+        order_index: item?.order_index ?? null,
+        duration_seconds: item?.duration_seconds ?? null,
+        ads_id: item?.ads?.id ?? null,
+        ads_name: item?.ads?.name ?? '',
+        ads_type: item?.ads?.type ?? '',
+        ads_file_url: item?.ads?.file_url ?? '',
+        ads_mime_type: item?.ads?.mime_type ?? '',
+        ads_is_active: item?.ads?.is_active !== false
+      }))
+      : [];
+
+    return JSON.stringify({
+      id: signage?.id ?? null,
+      layout: signage?.layout ?? '',
+      orientation: signage?.orientation ?? '',
+      background_url: signage?.background?.file_url ?? '',
+      background_id: signage?.background?.id ?? null,
+      ads_assignment_version: signage?.ads_assignment_version ?? null,
+      ads_items: adsItems
+    });
   }
 
   /**
@@ -809,8 +899,10 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     }
 
     this.disasterDialogRef = this.dialog.open(DisasterAlertModalComponent, {
-      width: '900px',
+      width: '96vw',
       maxWidth: '96vw',
+      height: '92vh',
+      maxHeight: '92vh',
       disableClose: true,
       data: { note }
     });
