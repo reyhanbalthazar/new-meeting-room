@@ -40,8 +40,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   selectedRoomName: string = '';
   isAdsEnable: boolean = true;
   selectedDate: Date = new Date();
-  useTouchUi: boolean = false;
-  selectedBooking: Booking | null = null;
   roomBackgroundImage: string = '../../../../assets/landscape-bg.jpg';
   portraitBackgroundImage: string = '../../../../assets/potrait-bg.jpg';
   roomCapacity: number | null = null;
@@ -51,7 +49,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   currentAdFileUrl: string = '';
   currentAdType: string = '';
   currentAdName: string = '';
-  currentAdMimeType: string = '';
   currentAdVideoError: string = '';
   private stopCurrentVideoAutoplayRetry: boolean = false;
   signageOrientation: 'LANDSCAPE' | 'PORTRAIT' = 'LANDSCAPE';
@@ -67,11 +64,14 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private readonly AUTOPLAY_PROBE_RETRY_DELAY_MS = 300;
   private readonly defaultLandscapeBackgroundImage = '../../../../assets/landscape-bg.jpg';
   private readonly defaultPortraitBackgroundImage = '../../../../assets/potrait-bg.jpg';
+  private readonly DISASTER_ALERT_SOUND_INTERVAL_MS = 1600;
   private readonly destroy$ = new Subject<void>();
   private adRotationTimeout: ReturnType<typeof setTimeout> | null = null;
   private lastDisasterChangedAt: string = '';
   private lastSignageSignature: string = '';
   private disasterDialogRef: MatDialogRef<DisasterAlertModalComponent> | null = null;
+  private disasterAlertAudioContext: AudioContext | null = null;
+  private disasterAlertSoundInterval: ReturnType<typeof setInterval> | null = null;
 
   // Date formatting options
   private readonly dateFormatOptions: DateFormatOptions = {
@@ -93,6 +93,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.clearAdRotationTimeout();
     this.closeDisasterDialog();
+    this.stopDisasterAlertSound();
     this.stopCurrentVideoAutoplayRetry = true;
     this.destroy$.next();
     this.destroy$.complete();
@@ -103,7 +104,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   private initializeComponent(): void {
     this.initializeRoomFromRoute();
-    this.initializeTouchUi();
     this.roomBackgroundImage = this.defaultLandscapeBackgroundImage;
     this.portraitBackgroundImage = this.defaultPortraitBackgroundImage;
     this.fetchRoomSettings();
@@ -120,13 +120,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private initializeRoomFromRoute(): void {
     const roomId = this.route.snapshot.paramMap.get('id');
     this.selectedRoom = roomId ? Number(roomId) : null;
-  }
-
-  /**
-   * Determine if touch UI should be used based on screen size
-   */
-  private initializeTouchUi(): void {
-    this.useTouchUi = window.innerWidth < 768 || window.innerHeight > window.innerWidth;
   }
 
   /**
@@ -397,36 +390,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open verification modal with booking details
-   */
-  openVerificationModal(booking: Booking): void {
-    this.selectedBooking = booking;
-    console.debug('Selected booking for verification:', booking);
-  }
-
-  /**
-   * Handle date picker change
-   */
-  onDateChange(event: any): void {
-    if (!event.value) {
-      return;
-    }
-
-    this.selectedDate = event.value;
-
-    // Filter existing bookings by the new selected date
-    const selectedDateString = this.formatDate(this.selectedDate);
-    this.filteredBookings = this.dataBookings.filter(booking => {
-      // Extract date from the booking's date field
-      const bookingDate = new Date(booking.date);
-      const bookingDateString = this.formatDate(bookingDate);
-
-      // Compare the dates
-      return bookingDateString === selectedDateString;
-    });
-  }
-
-  /**
    * Get formatted time part from selected date
    */
   getTimePart(): string {
@@ -448,20 +411,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get complete formatted date-time string
-   */
-  getFormattedDateTime(): string {
-    return `${this.getDayPart()}, ${this.getDatePart()} ${this.getTimePart()}`;
-  }
-
-  /**
-   * Clear selected booking and go back to room description
-   */
-  goBackToRoomDescription(): void {
-    this.selectedBooking = null;
-  }
-
-  /**
    * Get total number of scheduled bookings
    */
   getTotalScheduleCount(): number {
@@ -474,7 +423,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     return count;
   }
 
-
   /**
    * Show all bookings without filtering by date
    */
@@ -483,16 +431,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     this.filteredBookings = [...this.dataBookings]; // Create a copy to avoid reference issues
 
     console.debug(`Showing all bookings (no date filter applied):`, this.filteredBookings);
-  }
-
-  /**
-   * Format date as YYYY-MM-DD string
-   */
-  formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 
   /**
@@ -690,7 +628,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     this.currentAdFileUrl = '';
     this.currentAdType = '';
     this.currentAdName = '';
-    this.currentAdMimeType = '';
     this.currentAdVideoError = '';
   }
 
@@ -701,7 +638,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     this.currentAdFileUrl = currentAd.fileUrl;
     this.currentAdType = currentAd.type;
     this.currentAdName = currentAd.name;
-    this.currentAdMimeType = currentAd.mimeType || '';
     this.currentAdVideoError = '';
     this.stopCurrentVideoAutoplayRetry = false;
   }
@@ -907,7 +843,10 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       data: { note }
     });
 
+    this.startDisasterAlertSound();
+
     this.disasterDialogRef.afterClosed().subscribe(() => {
+      this.stopDisasterAlertSound();
       this.disasterDialogRef = null;
     });
   }
@@ -920,5 +859,105 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       this.disasterDialogRef.close();
       this.disasterDialogRef = null;
     }
+
+    this.stopDisasterAlertSound();
   }
+
+  /**
+   * Play a repeating alert tone while the disaster modal is visible.
+   */
+  private startDisasterAlertSound(): void {
+    if (this.disasterAlertSoundInterval) {
+      return;
+    }
+
+    this.playDisasterAlertTone();
+    this.disasterAlertSoundInterval = setInterval(() => {
+      this.playDisasterAlertTone();
+    }, this.DISASTER_ALERT_SOUND_INTERVAL_MS);
+  }
+
+  /**
+   * Stop repeating alert tone and release browser audio resources.
+   */
+  private stopDisasterAlertSound(): void {
+    if (this.disasterAlertSoundInterval) {
+      clearInterval(this.disasterAlertSoundInterval);
+      this.disasterAlertSoundInterval = null;
+    }
+
+    if (this.disasterAlertAudioContext) {
+      void this.disasterAlertAudioContext.close().catch((error) => {
+        console.warn('Unable to close disaster alert audio context:', error);
+      });
+      this.disasterAlertAudioContext = null;
+    }
+  }
+
+  /**
+   * Generate a short two-tone alarm using Web Audio API.
+   */
+  private playDisasterAlertTone(): void {
+    const AudioContextCtor = window.AudioContext || (window as typeof window & {
+      webkitAudioContext?: typeof AudioContext;
+    }).webkitAudioContext;
+
+    if (!AudioContextCtor) {
+      return;
+    }
+
+    try {
+      if (!this.disasterAlertAudioContext || this.disasterAlertAudioContext.state === 'closed') {
+        this.disasterAlertAudioContext = new AudioContextCtor();
+      }
+
+      const audioContext = this.disasterAlertAudioContext;
+      if (audioContext.state === 'suspended') {
+        void audioContext.resume().catch((error) => {
+          console.warn('Unable to resume disaster alert audio context:', error);
+        });
+      }
+
+      const startAt = audioContext.currentTime + 0.02;
+      this.scheduleDisasterBeep(audioContext, startAt, 880, 0.18, 0.08);
+      this.scheduleDisasterBeep(audioContext, startAt + 0.26, 660, 0.22, 0.08);
+    } catch (error) {
+      console.warn('Unable to play disaster alert sound:', error);
+    }
+  }
+
+  /**
+   * Schedule a single short beep.
+   */
+  private scheduleDisasterBeep(
+    audioContext: AudioContext,
+    startAt: number,
+    frequency: number,
+    durationSeconds: number,
+    peakGain: number
+  ): void {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, startAt);
+
+    gainNode.gain.setValueAtTime(0.0001, startAt);
+    gainNode.gain.exponentialRampToValueAtTime(peakGain, startAt + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + durationSeconds);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.start(startAt);
+    oscillator.stop(startAt + durationSeconds + 0.02);
+  }
+
+  monthNameFromYearMonth(value: string): string {
+    const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const month = Number(value?.split('-')[1]);
+    return month >= 1 && month <= 12 ? names[month - 1] : value;
+  }
+
+
 }
