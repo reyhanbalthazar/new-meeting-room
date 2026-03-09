@@ -69,3 +69,19 @@
 .mat-mdc-dialog-actions {
   margin-top: 1rem;
 }
+
+.participant-form-shell {
+  display: flex;
+  flex-direction: column;
+  max-height: 75vh;
+}
+
+.participants-scroll-area {
+  max-height: 45vh;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.participant-actions {
+  flex-shrink: 0;
+}

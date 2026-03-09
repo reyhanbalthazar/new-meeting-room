@@ -12,6 +12,8 @@ interface DateFormatOptions {
   time: Intl.DateTimeFormatOptions;
   day: Intl.DateTimeFormatOptions;
   date: Intl.DateTimeFormatOptions;
+  month: Intl.DateTimeFormatOptions;
+  fullDate: Intl.DateTimeFormatOptions;
 }
 
 interface RoomAdsItem {
@@ -56,6 +58,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   // Configuration
   private readonly UPDATE_INTERVAL_MS = 10000;
   private readonly DISASTER_UPDATE_INTERVAL_MS = 1000;
+  private readonly LIVE_CLOCK_INTERVAL_MS = 1000;
   private readonly PREPARE_VIDEO_MAX_RETRIES = 6;
   private readonly PREPARE_VIDEO_RETRY_DELAY_MS = 50;
   private readonly AUTOPLAY_MAX_ATTEMPTS = 4;
@@ -77,7 +80,9 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private readonly dateFormatOptions: DateFormatOptions = {
     time: { hour: '2-digit', minute: '2-digit', hour12: false },
     day: { weekday: 'long' },
-    date: { year: 'numeric', month: 'long', day: 'numeric' }
+    date: { year: 'numeric', month: 'long', day: 'numeric' },
+    month: { month: 'long' },
+    fullDate: { year: 'numeric', month: 'long', day: 'numeric' }
   };
 
   constructor(
@@ -109,9 +114,21 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     this.fetchRoomSettings();
     this.fetchBookings();
     this.fetchDisasterStatus();
+    this.setupLiveClock();
     this.setupPeriodicUpdates();
     this.setupRoomSettingsPolling();
     this.setupDisasterPolling();
+  }
+
+  /**
+   * Keep room header clock/date in sync with current time.
+   */
+  private setupLiveClock(): void {
+    interval(this.LIVE_CLOCK_INTERVAL_MS)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.selectedDate = new Date();
+      });
   }
 
   /**
@@ -382,7 +399,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         return timeString;
       }
 
-      return date.toLocaleTimeString('en-US', this.dateFormatOptions.time);
+      return date.toLocaleTimeString('en-ID', this.dateFormatOptions.time);
     } catch (error) {
       console.error('Error formatting time:', error);
       return timeString; // Fallback to original string
@@ -393,21 +410,47 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    * Get formatted time part from selected date
    */
   getTimePart(): string {
-    return this.selectedDate.toLocaleTimeString('en-US', this.dateFormatOptions.time);
+    return this.selectedDate.toLocaleTimeString('en-ID', this.dateFormatOptions.time);
   }
 
   /**
    * Get formatted day part from selected date
    */
   getDayPart(): string {
-    return this.selectedDate.toLocaleDateString('en-US', this.dateFormatOptions.day);
+    return this.selectedDate.toLocaleDateString('en-ID', this.dateFormatOptions.day);
   }
 
   /**
    * Get formatted date part from selected date
    */
   getDatePart(): string {
-    return this.selectedDate.toLocaleDateString('en-US', this.dateFormatOptions.date);
+    return this.selectedDate.toLocaleDateString('en-ID', this.dateFormatOptions.date);
+  }
+
+  formatMonth(monthString: string): string {
+    if (!monthString) {
+      return '';
+    }
+
+    const monthDate = new Date(`${monthString}-01T00:00:00`);
+    if (isNaN(monthDate.getTime())) {
+      return monthString;
+    }
+
+    return monthDate.toLocaleDateString('en-ID', this.dateFormatOptions.month);
+  }
+
+  formatServerDate(dateString: string): string {
+    if (!dateString) {
+      return '';
+    }
+
+    const parsedDate = new Date(`${dateString}T00:00:00`);
+    if (isNaN(parsedDate.getTime())) {
+      return dateString;
+    }
+
+    return parsedDate.toLocaleDateString('en-ID', this.dateFormatOptions.fullDate);
   }
 
   /**
@@ -952,12 +995,4 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     oscillator.start(startAt);
     oscillator.stop(startAt + durationSeconds + 0.02);
   }
-
-  monthNameFromYearMonth(value: string): string {
-    const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const month = Number(value?.split('-')[1]);
-    return month >= 1 && month <= 12 ? names[month - 1] : value;
-  }
-
-
 }

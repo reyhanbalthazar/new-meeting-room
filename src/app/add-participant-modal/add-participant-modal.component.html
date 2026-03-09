@@ -1,7 +1,7 @@
 <div class="p-6">
   <h2 class="modal-title text-center text-lg font-bold mb-3">{{ data.title }}</h2>
 
-  <div *ngIf="showParticipantForm; else emailConfirmation">
+  <div *ngIf="showParticipantForm; else emailConfirmation" class="participant-form-shell">
     <p class="modal-message text-base font-medium mb-2">{{ data.message }}</p>
     <p class="modal-submessage text-sm text-gray-500 mb-4">{{ data.subMessage }}</p>
 
@@ -23,7 +23,7 @@
           </div>
 
           <!-- Participants list -->
-          <div *ngIf="!isLoading" class="space-y-3">
+          <div *ngIf="!isLoading" class="space-y-3 participants-scroll-area">
             <div *ngFor="let participant of participants.controls; let i = index" [formGroupName]="i"
               class="bg-gray-50 p-3 rounded border border-gray-200">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -68,7 +68,7 @@
 
     <p *ngIf="errorMessage" class="error-message text-error text-xs mt-1 mb-4">{{ errorMessage }}</p>
 
-    <mat-dialog-actions class="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+    <mat-dialog-actions class="participant-actions flex flex-col sm:flex-row gap-3 justify-center mt-6">
       <button mat-button (click)="submitParticipants()" class="btn-primary flex-1">{{ data.button1 }}</button>
       <button mat-button (click)="cancel()" class="btn-cancel flex-1">{{ data.button2 }}</button>
     </mat-dialog-actions>

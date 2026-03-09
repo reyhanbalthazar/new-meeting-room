@@ -71,19 +71,19 @@
         <div *ngFor="let monthData of filteredBookings">
           <!-- Month header -->
           <div class="text-lg font-bold text-gray-800 mt-4 landscape:text-xl 1080p:text-2xl pl-10">
-            {{ monthNameFromYearMonth(monthData.month) }}
+            {{ formatMonth(monthData.month) }}
           </div>
 
           <!-- Loop through dates in the month -->
           <div *ngFor="let dateData of monthData.dates">
             <!-- Date header -->
             <div class="text-md font-semibold text-gray-700 mt-2 landscape:text-lg 1080p:text-xl pl-10">
-              {{ dateData.date }}
+              {{ formatServerDate(dateData.date) }}
             </div>
 
             <!-- Loop through schedules for the date -->
             <div *ngFor="let booking of dateData.schedules"
-              class="bg-gray-300/40 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative landscape:p-6 1080p:p-8 mb-5">
+              class="bg-gray-300/70 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative landscape:p-6 1080p:p-8 mb-5">
               <!-- Bullet point for each booking -->
               <div
                 class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10 landscape:w-4 landscape:h-4 1080p:w-5 1080p:h-5">
@@ -266,19 +266,19 @@
             <div *ngFor="let monthData of filteredBookings">
               <!-- Month header -->
               <div class="text-lg font-bold text-gray-800 mt-4 mobile-portrait:text-xl landscape:text-2xl pl-10">
-                {{ monthData.month }}
+                {{ formatMonth(monthData.month) }}
               </div>
 
               <!-- Loop through dates in the month -->
               <div *ngFor="let dateData of monthData.dates">
                 <!-- Date header -->
                 <div class="text-md font-semibold text-gray-700 mt-2 mobile-portrait:text-lg landscape:text-xl pl-10">
-                  {{ dateData.date }}
+                  {{ formatServerDate(dateData.date) }}
                 </div>
 
                 <!-- Loop through schedules for the date -->
                 <div *ngFor="let booking of dateData.schedules"
-                  class="bg-gray-300/40 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative mobile-portrait:p-6 landscape:p-8 mb-5">
+                  class="bg-gray-300/70 rounded-lg p-4 hover:shadow-md hover:bg-gray-200 transition-shadow ml-10 relative mobile-portrait:p-6 landscape:p-8 mb-5">
                   <!-- Bullet point for each booking -->
                   <div
                     class="absolute left-0.5 -ml-9 top-11 w-3 h-3 rounded-full bg-black z-10 mobile-portrait:w-4 mobile-portrait:h-4 landscape:w-5 landscape:h-5">
