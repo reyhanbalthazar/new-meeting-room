@@ -117,3 +117,43 @@
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
+
+/* Footer Styles */
+.footer {
+  background-color: #1a1a2e;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+  pointer-events: none;
+}
+
+.footer > div {
+  position: relative;
+  z-index: 1;
+}
+
+@media screen and (max-width: 768px) {
+  .footer img {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  
+  .footer .text-right p:first-child {
+    font-size: 1.5rem;
+  }
+  
+  .footer .text-right p:last-child {
+    font-size: 0.75rem;
+  }
+}

@@ -3,6 +3,7 @@
   [style.background-image]="'url(' + roomBackgroundImage + ')'">
   <!-- Left Content: Room Description or Booking Details -->
   <div class="w-1/3 landscape:w-1/3 1080p:w-1/3 bg-black/50 text-white p-6 flex flex-col">
+    <!-- Header with Time -->
     <div class="mb-6 md:mb-8 landscape:mb-10 1080p:mb-12 flex items-center gap-4 md:gap-6 landscape:gap-8 1080p:gap-10">
       <!-- TIME section -->
       <div class="flex-shrink-0">
@@ -23,8 +24,6 @@
     </div>
 
     <!-- Room Description Template -->
-
-
     <div class="space-y-4 flex-grow overflow-y-auto landscape:space-y-6 1080p:space-y-8">
       <div class="flex items-start landscape:items-center">
         <div class="bg-gray-100 p-3 rounded-lg mr-4 landscape:p-4 landscape:mr-6 1080p:p-5 1080p:mr-8">
@@ -46,12 +45,25 @@
       <div class="mt-6 landscape:mt-8 1080p:mt-10">
         <h3 class="font-semibold mb-2 landscape:text-lg 1080p:text-xl">Deskripsi</h3>
         <p class="landscape:text-base 1080p:text-lg">{{ roomDescription }}</p>
-        <p class="mt-8 font-semibold landscape:text-base 1080p:text-lg">Scan untuk Daftar Meeting</p>
-        <p class="landscape:text-sm 1080p:text-base">Gunakan QR Code ini untuk pendaftaran meeting dan registrasi
-          peserta</p>
-        <div class="flex justify-center mt-6">
+      </div>
+    </div>
+
+    <!-- Footer with QR Code and Datetime -->
+    <div class="footer mt-auto pt-6 border-t border-white/30"
+      [style.background-image]="footerBackgroundImage ? 'url(' + footerBackgroundImage + ')' : 'none'">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
           <img src="../../../../assets/qr-code.png" alt="QR Code"
-            class="w-32 h-32 landscape:w-40 landscape:h-40 1080p:w-48 1080p:h-48">
+            class="w-20 h-20 landscape:w-24 landscape:h-24 1080p:w-28 1080p:h-28">
+          <div>
+            <p class="text-sm landscape:text-base 1080p:text-lg font-semibold">Scan untuk Daftar Meeting</p>
+            <p class="text-xs landscape:text-sm 1080p:text-base text-gray-300">Registrasi peserta</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-2xl md:text-3xl landscape:text-4xl 1080p:text-5xl font-bold">{{ getTimePart() }}</p>
+          <p class="text-sm landscape:text-base 1080p:text-lg text-gray-300">{{ getDayPart() }},</p>
+          <p class="text-sm landscape:text-base 1080p:text-lg text-gray-300">{{ getDatePart() }}</p>
         </div>
       </div>
     </div>
@@ -243,13 +255,6 @@
           <div class="mt-6 mobile-portrait:mt-8 landscape:mt-10">
             <h3 class="font-semibold mb-2 mobile-portrait:text-lg landscape:text-xl">Deskripsi</h3>
             <p class="mobile-portrait:text-base landscape:text-lg">{{ roomDescription }}</p>
-            <p class="mt-8 font-semibold mobile-portrait:text-base landscape:text-lg">Scan untuk Daftar Meeting</p>
-            <p class="mobile-portrait:text-sm landscape:text-base">Gunakan QR Code ini untuk pendaftaran meeting dan
-              registrasi peserta</p>
-            <div class="flex justify-center mt-6">
-              <img src="../../../../assets/qr-code.png" alt="QR Code"
-                class="w-32 h-32 mobile-portrait:w-40 mobile-portrait:h-40 landscape:w-48 landscape:h-48">
-            </div>
           </div>
         </div>
 
@@ -330,6 +335,44 @@
               ruangan ini pada tanggal ini.</p>
           </div>
         </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full-width Footer -->
+  <div class="footer w-full"
+    [style.background-image]="footerBackgroundImage ? 'url(' + footerBackgroundImage + ')' : 'none'">
+    <div
+      class="flex items-center justify-between h-full px-6 py-4 mobile-portrait:px-8 mobile-portrait:py-6 landscape:px-10 landscape:py-8 text-white">
+      <div class="flex items-center gap-4">
+        <img src="../../../../assets/qr-code.png" alt="QR Code"
+          class="w-20 h-20 mobile-portrait:w-24 mobile-portrait:h-24 landscape:w-28 landscape:h-28">
+        <div>
+          <!-- <p class="text-sm mobile-portrait:text-base landscape:text-lg font-semibold">Scan untuk Daftar Meeting</p> -->
+          <img src="../../../../assets/dmmx-logo-white.png" alt="QR Code"
+            class="w-100 h-10 mobile-portrait:w-24 mobile-portrait:h-24 landscape:w-28 landscape:h-28">
+          <p class="text-xs mobile-portrait:text-sm landscape:text-base">Pindai untuk memesan ruangan</p>
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-4 md:gap-6 mobile-portrait:gap-6 landscape:gap-8 ">
+        <!-- TIME section -->
+        <div class="flex-shrink-0">
+          <p
+            class="text-4xl md:text-5xl lg:text-6xl mobile-portrait:text-7xl landscape:text-8xl font-bold leading-none">
+            {{ getTimePart() }}
+          </p>
+        </div>
+
+        <!-- DAY and DATE section -->
+        <div class="flex flex-col justify-center">
+          <p class="text-sm md:text-base lg:text-lg mobile-portrait:text-xl landscape:text-2xl">
+            {{ getDayPart() }},
+          </p>
+          <p class="text-sm md:text-base lg:text-lg mobile-portrait:text-xl landscape:text-2xl">
+            {{ getDatePart() }}
+          </p>
+        </div>
       </div>
     </div>
   </div>

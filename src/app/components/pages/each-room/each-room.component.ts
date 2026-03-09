@@ -44,6 +44,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   selectedDate: Date = new Date();
   roomBackgroundImage: string = '../../../../assets/landscape-bg.jpg';
   portraitBackgroundImage: string = '../../../../assets/potrait-bg.jpg';
+  footerBackgroundImage: string = '';
   roomCapacity: number | null = null;
   roomDescription: string = 'Belum ada deskripsi ruangan.';
   roomAdsItems: RoomAdsItem[] = [];
@@ -340,13 +341,11 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     const backgroundUrl = room?.signage?.background?.file_url;
     if (typeof backgroundUrl === 'string' && backgroundUrl.trim().length > 0) {
       const normalizedBackgroundUrl = this.normalizeMediaUrl(backgroundUrl);
-      this.roomBackgroundImage = normalizedBackgroundUrl;
-      this.portraitBackgroundImage = normalizedBackgroundUrl;
+      this.footerBackgroundImage = normalizedBackgroundUrl;
       return;
     }
 
-    this.roomBackgroundImage = this.defaultLandscapeBackgroundImage;
-    this.portraitBackgroundImage = this.defaultPortraitBackgroundImage;
+    this.footerBackgroundImage = '';
   }
 
   /**
@@ -451,6 +450,18 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     }
 
     return parsedDate.toLocaleDateString('en-ID', this.dateFormatOptions.fullDate);
+  }
+
+  /**
+   * Get formatted full date and time for footer
+   */
+  getFullDateTime(): string {
+    return this.selectedDate.toLocaleDateString('en-ID', { 
+      weekday: 'short',
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
   }
 
   /**
