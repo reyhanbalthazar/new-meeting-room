@@ -35,7 +35,8 @@ export class EachRoomComponent implements OnInit, OnDestroy {
 
   // Data
   dataBookings: any[] = []; // Calendar data with months and dates
-  filteredBookings: any[] = []; // Filtered calendar data
+  todayBookings: any[] = [];
+  upcomingBookings: any[] = [];
 
   // State
   selectedRoom: number | null = null;
@@ -43,7 +44,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   isAdsEnable: boolean = true;
   selectedDate: Date = new Date();
   roomBackgroundImage: string = '../../../../assets/landscape-bg.jpg';
-  portraitBackgroundImage: string = '../../../../assets/potrait-bg.jpg';
+  portraitBackgroundImage: string = '../../../../assets/potrait-bg.png';
   footerBackgroundImage: string = '';
   roomCapacity: number | null = null;
   roomDescription: string = 'Belum ada deskripsi ruangan.';
@@ -67,7 +68,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private readonly AUTOPLAY_PROBE_MAX_RETRIES = 2;
   private readonly AUTOPLAY_PROBE_RETRY_DELAY_MS = 300;
   private readonly defaultLandscapeBackgroundImage = '../../../../assets/landscape-bg.jpg';
-  private readonly defaultPortraitBackgroundImage = '../../../../assets/potrait-bg.jpg';
+  private readonly defaultPortraitBackgroundImage = '../../../../assets/potrait-bg.png';
   private readonly DISASTER_ALERT_SOUND_INTERVAL_MS = 1600;
   private readonly destroy$ = new Subject<void>();
   private adRotationTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -152,13 +153,14 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       next: (response: any) => {
         // Ensure response.data is an array before assigning
         this.dataBookings = Array.isArray(response?.data) ? response.data : [];
-        this.filterBookingsByDate(); // Show all bookings
+        this.filterBookingsByDate();
         console.debug('Fetched calendar bookings for room:', response);
       },
       error: (error) => {
         console.error('Error fetching calendar bookings:', error);
         this.dataBookings = []; // Clear data on error
-        this.filteredBookings = []; // Also clear filtered bookings
+        this.todayBookings = [];
+        this.upcomingBookings = [];
       }
     });
   }
@@ -212,7 +214,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (calendarData: any[]) => {
           this.dataBookings = calendarData;
-          this.filterBookingsByDate(); // Show all bookings (no date filter)
+          this.filterBookingsByDate();
           console.debug('Updated calendar bookings:', calendarData);
         },
         error: (error) => {
@@ -426,6 +428,20 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     return this.selectedDate.toLocaleDateString('en-ID', this.dateFormatOptions.date);
   }
 
+  getDateHeadlinePart(): string {
+    return this.selectedDate.toLocaleDateString('en-ID', {
+      day: 'numeric',
+      month: 'long'
+    });
+  }
+
+  getDateWeekYearPart(): string {
+    return this.selectedDate.toLocaleDateString('en-ID', {
+      weekday: 'long',
+      year: 'numeric'
+    });
+  }
+
   formatMonth(monthString: string): string {
     if (!monthString) {
       return '';
@@ -469,22 +485,66 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   getTotalScheduleCount(): number {
     let count = 0;
-    this.filteredBookings.forEach((monthData: any) => {
+
+    this.upcomingBookings.forEach((monthData: any) => {
       monthData.dates.forEach((dateData: any) => {
         count += dateData.schedules.length;
       });
     });
-    return count;
+
+    return count + this.todayBookings.length;
   }
 
   /**
-   * Show all bookings without filtering by date
+   * Split bookings into today and upcoming groups
    */
   private filterBookingsByDate(): void {
-    // Assign all calendar data to filteredBookings to show everything
-    this.filteredBookings = [...this.dataBookings]; // Create a copy to avoid reference issues
+    const todayIsoDate = this.getLocalIsoDate(this.selectedDate);
+    const upcomingMonths: any[] = [];
+    const todaySchedules: any[] = [];
 
-    console.debug(`Showing all bookings (no date filter applied):`, this.filteredBookings);
+    this.dataBookings.forEach((monthData: any) => {
+      const futureDates: any[] = [];
+      const monthDates = Array.isArray(monthData?.dates) ? monthData.dates : [];
+
+      monthDates.forEach((dateData: any) => {
+        const schedules = Array.isArray(dateData?.schedules) ? [...dateData.schedules] : [];
+        schedules.sort((a: any, b: any) => String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? '')));
+
+        if (dateData?.date === todayIsoDate) {
+          todaySchedules.push(...schedules);
+          return;
+        }
+
+        if (typeof dateData?.date === 'string' && dateData.date > todayIsoDate && schedules.length > 0) {
+          futureDates.push({
+            ...dateData,
+            schedules
+          });
+        }
+      });
+
+      if (futureDates.length > 0) {
+        upcomingMonths.push({
+          ...monthData,
+          dates: futureDates
+        });
+      }
+    });
+
+    todaySchedules.sort((a: any, b: any) => String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? '')));
+    this.todayBookings = todaySchedules;
+    this.upcomingBookings = upcomingMonths;
+
+    console.debug('Today bookings:', this.todayBookings);
+    console.debug('Upcoming bookings:', this.upcomingBookings);
+  }
+
+  private getLocalIsoDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   /**
@@ -492,6 +552,123 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   get hasBookings(): boolean {
     return this.getTotalScheduleCount() > 0;
+  }
+
+  get hasTodayBookings(): boolean {
+    return this.todayBookings.length > 0;
+  }
+
+  get hasUpcomingBookings(): boolean {
+    return this.upcomingBookings.some((monthData: any) =>
+      Array.isArray(monthData?.dates) &&
+      monthData.dates.some((dateData: any) => Array.isArray(dateData?.schedules) && dateData.schedules.length > 0)
+    );
+  }
+
+  get currentMeeting(): any | null {
+    const now = this.selectedDate;
+    const activeMeeting = this.todayBookings.find((booking: any) => this.isMeetingActiveNow(booking, now));
+    return activeMeeting ?? null;
+  }
+
+  get roomStatusLabel(): string {
+    return this.currentMeeting ? 'Occupied' : 'Unoccupied';
+  }
+
+  get currentMeetingBadgeLabel(): string {
+    return this.currentMeeting ? 'Current Meeting' : 'Available until';
+  }
+
+  get nextMeeting(): any | null {
+    const now = this.selectedDate;
+    const upcomingSchedules: any[] = [];
+
+    this.dataBookings.forEach((monthData: any) => {
+      const monthDates = Array.isArray(monthData?.dates) ? monthData.dates : [];
+      monthDates.forEach((dateData: any) => {
+        const schedules = Array.isArray(dateData?.schedules) ? dateData.schedules : [];
+        schedules.forEach((schedule: any) => {
+          const scheduleStart = this.parseDateTime(schedule?.start_time);
+          if (scheduleStart && scheduleStart > now) {
+            upcomingSchedules.push(schedule);
+          }
+        });
+      });
+    });
+
+    if (upcomingSchedules.length === 0) {
+      return null;
+    }
+
+    upcomingSchedules.sort((a: any, b: any) =>
+      String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? ''))
+    );
+
+    return upcomingSchedules[0];
+  }
+
+  get nextMeetingCountdownLabel(): string {
+    if (this.currentMeeting) {
+      return '';
+    }
+
+    const nextMeeting = this.nextMeeting;
+    if (!nextMeeting) {
+      return 'Tidak ada meeting berikutnya';
+    }
+
+    const nextStart = this.parseDateTime(nextMeeting.start_time);
+    if (!nextStart) {
+      return 'Tidak ada meeting berikutnya';
+    }
+
+    const diffMs = nextStart.getTime() - this.selectedDate.getTime();
+    if (diffMs <= 0) {
+      return '00:00:00';
+    }
+
+    return this.formatDuration(diffMs);
+  }
+
+  get todayMeetingsList(): any[] {
+    const activeMeeting = this.currentMeeting;
+    if (!activeMeeting) {
+      return this.todayBookings;
+    }
+    return this.todayBookings.filter((booking: any) => booking?.id !== activeMeeting?.id);
+  }
+
+  private isMeetingActiveNow(booking: any, now: Date): boolean {
+    const start = this.parseDateTime(booking?.start_time);
+    const end = this.parseDateTime(booking?.end_time);
+
+    if (!start || !end) {
+      return false;
+    }
+
+    return now >= start && now < end;
+  }
+
+  private parseDateTime(dateTimeValue: string): Date | null {
+    if (typeof dateTimeValue !== 'string' || dateTimeValue.trim().length === 0) {
+      return null;
+    }
+
+    const parsedDate = new Date(dateTimeValue);
+    if (isNaN(parsedDate.getTime())) {
+      return null;
+    }
+
+    return parsedDate;
+  }
+
+  private formatDuration(durationMs: number): string {
+    const totalSeconds = Math.floor(durationMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
   /**

@@ -3,7 +3,8 @@
 <!-- Landscape Layout: LEFT CONTENT (Room Info) | RIGHT CONTENT (Booking Form) -->
 <div class="hidden md:flex h-screen">
   <!-- Left Content: Room Description with Background -->
-  <div class="w-1/2 bg-cover bg-center text-white flex flex-col" [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
+  <div class="w-1/2 bg-cover bg-center text-white flex flex-col"
+    [style.background-image]="'url(../../../../assets/potrait-bg.png)'">
     <div class="bg-black/50 p-6 border-r border-white/20 flex flex-col flex-grow">
       <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
         <!-- TIME section -->
@@ -87,7 +88,8 @@
       <div class="form-group">
         <label for="room" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Pilih Ruangan</label>
         <div class="relative w-full inline-block text-left">
-          <button type="button" class="w-full justify-center gap-x-1.5 text-left bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-800 font-medium"
+          <button type="button"
+            class="w-full justify-center gap-x-1.5 text-left bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-800 font-medium"
             id="menu-button" aria-expanded="isOpen" aria-haspopup="true" (click)="toggleMenu()">
             {{ selectedRoomName }}
             <svg class="-mr-1 ml-auto h-5 w-5 text-gray-800" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -200,7 +202,8 @@
       </div> -->
 
       <div class="pt-4">
-        <button type="submit" class="w-full bg-dmm-green hover:bg-dmm-green/90 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300">
+        <button type="submit"
+          class="w-full bg-dmm-green hover:bg-dmm-green/90 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300">
           Booking Sekarang
         </button>
       </div>
@@ -218,7 +221,8 @@
       <div class="form-group">
         <label for="room" class="text-sm font-semibold text-gray-800 ml-1 mb-2 block">Pilih Ruangan</label>
         <div class="relative w-full inline-block text-left">
-          <button type="button" class="w-full justify-center gap-x-1.5 text-left bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-800 font-medium"
+          <button type="button"
+            class="w-full justify-center gap-x-1.5 text-left bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 shadow-sm text-gray-800 font-medium"
             id="menu-button" aria-expanded="isOpen" aria-haspopup="true" (click)="toggleMenu()">
             {{ selectedRoomName }}
             <svg class="-mr-1 ml-auto h-5 w-5 text-gray-800" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -295,35 +299,32 @@
         <div class="space-y-3">
           <div *ngFor="let attendee of bookingData.participants; let i = index" class="flex gap-2 items-center">
             <div class="flex-1">
-              <input type="text"
-                [(ngModel)]="attendee.name"
-                [name]="'attendee-name-' + i"
-                placeholder="Nama peserta"
+              <input type="text" [(ngModel)]="attendee.name" [name]="'attendee-name-' + i" placeholder="Nama peserta"
                 class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium text-sm"
                 required />
             </div>
             <div class="flex-1">
-              <input type="email"
-                [(ngModel)]="attendee.email"
-                [name]="'attendee-email-' + i"
+              <input type="email" [(ngModel)]="attendee.email" [name]="'attendee-email-' + i"
                 placeholder="Email peserta"
                 class="bg-gray-200 backdrop-blur-sm px-3 py-2.5 rounded-lg border border-gray-200 w-full text-gray-800 font-medium text-sm"
                 required />
             </div>
-            <button type="button"
-              (click)="removeAttendee(i)"
+            <button type="button" (click)="removeAttendee(i)"
               class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                <path fill-rule="evenodd"
+                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd" />
               </svg>
             </button>
           </div>
 
-          <button type="button"
-            (click)="addAttendee()"
+          <button type="button" (click)="addAttendee()"
             class="flex items-center gap-2 text-dmm-green font-medium text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                clip-rule="evenodd" />
             </svg>
             Tambah Peserta
           </button>
@@ -331,7 +332,8 @@
       </div>
 
       <div class="pt-4">
-        <button type="submit" class="w-full bg-dmm-green hover:bg-dmm-green/90 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300">
+        <button type="submit"
+          class="w-full bg-dmm-green hover:bg-dmm-green/90 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300">
           Booking Sekarang
         </button>
       </div>
@@ -339,7 +341,7 @@
   </div>
 
   <!-- Room Info Section with Background -->
-  <div class="bg-cover bg-center flex-grow" [style.background-image]="'url(../../../../assets/potrait-bg.jpg)'">
+  <div class="bg-cover bg-center flex-grow" [style.background-image]="'url(../../../../assets/potrait-bg.png)'">
     <div class="bg-black/50 text-white p-6 h-full">
       <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
         <!-- TIME section -->
