@@ -3,18 +3,19 @@
 <!-- Landscape Layout: LEFT CONTENT (Room Info) | RIGHT CONTENT (Booking Form) -->
 <div class="hidden md:flex h-screen">
   <!-- Left Content: Room Description with Background -->
+  <!-- 
   <div class="w-1/2 bg-cover bg-center text-white flex flex-col"
     [style.background-image]="'url(../../../../assets/potrait-bg.png)'">
     <div class="bg-black/50 p-6 border-r border-white/20 flex flex-col flex-grow">
       <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
-        <!-- TIME section -->
+        
         <div class="flex-shrink-0">
           <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
             {{ getTimePart() }}
           </p>
         </div>
 
-        <!-- DAY and DATE section -->
+        
         <div class="flex flex-col justify-center">
           <p class="text-sm md:text-base lg:text-lg">
             {{ getDayPart() }},
@@ -79,6 +80,7 @@
       </div>
     </div>
   </div>
+  -->
 
   <!-- Right Content: Booking Form -->
   <div class="w-1/2 bg-white/50 p-6 flex flex-col">
@@ -341,17 +343,16 @@
   </div>
 
   <!-- Room Info Section with Background -->
+  <!-- 
   <div class="bg-cover bg-center flex-grow" [style.background-image]="'url(../../../../assets/potrait-bg.png)'">
     <div class="bg-black/50 text-white p-6 h-full">
       <div class="mb-6 md:mb-8 flex items-center gap-4 md:gap-6">
-        <!-- TIME section -->
         <div class="flex-shrink-0">
           <p class="text-4xl md:text-5xl lg:text-6xl font-bold leading-none">
             {{ getTimePart() }}
           </p>
         </div>
 
-        <!-- DAY and DATE section -->
         <div class="flex flex-col justify-center">
           <p class="text-sm md:text-base lg:text-lg">
             {{ getDayPart() }},
@@ -416,4 +417,5 @@
       </div>
     </div>
   </div>
+  -->
 </div>

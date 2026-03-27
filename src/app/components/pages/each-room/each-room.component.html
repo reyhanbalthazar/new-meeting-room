@@ -27,7 +27,7 @@
 
     <section class="room-display__body">
       <section class="room-display__current-section">
-        
+
 
         <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingLandscape">
           <div class="room-display__current-card">
@@ -142,8 +142,9 @@
 
     <section class="room-display__body">
       <section class="room-display__current-section">
-        <h2>Current Schedule</h2>
-
+        <div class="room-display__current-card-header">
+          <h2>Current Schedule</h2>
+        </div>
         <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingPortrait">
           <div class="room-display__current-card">
             <div class="room-display__current-card-inner">
@@ -160,6 +161,9 @@
 
         <ng-template #noCurrentMeetingPortrait>
           <div class="room-display__current-card room-display__current-card--empty">
+            <div class="room-display__current-card-header">
+              <h2>Current Schedule</h2>
+            </div>
             <div class="room-display__current-card-inner">
               <div class="room-display__current-time">{{ roomStatusLabel }}</div>
               <div class="room-display__current-details">
