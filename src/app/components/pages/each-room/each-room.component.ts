@@ -649,6 +649,48 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     return now >= start && now < end;
   }
 
+  /**
+   * Get the remaining time in minutes for the current meeting
+   */
+  private getRemainingMinutes(): number {
+    const activeMeeting = this.currentMeeting;
+    if (!activeMeeting) {
+      return -1;
+    }
+
+    const endTime = this.parseDateTime(activeMeeting.end_time);
+    if (!endTime) {
+      return -1;
+    }
+
+    const remainingMs = endTime.getTime() - this.selectedDate.getTime();
+    return Math.floor(remainingMs / (1000 * 60));
+  }
+
+  /**
+   * Get the room occupancy color state
+   * Returns: 'green' (unoccupied), 'red' (occupied), 'yellow' (almost done - 10 minutes left)
+   */
+  getRoomOccupancyState(): 'green' | 'red' | 'yellow' {
+    const activeMeeting = this.currentMeeting;
+
+    // No meeting - room is unoccupied (Green)
+    if (!activeMeeting) {
+      return 'green';
+    }
+
+    // Meeting is happening - check remaining time
+    const remainingMinutes = this.getRemainingMinutes();
+
+    // Less than or equal to 10 minutes remaining - Yellow
+    if (remainingMinutes <= 10 && remainingMinutes > 0) {
+      return 'yellow';
+    }
+
+    // More than 10 minutes remaining - Red
+    return 'red';
+  }
+
   private parseDateTime(dateTimeValue: string): Date | null {
     if (typeof dateTimeValue !== 'string' || dateTimeValue.trim().length === 0) {
       return null;

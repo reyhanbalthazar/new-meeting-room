@@ -1,5 +1,5 @@
 <div *ngIf="signageOrientation === 'LANDSCAPE'" class="room-display room-display--landscape">
-  <header class="room-display__brand">
+   <header class="room-display__brand">
     <div class="room-display__brand-pattern"></div>
     <div class="room-display__brand-content">
       <img src="../../../../assets/dmmx-logo-white.png" alt="DMMX Logo" class="room-display__brand-logo">
@@ -12,7 +12,7 @@
 
   <main class="room-display__main">
     <section class="room-display__headline">
-      <div class="room-display__title-pill">
+      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + getRoomOccupancyState()">
         <h1>{{ selectedRoomName || 'Meeting Room' }}</h1>
       </div>
 
@@ -30,7 +30,7 @@
 
 
         <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingLandscape">
-          <div class="room-display__current-card">
+          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
@@ -47,7 +47,7 @@
         </ng-container>
 
         <ng-template #noCurrentMeetingLandscape>
-          <div class="room-display__current-card room-display__current-card--empty">
+          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
@@ -114,7 +114,7 @@
 </div>
 
 <div *ngIf="signageOrientation === 'PORTRAIT'" class="room-display room-display--portrait">
-  <header class="room-display__brand">
+   <header class="room-display__brand">
     <div class="room-display__brand-pattern"></div>
     <div class="room-display__brand-content">
       <img src="../../../../assets/dmmx-logo-white.png" alt="DMMX Logo" class="room-display__brand-logo">
@@ -127,7 +127,7 @@
 
   <main class="room-display__main">
     <section class="room-display__headline">
-      <div class="room-display__title-pill">
+      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + getRoomOccupancyState()">
         <h1>{{ selectedRoomName || 'Meeting Room' }}</h1>
       </div>
 
@@ -146,7 +146,7 @@
           <h2>Current Schedule</h2>
         </div>
         <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingPortrait">
-          <div class="room-display__current-card">
+          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
             <div class="room-display__current-card-inner">
               <div class="room-display__current-time">
                 {{ formatTime(activeMeeting.start_time) }} - {{ formatTime(activeMeeting.end_time) }}
@@ -160,7 +160,7 @@
         </ng-container>
 
         <ng-template #noCurrentMeetingPortrait>
-          <div class="room-display__current-card room-display__current-card--empty">
+          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
