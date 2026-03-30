@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { BookingResponse } from '../models/booking-response.model';
 import { Room } from '../models/room.model';
+import { MeetingCategory } from '../models/booking.model';
 // Modal
 import { MatDialog } from '@angular/material/dialog';
 import { BookingModalComponent } from '../booking-modal/booking-modal.component';
@@ -18,6 +19,7 @@ export class BookingFormComponent {
   isOpen = false; // Track the dropdown state
   rooms: Room[] = []; // Array to hold the fetched room data
   selectedRoomName = 'Pilih Ruangan'; // Default button text
+  meetingCategories = Object.values(MeetingCategory);
   bookingData = {
     room_id: 0, // Changed from string to number
     user_id: 1,
@@ -27,6 +29,7 @@ export class BookingFormComponent {
     pic: '',
     email: '',
     topic: '',
+    meeting_category: '' as MeetingCategory | '',
     participants: [] as { name: string; email: string }[]
   }
 
@@ -65,16 +68,28 @@ export class BookingFormComponent {
   }
 
   onDateChange(event: any) {
-    const selectedDate = new Date(event.value);
-
-    // Format the date as YYYY-MM-DD (without time component)
-    const year = selectedDate.getFullYear();
-    const month = String(selectedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const day = String(selectedDate.getDate()).padStart(2, '0');
-
-    this.bookingData.date = `${year}-${month}-${day}`;
+    const formattedDate = this.formatDateInput(event?.value);
+    this.bookingData.date = formattedDate;
 
     console.log(this.bookingData);
+  }
+
+  private formatDateInput(dateValue: unknown): string {
+    if (!dateValue) {
+      return '';
+    }
+
+    const selectedDate = dateValue instanceof Date ? dateValue : new Date(String(dateValue));
+
+    if (Number.isNaN(selectedDate.getTime())) {
+      return '';
+    }
+
+    const year = selectedDate.getFullYear();
+    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(selectedDate.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   // Helper method to validate bookingData
@@ -85,7 +100,8 @@ export class BookingFormComponent {
       this.bookingData.start_time !== '' &&
       this.bookingData.end_time !== '' &&
       this.bookingData.pic !== '' &&
-      this.bookingData.topic !== '';
+      this.bookingData.topic !== '' &&
+      this.bookingData.meeting_category !== '';
 
     // Validate participants if there are any
     let participantsValid = true;
@@ -103,17 +119,27 @@ export class BookingFormComponent {
       this.openInvalidFormModal();
       return; // Exit the function early if validation fails
     }
+
+    const normalizedDate = this.formatDateInput(this.bookingData.date);
+    if (!normalizedDate) {
+      this.openInvalidFormModal();
+      return;
+    }
+
     // Open confirmation modal before proceeding
     this.openConfirmationModal().afterClosed().subscribe((confirmed: boolean) => {
       if (confirmed) {
+        const { meeting_category, ...bookingFormData } = this.bookingData;
+
         // Format the date and time in ISO format as expected by the API
         const bookingPayload = {
-          ...this.bookingData,
+          ...bookingFormData,
           // Ensure room_id is a number and format date and time in ISO format: YYYY-MM-DDTHH:mm:ssZ
           room_id: Number(this.bookingData.room_id),
-          date: `${this.bookingData.date}T00:00:00Z`,
-          start_time: `${this.bookingData.date}T${this.bookingData.start_time}:00Z`,
-          end_time: `${this.bookingData.date}T${this.bookingData.end_time}:00Z`,
+          date: `${normalizedDate}T00:00:00Z`,
+          start_time: `${normalizedDate}T${this.bookingData.start_time}:00Z`,
+          end_time: `${normalizedDate}T${this.bookingData.end_time}:00Z`,
+          category: meeting_category,
           participants: this.bookingData.participants // Include participants in the payload
         };
 

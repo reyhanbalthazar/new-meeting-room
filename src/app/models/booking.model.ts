@@ -5,6 +5,16 @@ export interface Participant {
   status: string;
 }
 
+export enum MeetingCategory {
+  Internal = 'Internal',
+  External = 'External',
+  Executive = 'Executive',
+  Interview = 'Interview',
+  Training = 'Training',
+  Presentation = 'Presentation',
+  Personal = 'Personal'
+}
+
 export interface Booking {
   id: number;
   room_id: number;
@@ -15,6 +25,7 @@ export interface Booking {
   pic: string;
   email: string;
   topic: string;
+  meeting_category: MeetingCategory;
   status: string;
   participants: Participant[]; // Array of participants
   created_at: string; // ISO datetime string
