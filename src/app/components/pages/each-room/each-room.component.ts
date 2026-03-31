@@ -36,6 +36,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   // Data
   dataBookings: any[] = []; // Calendar data with months and dates
   todayBookings: any[] = [];
+  nextDayBookings: any[] = [];
   upcomingBookings: any[] = [];
 
   // State
@@ -160,6 +161,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         console.error('Error fetching calendar bookings:', error);
         this.dataBookings = []; // Clear data on error
         this.todayBookings = [];
+        this.nextDayBookings = [];
         this.upcomingBookings = [];
       }
     });
@@ -500,8 +502,10 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   private filterBookingsByDate(): void {
     const todayIsoDate = this.getLocalIsoDate(this.selectedDate);
+    const nextDayIsoDate = this.getLocalIsoDate(this.getNextDayDate(this.selectedDate));
     const upcomingMonths: any[] = [];
     const todaySchedules: any[] = [];
+    const nextDaySchedules: any[] = [];
 
     this.dataBookings.forEach((monthData: any) => {
       const futureDates: any[] = [];
@@ -514,6 +518,10 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         if (dateData?.date === todayIsoDate) {
           todaySchedules.push(...schedules);
           return;
+        }
+
+        if (dateData?.date === nextDayIsoDate) {
+          nextDaySchedules.push(...schedules);
         }
 
         if (typeof dateData?.date === 'string' && dateData.date > todayIsoDate && schedules.length > 0) {
@@ -533,11 +541,20 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     });
 
     todaySchedules.sort((a: any, b: any) => String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? '')));
+    nextDaySchedules.sort((a: any, b: any) => String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? '')));
     this.todayBookings = todaySchedules;
+    this.nextDayBookings = nextDaySchedules;
     this.upcomingBookings = upcomingMonths;
 
     console.debug('Today bookings:', this.todayBookings);
+    console.debug('Next day bookings:', this.nextDayBookings);
     console.debug('Upcoming bookings:', this.upcomingBookings);
+  }
+
+  private getNextDayDate(date: Date): Date {
+    const nextDate = new Date(date);
+    nextDate.setDate(nextDate.getDate() + 1);
+    return nextDate;
   }
 
   private getLocalIsoDate(date: Date): string {
@@ -556,6 +573,20 @@ export class EachRoomComponent implements OnInit, OnDestroy {
 
   get hasTodayBookings(): boolean {
     return this.todayBookings.length > 0;
+  }
+
+  get hasNextDayBookings(): boolean {
+    return this.nextDayBookings.length > 0;
+  }
+
+  get nextDayScheduleLabel(): string {
+    const nextDay = this.getNextDayDate(this.selectedDate);
+    return nextDay.toLocaleDateString('en-ID', {
+      day: 'numeric',
+      month: 'long',
+      weekday: 'long',
+      year: 'numeric'
+    });
   }
 
   get hasUpcomingBookings(): boolean {

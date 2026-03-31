@@ -83,6 +83,29 @@
           <div class="room-display__empty-state">Tidak ada booking untuk hari ini.</div>
         </ng-template>
       </section>
+
+      <!-- <hr style="height: 3px; background-color: #000000; border: none; margin: 1em 0;"> -->
+
+      <section class="room-display__schedule-section room-display__schedule-section--next-day">
+        <!-- <h2>Next Day Schedule</h2> -->
+        <p class="room-display__next-day-label">{{ nextDayScheduleLabel }}</p>
+
+        <ng-container *ngIf="hasNextDayBookings; else noNextDayBookingsLandscape">
+          <div *ngFor="let booking of nextDayBookings" class="room-display__schedule-item">
+            <div class="room-display__schedule-time">
+              {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
+            </div>
+            <div class="room-display__schedule-details">
+              <p class="room-display__schedule-topic">{{ booking.topic }}</p>
+              <p class="room-display__schedule-pic">PIC: {{ booking.pic }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noNextDayBookingsLandscape>
+          <div class="room-display__empty-state">Tidak ada booking untuk besok.</div>
+        </ng-template>
+      </section>
     </section>
   </main>
 
@@ -192,6 +215,27 @@
 
         <ng-template #noTodayBookingsPortrait>
           <div class="room-display__empty-state">Tidak ada booking untuk hari ini.</div>
+        </ng-template>
+      </section>
+
+      <section class="room-display__schedule-section room-display__schedule-section--next-day">
+        <!-- <h2>Next Day Schedule</h2> -->
+        <p class="room-display__next-day-label">{{ nextDayScheduleLabel }}</p>
+
+        <ng-container *ngIf="hasNextDayBookings; else noNextDayBookingsPortrait">
+          <div *ngFor="let booking of nextDayBookings" class="room-display__schedule-item">
+            <div class="room-display__schedule-time">
+              {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
+            </div>
+            <div class="room-display__schedule-details">
+              <p class="room-display__schedule-topic">{{ booking.topic }}</p>
+              <p class="room-display__schedule-pic">PIC: {{ booking.pic }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noNextDayBookingsPortrait>
+          <div class="room-display__empty-state">Tidak ada booking untuk besok.</div>
         </ng-template>
       </section>
     </section>

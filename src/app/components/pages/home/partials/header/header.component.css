@@ -1,5 +1,7 @@
 .image-container {
-	position: relative;
+	position: sticky;
+	top: 0;
+	z-index: var(--z-index-sticky);
 	width: 100%;
 	height: var(--header-height);
 }
