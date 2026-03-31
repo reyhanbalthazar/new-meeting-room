@@ -8,6 +8,7 @@ import { MeetingCategory } from '../models/booking.model';
 // Modal
 import { MatDialog } from '@angular/material/dialog';
 import { BookingModalComponent } from '../booking-modal/booking-modal.component';
+import { ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class BookingFormComponent {
   rooms: Room[] = []; // Array to hold the fetched room data
   selectedRoomName = 'Pilih Ruangan'; // Default button text
   meetingCategories = Object.values(MeetingCategory);
+  initialRoomId: number | null = null;
   bookingData = {
     room_id: 0, // Changed from string to number
     user_id: 1,
@@ -37,9 +39,14 @@ export class BookingFormComponent {
     private http: HttpClient,
     private dialog: MatDialog,
     private apiService: ApiService,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
+    const roomIdParam = this.route.snapshot.queryParamMap.get('roomId');
+    const parsedRoomId = roomIdParam ? Number(roomIdParam) : NaN;
+    this.initialRoomId = Number.isNaN(parsedRoomId) ? null : parsedRoomId;
+
     this.fetchRooms();
     // Initialize participants array
     this.bookingData.participants = [];
@@ -50,11 +57,23 @@ export class BookingFormComponent {
       (response) => {
         // Filter out room with ID 1 (possibly reserved or unavailable)
         this.rooms = response.filter((room: Room) => room.id !== 1);
+        this.applyInitialRoomSelection();
       },
       (error) => {
         console.error('Error fetching data:', error);
       }
     )
+  }
+
+  private applyInitialRoomSelection(): void {
+    if (!this.initialRoomId || !Array.isArray(this.rooms)) {
+      return;
+    }
+
+    const roomFromQuery = this.rooms.find((room: Room) => room.id === this.initialRoomId);
+    if (roomFromQuery) {
+      this.selectRoom(roomFromQuery);
+    }
   }
 
   toggleMenu() {
