@@ -575,6 +575,10 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     return this.todayBookings.length > 0;
   }
 
+  get isRoomFreeAllDay(): boolean {
+    return !this.currentMeeting && !this.hasTodayBookings;
+  }
+
   get hasNextDayBookings(): boolean {
     return this.nextDayBookings.length > 0;
   }

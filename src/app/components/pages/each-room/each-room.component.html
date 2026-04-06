@@ -51,15 +51,23 @@
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
-            <div class="room-display__current-card-inner">
-              <div class="room-display__current-time">
-                <div class="room-display__current-time">{{ roomStatusLabel }}</div>
+            <ng-container *ngIf="isRoomFreeAllDay; else countdownLandscape">
+              <div class="room-display__current-card-inner room-display__current-card-inner--free">
+                <p class="room-display__available-label">Room is available</p>
+                <p class="room-display__available-sub">No session in progress</p>
               </div>
-              <div class="room-display__current-details">
-                <p class="room-display__current-topic">{{ nextMeetingCountdownLabel }}</p>
-                <p class="room-display__current-pic">{{ currentMeetingBadgeLabel }}</p>
+            </ng-container>
+            <ng-template #countdownLandscape>
+              <div class="room-display__current-card-inner">
+                <div class="room-display__current-time">
+                  <div class="room-display__current-time">{{ roomStatusLabel }}</div>
+                </div>
+                <div class="room-display__current-details">
+                  <p class="room-display__current-topic">{{ nextMeetingCountdownLabel }}</p>
+                  <p class="room-display__current-pic">{{ currentMeetingBadgeLabel }}</p>
+                </div>
               </div>
-            </div>
+            </ng-template>
           </div>
         </ng-template>
       </section>
@@ -67,7 +75,7 @@
       <section class="room-display__schedule-section">
         <h2>Today Schedule</h2>
 
-        <ng-container *ngIf="hasTodayBookings; else noTodayBookingsLandscape">
+        <ng-container *ngIf="todayMeetingsList.length > 0; else noTodayBookingsLandscape">
           <div *ngFor="let booking of todayMeetingsList" class="room-display__schedule-item">
             <div class="room-display__schedule-time">
               {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
@@ -80,7 +88,7 @@
         </ng-container>
 
         <ng-template #noTodayBookingsLandscape>
-          <div class="room-display__empty-state">Tidak ada booking untuk hari ini.</div>
+          <div class="room-display__empty-state">No further bookings scheduled for today</div>
         </ng-template>
       </section>
 
@@ -165,9 +173,7 @@
 
     <section class="room-display__body">
       <section class="room-display__current-section">
-        <div class="room-display__current-card-header">
-          <h2>Current Schedule</h2>
-        </div>
+        
         <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingPortrait">
           <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
             <div class="room-display__current-card-inner">
@@ -187,13 +193,21 @@
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
-            <div class="room-display__current-card-inner">
-              <div class="room-display__current-time">{{ roomStatusLabel }}</div>
-              <div class="room-display__current-details">
-                <p class="room-display__current-topic">{{ nextMeetingCountdownLabel }}</p>
-                <p class="room-display__current-pic">{{ currentMeetingBadgeLabel }}</p>
+            <ng-container *ngIf="isRoomFreeAllDay; else countdownPortrait">
+              <div class="room-display__current-card-inner room-display__current-card-inner--free">
+                <p class="room-display__available-label">Room is available</p>
+                <p class="room-display__available-sub">No session in progress</p>
               </div>
-            </div>
+            </ng-container>
+            <ng-template #countdownPortrait>
+              <div class="room-display__current-card-inner">
+                <div class="room-display__current-time">{{ roomStatusLabel }}</div>
+                <div class="room-display__current-details">
+                  <p class="room-display__current-topic">{{ nextMeetingCountdownLabel }}</p>
+                  <p class="room-display__current-pic">{{ currentMeetingBadgeLabel }}</p>
+                </div>
+              </div>
+            </ng-template>
           </div>
         </ng-template>
       </section>
@@ -201,7 +215,7 @@
       <section class="room-display__schedule-section">
         <h2>Today Schedule</h2>
 
-        <ng-container *ngIf="hasTodayBookings; else noTodayBookingsPortrait">
+        <ng-container *ngIf="todayMeetingsList.length > 0; else noTodayBookingsPortrait">
           <div *ngFor="let booking of todayMeetingsList" class="room-display__schedule-item">
             <div class="room-display__schedule-time">
               {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
@@ -214,7 +228,7 @@
         </ng-container>
 
         <ng-template #noTodayBookingsPortrait>
-          <div class="room-display__empty-state">Tidak ada booking untuk hari ini.</div>
+          <div class="room-display__empty-state">No further bookings scheduled for today</div>
         </ng-template>
       </section>
 
