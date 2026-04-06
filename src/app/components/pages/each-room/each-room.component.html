@@ -88,7 +88,7 @@
 
       <section class="room-display__schedule-section room-display__schedule-section--next-day">
         <!-- <h2>Next Day Schedule</h2> -->
-        <p class="room-display__next-day-label">{{ nextDayScheduleLabel }}</p>
+        <h2>{{ nextDayScheduleLabel }}</h2>
 
         <ng-container *ngIf="hasNextDayBookings; else noNextDayBookingsLandscape">
           <div *ngFor="let booking of nextDayBookings" class="room-display__schedule-item">
@@ -220,7 +220,7 @@
 
       <section class="room-display__schedule-section room-display__schedule-section--next-day">
         <!-- <h2>Next Day Schedule</h2> -->
-        <p class="room-display__next-day-label">{{ nextDayScheduleLabel }}</p>
+        <h2>{{ nextDayScheduleLabel }}</h2>
 
         <ng-container *ngIf="hasNextDayBookings; else noNextDayBookingsPortrait">
           <div *ngFor="let booking of nextDayBookings" class="room-display__schedule-item">

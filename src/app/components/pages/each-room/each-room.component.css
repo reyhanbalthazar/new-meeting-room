@@ -240,6 +240,7 @@
 }
 
 .room-display__schedule-section {
+  padding-top: 2rem;
   padding-bottom: 1rem;
 }
 
@@ -348,6 +349,22 @@
   border-top: 3px solid rgba(16, 16, 16, 0.06);
   margin-top: 1.5rem;
   padding-top: 1.5rem;
+}
+
+.room-display__schedule-section--next-day h2 {
+  font-size: clamp(1.6rem, 2.1vw, 2.35rem);
+}
+
+.room-display__schedule-section--next-day .room-display__schedule-time {
+  font-size: clamp(1.45rem, 2.1vw, 2.35rem);
+}
+
+.room-display__schedule-section--next-day .room-display__schedule-topic {
+  font-size: clamp(1.55rem, 2.7vw, 3rem);
+}
+
+.room-display__schedule-section--next-day .room-display__schedule-pic {
+  font-size: clamp(0.95rem, 1.25vw, 1.35rem);
 }
 
 @media screen and (max-width: 1024px) {
