@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/co
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../api.service';
 import { Booking } from '../../../models/booking.model'; // Import the shared Booking interface
-import { interval, Observable, Subject, switchMap, takeUntil, map } from 'rxjs';
+import { interval, Observable, Subject, exhaustMap, takeUntil, map, of } from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddParticipantModalComponent } from '../../../add-participant-modal/add-participant-modal.component';
 import { CancelBookingModalComponent } from '../../../cancel-booking-modal/cancel-booking-modal.component';
@@ -25,6 +25,24 @@ interface RoomAdsItem {
   mimeType: string;
 }
 
+interface DisplayBooking {
+  id: number | string | null;
+  start_time: string;
+  end_time: string;
+  topic: string;
+  pic: string;
+  timeRangeLabel: string;
+  startTimestamp: number;
+  endTimestamp: number;
+  [key: string]: any;
+}
+
+interface FutureBookingGroup {
+  date: string;
+  label: string;
+  schedules: DisplayBooking[];
+}
+
 @Component({
   selector: 'app-each-room',
   templateUrl: './each-room.component.html',
@@ -35,9 +53,10 @@ export class EachRoomComponent implements OnInit, OnDestroy {
 
   // Data
   dataBookings: any[] = []; // Calendar data with months and dates
-  todayBookings: any[] = [];
-  nextDayBookings: any[] = [];
-  upcomingBookings: any[] = [];
+  todayBookings: DisplayBooking[] = [];
+  nextDayBookings: DisplayBooking[] = [];
+  upcomingBookings: FutureBookingGroup[] = [];
+  futureDateGroups: FutureBookingGroup[] = [];
 
   // State
   selectedRoom: number | null = null;
@@ -55,6 +74,17 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   currentAdType: string = '';
   currentAdName: string = '';
   currentAdVideoError: string = '';
+  currentTimeText: string = '';
+  dateHeadlineText: string = '';
+  dateWeekYearText: string = '';
+  currentMeeting: DisplayBooking | null = null;
+  roomOccupancyState: 'green' | 'red' | 'yellow' = 'green';
+  roomStatusLabel: string = 'Unoccupied';
+  currentMeetingBadgeLabel: string = 'Available until';
+  nextMeetingCountdownLabel: string = 'Tidak ada meeting berikutnya';
+  todayMeetingsList: DisplayBooking[] = [];
+  hasFutureBookings: boolean = false;
+  isRoomFreeAllDay: boolean = true;
   private stopCurrentVideoAutoplayRetry: boolean = false;
   signageOrientation: 'LANDSCAPE' | 'PORTRAIT' = 'LANDSCAPE';
 
@@ -75,6 +105,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
   private adRotationTimeout: ReturnType<typeof setTimeout> | null = null;
   private lastDisasterChangedAt: string = '';
   private lastSignageSignature: string = '';
+  private selectedIsoDate: string = '';
   private disasterDialogRef: MatDialogRef<DisasterAlertModalComponent> | null = null;
   private disasterAlertAudioContext: AudioContext | null = null;
   private disasterAlertSoundInterval: ReturnType<typeof setInterval> | null = null;
@@ -87,6 +118,21 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     month: { month: 'long' },
     fullDate: { year: 'numeric', month: 'long', day: 'numeric' }
   };
+  private readonly timeFormatter = new Intl.DateTimeFormat('en-ID', this.dateFormatOptions.time);
+  private readonly dateHeadlineFormatter = new Intl.DateTimeFormat('en-ID', {
+    day: 'numeric',
+    month: 'long'
+  });
+  private readonly dateWeekYearFormatter = new Intl.DateTimeFormat('en-ID', {
+    weekday: 'long',
+    year: 'numeric'
+  });
+  private readonly futureDateFormatter = new Intl.DateTimeFormat('en-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 
   constructor(
     private apiService: ApiService,
@@ -112,6 +158,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   private initializeComponent(): void {
     this.initializeRoomFromRoute();
+    this.refreshLiveState(new Date());
     this.roomBackgroundImage = this.defaultLandscapeBackgroundImage;
     this.portraitBackgroundImage = this.defaultPortraitBackgroundImage;
     this.fetchRoomSettings();
@@ -130,7 +177,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     interval(this.LIVE_CLOCK_INTERVAL_MS)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        this.selectedDate = new Date();
+        this.refreshLiveState(new Date());
       });
   }
 
@@ -155,7 +202,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         // Ensure response.data is an array before assigning
         this.dataBookings = Array.isArray(response?.data) ? response.data : [];
         this.filterBookingsByDate();
-        console.debug('Fetched calendar bookings for room:', response);
       },
       error: (error) => {
         console.error('Error fetching calendar bookings:', error);
@@ -163,6 +209,8 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         this.todayBookings = [];
         this.nextDayBookings = [];
         this.upcomingBookings = [];
+        this.futureDateGroups = [];
+        this.updateScheduleViewState();
       }
     });
   }
@@ -192,7 +240,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     interval(this.UPDATE_INTERVAL_MS)
       .pipe(
         takeUntil(this.destroy$),
-        switchMap(() => this.getUpdatedRoomSettings())
+        exhaustMap(() => this.getUpdatedRoomSettings())
       )
       .subscribe({
         next: (room: any) => {
@@ -211,13 +259,12 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     interval(this.UPDATE_INTERVAL_MS)
       .pipe(
         takeUntil(this.destroy$),
-        switchMap(() => this.getUpdatedBookings())
+        exhaustMap(() => this.getUpdatedBookings())
       )
       .subscribe({
         next: (calendarData: any[]) => {
           this.dataBookings = calendarData;
           this.filterBookingsByDate();
-          console.debug('Updated calendar bookings:', calendarData);
         },
         error: (error) => {
           console.error('Error during periodic updates:', error);
@@ -232,7 +279,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     interval(this.DISASTER_UPDATE_INTERVAL_MS)
       .pipe(
         takeUntil(this.destroy$),
-        switchMap(() => this.apiService.getDisasterStatus())
+        exhaustMap(() => this.apiService.getDisasterStatus())
       )
       .subscribe({
         next: (response: any) => {
@@ -292,11 +339,9 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   private getUpdatedBookings(): Observable<any> {
     if (!this.selectedRoom) {
-      return new Observable<any>(observer => {
-        observer.next({ data: [] });
-        observer.complete();
-      });
+      return of([]);
     }
+
     return this.apiService.getDataBookingsByRoomIdCalendar(this.selectedRoom).pipe(
       map((response: any) => {
         // Ensure response.data is an array before returning
@@ -310,10 +355,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   private getUpdatedRoomSettings(): Observable<any> {
     if (!this.selectedRoom) {
-      return new Observable<any>(observer => {
-        observer.next(null);
-        observer.complete();
-      });
+      return of(null);
     }
 
     return this.apiService.getRoomById(this.selectedRoom).pipe(
@@ -402,7 +444,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
         return timeString;
       }
 
-      return date.toLocaleTimeString('en-ID', this.dateFormatOptions.time);
+      return this.timeFormatter.format(date);
     } catch (error) {
       console.error('Error formatting time:', error);
       return timeString; // Fallback to original string
@@ -489,9 +531,7 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     let count = 0;
 
     this.upcomingBookings.forEach((monthData: any) => {
-      monthData.dates.forEach((dateData: any) => {
-        count += dateData.schedules.length;
-      });
+      count += monthData.schedules.length;
     });
 
     return count + this.todayBookings.length;
@@ -502,53 +542,41 @@ export class EachRoomComponent implements OnInit, OnDestroy {
    */
   private filterBookingsByDate(): void {
     const todayIsoDate = this.getLocalIsoDate(this.selectedDate);
-    const nextDayIsoDate = this.getLocalIsoDate(this.getNextDayDate(this.selectedDate));
-    const upcomingMonths: any[] = [];
-    const todaySchedules: any[] = [];
-    const nextDaySchedules: any[] = [];
+    const upcomingGroups: FutureBookingGroup[] = [];
+    const todaySchedules: DisplayBooking[] = [];
 
     this.dataBookings.forEach((monthData: any) => {
-      const futureDates: any[] = [];
       const monthDates = Array.isArray(monthData?.dates) ? monthData.dates : [];
 
       monthDates.forEach((dateData: any) => {
-        const schedules = Array.isArray(dateData?.schedules) ? [...dateData.schedules] : [];
-        schedules.sort((a: any, b: any) => String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? '')));
+        const schedules = Array.isArray(dateData?.schedules)
+          ? dateData.schedules
+              .map((schedule: any) => this.createDisplayBooking(schedule))
+              .sort((a: DisplayBooking, b: DisplayBooking) => a.startTimestamp - b.startTimestamp)
+          : [];
 
         if (dateData?.date === todayIsoDate) {
           todaySchedules.push(...schedules);
           return;
         }
 
-        if (dateData?.date === nextDayIsoDate) {
-          nextDaySchedules.push(...schedules);
-        }
-
         if (typeof dateData?.date === 'string' && dateData.date > todayIsoDate && schedules.length > 0) {
-          futureDates.push({
-            ...dateData,
+          upcomingGroups.push({
+            date: dateData.date,
+            label: this.formatFutureDate(dateData.date),
             schedules
           });
         }
       });
-
-      if (futureDates.length > 0) {
-        upcomingMonths.push({
-          ...monthData,
-          dates: futureDates
-        });
-      }
     });
 
-    todaySchedules.sort((a: any, b: any) => String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? '')));
-    nextDaySchedules.sort((a: any, b: any) => String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? '')));
+    todaySchedules.sort((a: DisplayBooking, b: DisplayBooking) => a.startTimestamp - b.startTimestamp);
     this.todayBookings = todaySchedules;
-    this.nextDayBookings = nextDaySchedules;
-    this.upcomingBookings = upcomingMonths;
-
-    console.debug('Today bookings:', this.todayBookings);
-    console.debug('Next day bookings:', this.nextDayBookings);
-    console.debug('Upcoming bookings:', this.upcomingBookings);
+    this.nextDayBookings = [];
+    this.upcomingBookings = upcomingGroups;
+    this.futureDateGroups = upcomingGroups;
+    this.hasFutureBookings = upcomingGroups.length > 0;
+    this.updateScheduleViewState();
   }
 
   private getNextDayDate(date: Date): Date {
@@ -571,146 +599,6 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     return this.getTotalScheduleCount() > 0;
   }
 
-  get hasTodayBookings(): boolean {
-    return this.todayBookings.length > 0;
-  }
-
-  get isRoomFreeAllDay(): boolean {
-    return !this.currentMeeting && !this.hasTodayBookings;
-  }
-
-  get hasNextDayBookings(): boolean {
-    return this.nextDayBookings.length > 0;
-  }
-
-  get nextDayScheduleLabel(): string {
-    const nextDay = this.getNextDayDate(this.selectedDate);
-    return nextDay.toLocaleDateString('en-ID', {
-      day: 'numeric',
-      month: 'long',
-      weekday: 'long',
-      year: 'numeric'
-    });
-  }
-
-  get futureDateGroups(): { date: string; schedules: any[] }[] {
-    const result: { date: string; schedules: any[] }[] = [];
-    this.upcomingBookings.forEach((monthData: any) => {
-      const dates = Array.isArray(monthData?.dates) ? monthData.dates : [];
-      dates.forEach((dateData: any) => {
-        if (Array.isArray(dateData?.schedules) && dateData.schedules.length > 0) {
-          result.push({ date: dateData.date, schedules: dateData.schedules });
-        }
-      });
-    });
-    return result;
-  }
-
-  get hasFutureBookings(): boolean {
-    return this.futureDateGroups.length > 0;
-  }
-
-  formatDateLabel(isoDate: string): string {
-    const date = new Date(isoDate + 'T00:00:00');
-    return date.toLocaleDateString('en-ID', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  }
-
-  get hasUpcomingBookings(): boolean {
-    return this.upcomingBookings.some((monthData: any) =>
-      Array.isArray(monthData?.dates) &&
-      monthData.dates.some((dateData: any) => Array.isArray(dateData?.schedules) && dateData.schedules.length > 0)
-    );
-  }
-
-  get currentMeeting(): any | null {
-    const now = this.selectedDate;
-    const activeMeeting = this.todayBookings.find((booking: any) => this.isMeetingActiveNow(booking, now));
-    return activeMeeting ?? null;
-  }
-
-  get roomStatusLabel(): string {
-    return this.currentMeeting ? 'Occupied' : 'Unoccupied';
-  }
-
-  get currentMeetingBadgeLabel(): string {
-    return this.currentMeeting ? 'Current Meeting' : 'Available until';
-  }
-
-  get nextMeeting(): any | null {
-    const now = this.selectedDate;
-    const upcomingSchedules: any[] = [];
-
-    this.dataBookings.forEach((monthData: any) => {
-      const monthDates = Array.isArray(monthData?.dates) ? monthData.dates : [];
-      monthDates.forEach((dateData: any) => {
-        const schedules = Array.isArray(dateData?.schedules) ? dateData.schedules : [];
-        schedules.forEach((schedule: any) => {
-          const scheduleStart = this.parseDateTime(schedule?.start_time);
-          if (scheduleStart && scheduleStart > now) {
-            upcomingSchedules.push(schedule);
-          }
-        });
-      });
-    });
-
-    if (upcomingSchedules.length === 0) {
-      return null;
-    }
-
-    upcomingSchedules.sort((a: any, b: any) =>
-      String(a?.start_time ?? '').localeCompare(String(b?.start_time ?? ''))
-    );
-
-    return upcomingSchedules[0];
-  }
-
-  get nextMeetingCountdownLabel(): string {
-    if (this.currentMeeting) {
-      return '';
-    }
-
-    const nextMeeting = this.nextMeeting;
-    if (!nextMeeting) {
-      return 'Tidak ada meeting berikutnya';
-    }
-
-    const nextStart = this.parseDateTime(nextMeeting.start_time);
-    if (!nextStart) {
-      return 'Tidak ada meeting berikutnya';
-    }
-
-    const diffMs = nextStart.getTime() - this.selectedDate.getTime();
-    if (diffMs <= 0) {
-      return '00:00:00';
-    }
-
-    return this.formatDuration(diffMs);
-  }
-
-  get todayMeetingsList(): any[] {
-    const activeMeeting = this.currentMeeting;
-    if (!activeMeeting) {
-      return this.todayBookings;
-    }
-    return this.todayBookings.filter((booking: any) => booking?.id !== activeMeeting?.id);
-  }
-
-  private isMeetingActiveNow(booking: any, now: Date): boolean {
-    const start = this.parseDateTime(booking?.start_time);
-    const end = this.parseDateTime(booking?.end_time);
-
-    if (!start || !end) {
-      return false;
-    }
-
-    return now >= start && now < end;
-  }
-
   /**
    * Get the remaining time in minutes for the current meeting
    */
@@ -720,37 +608,131 @@ export class EachRoomComponent implements OnInit, OnDestroy {
       return -1;
     }
 
-    const endTime = this.parseDateTime(activeMeeting.end_time);
-    if (!endTime) {
+    if (!Number.isFinite(activeMeeting.endTimestamp)) {
       return -1;
     }
 
-    const remainingMs = endTime.getTime() - this.selectedDate.getTime();
+    const remainingMs = activeMeeting.endTimestamp - this.selectedDate.getTime();
     return Math.floor(remainingMs / (1000 * 60));
   }
 
   /**
-   * Get the room occupancy color state
-   * Returns: 'green' (unoccupied), 'red' (occupied), 'yellow' (almost done - 10 minutes left)
+   * Refresh all time-sensitive UI state from already-processed schedule data.
    */
-  getRoomOccupancyState(): 'green' | 'red' | 'yellow' {
-    const activeMeeting = this.currentMeeting;
+  private updateScheduleViewState(): void {
+    const nowTimestamp = this.selectedDate.getTime();
+    const activeMeeting = this.todayBookings.find((booking: DisplayBooking) =>
+      Number.isFinite(booking.startTimestamp) &&
+      Number.isFinite(booking.endTimestamp) &&
+      nowTimestamp >= booking.startTimestamp &&
+      nowTimestamp < booking.endTimestamp
+    ) ?? null;
 
-    // No meeting - room is unoccupied (Green)
+    this.currentMeeting = activeMeeting;
+    this.todayMeetingsList = activeMeeting
+      ? this.todayBookings.filter((booking: DisplayBooking) => booking.id !== activeMeeting.id)
+      : this.todayBookings;
+    this.isRoomFreeAllDay = !activeMeeting && this.todayBookings.length === 0;
+    this.roomStatusLabel = activeMeeting ? 'Occupied' : 'Unoccupied';
+    this.currentMeetingBadgeLabel = activeMeeting ? 'Current Meeting' : 'Available until';
+    this.roomOccupancyState = this.resolveRoomOccupancyState(activeMeeting);
+
+    if (activeMeeting) {
+      this.nextMeetingCountdownLabel = '';
+      return;
+    }
+
+    const nextMeeting = this.getNextUpcomingMeeting(nowTimestamp);
+    if (!nextMeeting || !Number.isFinite(nextMeeting.startTimestamp)) {
+      this.nextMeetingCountdownLabel = 'Tidak ada meeting berikutnya';
+      return;
+    }
+
+    const diffMs = nextMeeting.startTimestamp - nowTimestamp;
+    this.nextMeetingCountdownLabel = diffMs <= 0 ? '00:00:00' : this.formatDuration(diffMs);
+  }
+
+  private refreshLiveState(now: Date): void {
+    const previousIsoDate = this.selectedIsoDate;
+    const nextIsoDate = this.getLocalIsoDate(now);
+
+    this.selectedDate = now;
+    this.selectedIsoDate = nextIsoDate;
+    this.currentTimeText = this.timeFormatter.format(now);
+    this.dateHeadlineText = this.dateHeadlineFormatter.format(now);
+    this.dateWeekYearText = this.dateWeekYearFormatter.format(now);
+
+    if (this.todayBookings.length === 0 && this.futureDateGroups.length === 0) {
+      this.updateScheduleViewState();
+      return;
+    }
+
+    if (previousIsoDate && nextIsoDate !== previousIsoDate) {
+      this.filterBookingsByDate();
+      return;
+    }
+
+    this.updateScheduleViewState();
+  }
+
+  private resolveRoomOccupancyState(activeMeeting: DisplayBooking | null): 'green' | 'red' | 'yellow' {
     if (!activeMeeting) {
       return 'green';
     }
 
-    // Meeting is happening - check remaining time
     const remainingMinutes = this.getRemainingMinutes();
-
-    // Less than or equal to 10 minutes remaining - Yellow
     if (remainingMinutes <= 10 && remainingMinutes > 0) {
       return 'yellow';
     }
 
-    // More than 10 minutes remaining - Red
     return 'red';
+  }
+
+  private getNextUpcomingMeeting(nowTimestamp: number): DisplayBooking | null {
+    const todayNextMeeting = this.todayBookings.find((booking: DisplayBooking) => booking.startTimestamp > nowTimestamp);
+    if (todayNextMeeting) {
+      return todayNextMeeting;
+    }
+
+    for (const group of this.futureDateGroups) {
+      if (group.schedules.length > 0) {
+        return group.schedules[0];
+      }
+    }
+
+    return null;
+  }
+
+  private createDisplayBooking(schedule: any): DisplayBooking {
+    const startTime = typeof schedule?.start_time === 'string' ? schedule.start_time : '';
+    const endTime = typeof schedule?.end_time === 'string' ? schedule.end_time : '';
+    const startDate = this.parseDateTime(startTime);
+    const endDate = this.parseDateTime(endTime);
+
+    return {
+      ...schedule,
+      id: schedule?.id ?? null,
+      start_time: startTime,
+      end_time: endTime,
+      topic: typeof schedule?.topic === 'string' ? schedule.topic : '',
+      pic: typeof schedule?.pic === 'string' ? schedule.pic : '',
+      timeRangeLabel: `${this.formatTime(startTime)} - ${this.formatTime(endTime)}`,
+      startTimestamp: startDate ? startDate.getTime() : Number.POSITIVE_INFINITY,
+      endTimestamp: endDate ? endDate.getTime() : Number.POSITIVE_INFINITY
+    };
+  }
+
+  private formatFutureDate(isoDate: string): string {
+    const date = new Date(`${isoDate}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? isoDate : this.futureDateFormatter.format(date);
+  }
+
+  trackByBooking(_index: number, booking: DisplayBooking): number | string {
+    return booking.id ?? `${booking.start_time}-${booking.end_time}-${booking.topic}`;
+  }
+
+  trackByFutureDate(_index: number, group: FutureBookingGroup): string {
+    return group.date;
   }
 
   private parseDateTime(dateTimeValue: string): Date | null {

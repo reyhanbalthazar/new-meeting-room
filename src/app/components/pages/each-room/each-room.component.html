@@ -12,15 +12,15 @@
 
   <main class="room-display__main">
     <section class="room-display__headline">
-      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + getRoomOccupancyState()">
+      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + roomOccupancyState">
         <h1>{{ selectedRoomName || 'Meeting Room' }}</h1>
       </div>
 
       <div class="room-display__clock-block">
-        <div class="room-display__clock-time">{{ getTimePart() }}</div>
+        <div class="room-display__clock-time">{{ currentTimeText }}</div>
         <div class="room-display__clock-date">
-          <p>{{ getDateHeadlinePart() }}</p>
-          <p>{{ getDateWeekYearPart() }}</p>
+          <p>{{ dateHeadlineText }}</p>
+          <p>{{ dateWeekYearText }}</p>
         </div>
       </div>
     </section>
@@ -30,13 +30,13 @@
 
 
         <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingLandscape">
-          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
+          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + roomOccupancyState">
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
             <div class="room-display__current-card-inner">
               <div class="room-display__current-time">
-                {{ formatTime(activeMeeting.start_time) }} - {{ formatTime(activeMeeting.end_time) }}
+                {{ activeMeeting.timeRangeLabel }}
               </div>
               <div class="room-display__current-details">
                 <p class="room-display__current-topic">{{ activeMeeting.topic }}</p>
@@ -47,7 +47,7 @@
         </ng-container>
 
         <ng-template #noCurrentMeetingLandscape>
-          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
+          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + roomOccupancyState">
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
@@ -76,9 +76,9 @@
         <h2>Today Schedule</h2>
 
         <ng-container *ngIf="todayMeetingsList.length > 0; else noTodayBookingsLandscape">
-          <div *ngFor="let booking of todayMeetingsList" class="room-display__schedule-item">
+          <div *ngFor="let booking of todayMeetingsList; trackBy: trackByBooking" class="room-display__schedule-item">
             <div class="room-display__schedule-time">
-              {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
+              {{ booking.timeRangeLabel }}
             </div>
             <div class="room-display__schedule-details">
               <p class="room-display__schedule-topic">{{ booking.topic }}</p>
@@ -98,11 +98,11 @@
         <h2>Upcoming Schedule</h2>
 
         <ng-container *ngIf="hasFutureBookings; else noFutureBookingsLandscape">
-          <ng-container *ngFor="let group of futureDateGroups">
-            <div class="room-display__schedule-date-header">{{ formatDateLabel(group.date) }}</div>
-            <div *ngFor="let booking of group.schedules" class="room-display__schedule-item">
+          <ng-container *ngFor="let group of futureDateGroups; trackBy: trackByFutureDate">
+            <div class="room-display__schedule-date-header">{{ group.label }}</div>
+            <div *ngFor="let booking of group.schedules; trackBy: trackByBooking" class="room-display__schedule-item">
               <div class="room-display__schedule-time">
-                {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
+                {{ booking.timeRangeLabel }}
               </div>
               <div class="room-display__schedule-details">
                 <p class="room-display__schedule-topic">{{ booking.topic }}</p>
@@ -160,15 +160,15 @@
 
   <main class="room-display__main">
     <section class="room-display__headline">
-      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + getRoomOccupancyState()">
+      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + roomOccupancyState">
         <h1>{{ selectedRoomName || 'Meeting Room' }}</h1>
       </div>
 
       <div class="room-display__clock-block">
-        <div class="room-display__clock-time">{{ getTimePart() }}</div>
+        <div class="room-display__clock-time">{{ currentTimeText }}</div>
         <div class="room-display__clock-date">
-          <p>{{ getDateHeadlinePart() }}</p>
-          <p>{{ getDateWeekYearPart() }}</p>
+          <p>{{ dateHeadlineText }}</p>
+          <p>{{ dateWeekYearText }}</p>
         </div>
       </div>
     </section>
@@ -177,10 +177,10 @@
       <section class="room-display__current-section">
         
         <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingPortrait">
-          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
+          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + roomOccupancyState">
             <div class="room-display__current-card-inner">
               <div class="room-display__current-time">
-                {{ formatTime(activeMeeting.start_time) }} - {{ formatTime(activeMeeting.end_time) }}
+                {{ activeMeeting.timeRangeLabel }}
               </div>
               <div class="room-display__current-details">
                 <p class="room-display__current-topic">{{ activeMeeting.topic }}</p>
@@ -191,7 +191,7 @@
         </ng-container>
 
         <ng-template #noCurrentMeetingPortrait>
-          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + getRoomOccupancyState()">
+          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + roomOccupancyState">
             <div class="room-display__current-card-header">
               <h2>Current Schedule</h2>
             </div>
@@ -218,9 +218,9 @@
         <h2>Today Schedule</h2>
 
         <ng-container *ngIf="todayMeetingsList.length > 0; else noTodayBookingsPortrait">
-          <div *ngFor="let booking of todayMeetingsList" class="room-display__schedule-item">
+          <div *ngFor="let booking of todayMeetingsList; trackBy: trackByBooking" class="room-display__schedule-item">
             <div class="room-display__schedule-time">
-              {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
+              {{ booking.timeRangeLabel }}
             </div>
             <div class="room-display__schedule-details">
               <p class="room-display__schedule-topic">{{ booking.topic }}</p>
@@ -238,11 +238,11 @@
         <h2>Upcoming Schedule</h2>
 
         <ng-container *ngIf="hasFutureBookings; else noFutureBookingsPortrait">
-          <ng-container *ngFor="let group of futureDateGroups">
-            <div class="room-display__schedule-date-header">{{ formatDateLabel(group.date) }}</div>
-            <div *ngFor="let booking of group.schedules" class="room-display__schedule-item">
+          <ng-container *ngFor="let group of futureDateGroups; trackBy: trackByFutureDate">
+            <div class="room-display__schedule-date-header">{{ group.label }}</div>
+            <div *ngFor="let booking of group.schedules; trackBy: trackByBooking" class="room-display__schedule-item">
               <div class="room-display__schedule-time">
-                {{ formatTime(booking.start_time) }} - {{ formatTime(booking.end_time) }}
+                {{ booking.timeRangeLabel }}
               </div>
               <div class="room-display__schedule-details">
                 <p class="room-display__schedule-topic">{{ booking.topic }}</p>
