@@ -593,6 +593,33 @@ export class EachRoomComponent implements OnInit, OnDestroy {
     });
   }
 
+  get futureDateGroups(): { date: string; schedules: any[] }[] {
+    const result: { date: string; schedules: any[] }[] = [];
+    this.upcomingBookings.forEach((monthData: any) => {
+      const dates = Array.isArray(monthData?.dates) ? monthData.dates : [];
+      dates.forEach((dateData: any) => {
+        if (Array.isArray(dateData?.schedules) && dateData.schedules.length > 0) {
+          result.push({ date: dateData.date, schedules: dateData.schedules });
+        }
+      });
+    });
+    return result;
+  }
+
+  get hasFutureBookings(): boolean {
+    return this.futureDateGroups.length > 0;
+  }
+
+  formatDateLabel(isoDate: string): string {
+    const date = new Date(isoDate + 'T00:00:00');
+    return date.toLocaleDateString('en-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
   get hasUpcomingBookings(): boolean {
     return this.upcomingBookings.some((monthData: any) =>
       Array.isArray(monthData?.dates) &&
