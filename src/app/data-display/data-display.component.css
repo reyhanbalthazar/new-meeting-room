@@ -5,6 +5,19 @@
     min-height: 100vh;
 }
 
+.room-tabs-sticky {
+  position: sticky;
+  top: calc(var(--header-height) + var(--banner-height));
+  z-index: calc(var(--z-index-sticky) - 2);
+  background: white;
+}
+
+@media screen and (max-width: 768px) {
+  .room-tabs-sticky {
+    top: calc(var(--header-height-mobile) + var(--banner-height));
+  }
+}
+
 .page-container>.footer-background {
     position: relative;
 }

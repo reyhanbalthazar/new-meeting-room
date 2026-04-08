@@ -3,6 +3,19 @@ module.exports = {
   content: ["./src/**/*.{html,js,ts}"],
   darkMode: 'class',
   theme: {
+    screens: {
+      'xs': '475px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+      // Custom screen sizes for specific display requirements
+      'landscape': {'raw': '(min-width: 1920px) and (max-height: 1080px)'},
+      'portrait': {'raw': '(max-width: 1080px) and (min-height: 1920px)'},
+      '1080p': {'raw': '(min-width: 1920px) and (min-height: 1080px)'},
+      'mobile-portrait': {'raw': '(max-width: 1080px) and (min-height: 1920px)'},
+    },
     extend: {
       colors: {
         'dmm-green': '#28A745',

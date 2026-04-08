@@ -20,4 +20,13 @@ export class HeaderComponent implements OnInit {
       this.isHomePage = this.router.url === '/';
     });
   }
+
+  navigateToBookingForm(): void {
+    const currentQueryParams = this.router.parseUrl(this.router.url).queryParams;
+    const roomId = currentQueryParams['roomId'];
+
+    this.router.navigate(['/form-booking'], {
+      queryParams: roomId ? { roomId } : {}
+    });
+  }
 }

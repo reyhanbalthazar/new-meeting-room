@@ -1,73 +1,287 @@
-<!-- Header -->
-<div [ngClass]="{'fixed-footer': filteredBookings.length <= 1}">
-  <img src="../../../../../../assets/banner-footer.png" alt="qr-scan-booking" style="width: 100%; height: auto;">
-  <!-- <p>Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.</p> -->
-</div>
-<div class="relative">
-  <!-- Booking List -->
-  <div class="page-container w-full">
-    <ng-container *ngIf="filteredBookings.length > 0; else noBookings">
-      <div *ngFor="let monthGroup of filteredBookings" class="flex flex-col gap-4">
-        <!-- Header Bulan -->
-        <p class="text-4xl font-bold px-5 pt-6">{{ monthGroup.month + '-01' | date: 'MMMM' }}</p>
+<div *ngIf="signageOrientation === 'LANDSCAPE'" class="room-display room-display--landscape">
+   <header class="room-display__brand">
+    <div class="room-display__brand-pattern"></div>
+    <div class="room-display__brand-content">
+      <img src="../../../../assets/dmmx-logo-white.png" alt="DMMX Logo" class="room-display__brand-logo">
+      <div class="room-display__brand-qr">
+        <img src="../../../../assets/qr-code.png" alt="QR Code">
+        <p>Pindai untuk memesan ruangan.</p>
+      </div>
+    </div>
+  </header>
 
-        <!-- Looping Tanggal -->
-        <div *ngFor="let dateGroup of monthGroup.dates" class="flex flex-col mx-3">
-          <div class="flex">
-            <!-- Tanggal -->
-            <div class="mx-3 text-white text-center rounded flex flex-col date-box-large">
-              <div class="flex flex-col m-auto px-2">
-                <span class="text-lg">{{ dateGroup.date | date: 'EE' }}</span>
-                <span class="text-4xl font-bold">{{ dateGroup.date | date: 'dd' }}</span>
-              </div>
+  <main class="room-display__main">
+    <section class="room-display__headline">
+      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + roomOccupancyState">
+        <h1>{{ selectedRoomName || 'Meeting Room' }}</h1>
+      </div>
+
+      <div class="room-display__clock-block">
+        <div class="room-display__clock-time">{{ currentTimeText }}</div>
+        <div class="room-display__clock-date">
+          <p>{{ dateHeadlineText }}</p>
+          <p>{{ dateWeekYearText }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="room-display__body">
+      <section class="room-display__current-section">
+
+
+        <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingLandscape">
+          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + roomOccupancyState">
+            <div class="room-display__current-card-header">
+              <h2>Current Schedule</h2>
             </div>
-
-            <!-- Jadwal -->
-            <div class="w-full">
-              <div *ngFor="let schedule of dateGroup.schedules" class="schedule-box p-4">
-                <div class="flex h-full gap-4" style="align-items: center;">
-                  <div class="flex flex-col" style="width: 30%;">
-                    <!-- Waktu -->
-                    <div class="font-medium text-xl">
-                      {{ formatTime(schedule.start_time) }} - {{ formatTime(schedule.end_time) }}
-                    </div>
-                    <!-- PIC -->
-                    <div class="font-light text-lg text-gray-600">PIC: {{ schedule.pic }}</div>
-                  </div>
-                  <!-- Topik -->
-                  <div class="font-medium text-2xl mt-2 flex-1">
-                    {{ schedule.topic }}
-                  </div>
-                </div>
+            <div class="room-display__current-card-inner">
+              <div class="room-display__current-time">
+                {{ activeMeeting.timeRangeLabel }}
+              </div>
+              <div class="room-display__current-details">
+                <p class="room-display__current-topic">{{ activeMeeting.topic }}</p>
+                <p class="room-display__current-pic">PIC: {{ activeMeeting.pic }}</p>
               </div>
             </div>
           </div>
+        </ng-container>
+
+        <ng-template #noCurrentMeetingLandscape>
+          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + roomOccupancyState">
+            <div class="room-display__current-card-header">
+              <h2>Current Schedule</h2>
+            </div>
+            <ng-container *ngIf="isRoomFreeAllDay; else countdownLandscape">
+              <div class="room-display__current-card-inner room-display__current-card-inner--free">
+                <p class="room-display__available-label">Room is available</p>
+                <p class="room-display__available-sub">No session in progress</p>
+              </div>
+            </ng-container>
+            <ng-template #countdownLandscape>
+              <div class="room-display__current-card-inner">
+                <div class="room-display__current-time">
+                  <div class="room-display__current-time">{{ roomStatusLabel }}</div>
+                </div>
+                <div class="room-display__current-details">
+                  <p class="room-display__current-topic">{{ nextMeetingCountdownLabel }}</p>
+                  <p class="room-display__current-pic">{{ currentMeetingBadgeLabel }}</p>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </ng-template>
+      </section>
+
+      <section class="room-display__schedule-section">
+        <h2>Today Schedule</h2>
+
+        <ng-container *ngIf="todayMeetingsList.length > 0; else noTodayBookingsLandscape">
+          <div *ngFor="let booking of todayMeetingsList; trackBy: trackByBooking" class="room-display__schedule-item">
+            <div class="room-display__schedule-time">
+              {{ booking.timeRangeLabel }}
+            </div>
+            <div class="room-display__schedule-details">
+              <p class="room-display__schedule-topic">{{ booking.topic }}</p>
+              <p class="room-display__schedule-pic">PIC: {{ booking.pic }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noTodayBookingsLandscape>
+          <div class="room-display__empty-state">No further bookings scheduled for today</div>
+        </ng-template>
+      </section>
+
+      <!-- <hr style="height: 3px; background-color: #000000; border: none; margin: 1em 0;"> -->
+
+      <section class="room-display__schedule-section room-display__schedule-section--next-day">
+        <h2>Upcoming Schedule</h2>
+
+        <ng-container *ngIf="hasFutureBookings; else noFutureBookingsLandscape">
+          <ng-container *ngFor="let group of futureDateGroups; trackBy: trackByFutureDate">
+            <div class="room-display__schedule-date-header">{{ group.label }}</div>
+            <div *ngFor="let booking of group.schedules; trackBy: trackByBooking" class="room-display__schedule-item">
+              <div class="room-display__schedule-time">
+                {{ booking.timeRangeLabel }}
+              </div>
+              <div class="room-display__schedule-details">
+                <p class="room-display__schedule-topic">{{ booking.topic }}</p>
+                <p class="room-display__schedule-pic">PIC: {{ booking.pic }}</p>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <ng-template #noFutureBookingsLandscape>
+          <div class="room-display__empty-state">No upcoming bookings scheduled.</div>
+        </ng-template>
+      </section>
+    </section>
+  </main>
+
+  <footer class="room-display__footer" [class.room-display__footer--empty]="!isAdsEnable">
+    <ng-container *ngIf="isAdsEnable; else fallbackLandscapeFooter">
+      <div class="room-display__media-stage">
+        <img *ngIf="isCurrentAdImage && currentAdFileUrl" [src]="currentAdFileUrl" [alt]="currentAdName || 'Ads image'"
+          class="room-display__media-asset">
+        <video #currentAdVideoEl *ngIf="isCurrentAdVideo && currentAdFileUrl" [src]="currentAdFileUrl"
+          class="room-display__media-asset" [autoplay]="true" [muted]="true" [defaultMuted]="true" playsinline
+          webkit-playsinline preload="metadata" [loop]="roomAdsItems.length === 1"
+          (loadedmetadata)="onCurrentAdVideoLoadedMetadata($event)" (canplay)="onCurrentAdVideoCanPlay($event)"
+          (error)="onCurrentAdVideoError($event)" (ended)="onCurrentAdVideoEnded()"></video>
+        <div *ngIf="isCurrentAdVideo && currentAdVideoError" class="room-display__media-message">
+          {{ currentAdVideoError }}
+        </div>
+        <div *ngIf="!currentAdFileUrl" class="room-display__media-message">
+          Tidak ada media ads
         </div>
       </div>
     </ng-container>
 
-    <!-- No Bookings Template -->
-    <ng-template #noBookings>
-      <div class="flex flex-col items-center justify-center h-96 p-4">
-        <img src="../../../../../../assets/no-booking.png" alt="No Bookings Found" class="max-w-xs max-h-xs"
-          style="width: 30em; height: 30em;">
-        <p class="text-center text-gray-500 mt-4">Tidak ada jadwal booking untuk ruangan ini saat ini</p>
+    <ng-template #fallbackLandscapeFooter>
+      <div class="room-display__media-stage room-display__media-stage--fallback"
+        [style.background-image]="footerBackgroundImage ? 'url(' + footerBackgroundImage + ')' : 'url(assets/banner-footer.png)'">
       </div>
     </ng-template>
-  </div>
+  </footer>
+</div>
 
-  <div class="footer" style="background-image: url('../../../../assets/bcakground.png'); background-size: cover; background-position: center;">
-    <div class="room-name">
-      {{ selectedRoomName }}
-    </div>
-    <div class="qr-scan-booking">
-      <img src="../../../../../../assets/qr-scan-booking.png" alt="">
-      <div>
-        <img style="width: 7em;" src="../../../../../../assets/dmmx-logo-white.png" alt="">
-        <p>
-          Pindai QR ini untuk memesan ruang meeting ini atau melihat jadwal lainnya.
-        </p>
+<div *ngIf="signageOrientation === 'PORTRAIT'" class="room-display room-display--portrait">
+   <header class="room-display__brand">
+    <div class="room-display__brand-pattern"></div>
+    <div class="room-display__brand-content">
+      <img src="../../../../assets/dmmx-logo-white.png" alt="DMMX Logo" class="room-display__brand-logo">
+      <div class="room-display__brand-qr">
+        <img src="../../../../assets/qr-code.png" alt="QR Code">
+        <p>Pindai untuk memesan ruangan.</p>
       </div>
     </div>
-  </div>
+  </header>
+
+  <main class="room-display__main">
+    <section class="room-display__headline">
+      <div class="room-display__title-pill" [ngClass]="'room-display__title-pill--' + roomOccupancyState">
+        <h1>{{ selectedRoomName || 'Meeting Room' }}</h1>
+      </div>
+
+      <div class="room-display__clock-block">
+        <div class="room-display__clock-time">{{ currentTimeText }}</div>
+        <div class="room-display__clock-date">
+          <p>{{ dateHeadlineText }}</p>
+          <p>{{ dateWeekYearText }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="room-display__body">
+      <section class="room-display__current-section">
+        
+        <ng-container *ngIf="currentMeeting as activeMeeting; else noCurrentMeetingPortrait">
+          <div class="room-display__current-card" [ngClass]="'room-display__current-card--' + roomOccupancyState">
+            <div class="room-display__current-card-inner">
+              <div class="room-display__current-time">
+                {{ activeMeeting.timeRangeLabel }}
+              </div>
+              <div class="room-display__current-details">
+                <p class="room-display__current-topic">{{ activeMeeting.topic }}</p>
+                <p class="room-display__current-pic">PIC: {{ activeMeeting.pic }}</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noCurrentMeetingPortrait>
+          <div class="room-display__current-card room-display__current-card--empty" [ngClass]="'room-display__current-card--' + roomOccupancyState">
+            <div class="room-display__current-card-header">
+              <h2>Current Schedule</h2>
+            </div>
+            <ng-container *ngIf="isRoomFreeAllDay; else countdownPortrait">
+              <div class="room-display__current-card-inner room-display__current-card-inner--free">
+                <p class="room-display__available-label">Room is available</p>
+                <p class="room-display__available-sub">No session in progress</p>
+              </div>
+            </ng-container>
+            <ng-template #countdownPortrait>
+              <div class="room-display__current-card-inner">
+                <div class="room-display__current-time">{{ roomStatusLabel }}</div>
+                <div class="room-display__current-details">
+                  <p class="room-display__current-topic">{{ nextMeetingCountdownLabel }}</p>
+                  <p class="room-display__current-pic">{{ currentMeetingBadgeLabel }}</p>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </ng-template>
+      </section>
+
+      <section class="room-display__schedule-section">
+        <h2>Today Schedule</h2>
+
+        <ng-container *ngIf="todayMeetingsList.length > 0; else noTodayBookingsPortrait">
+          <div *ngFor="let booking of todayMeetingsList; trackBy: trackByBooking" class="room-display__schedule-item">
+            <div class="room-display__schedule-time">
+              {{ booking.timeRangeLabel }}
+            </div>
+            <div class="room-display__schedule-details">
+              <p class="room-display__schedule-topic">{{ booking.topic }}</p>
+              <p class="room-display__schedule-pic">PIC: {{ booking.pic }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #noTodayBookingsPortrait>
+          <div class="room-display__empty-state">No further bookings scheduled for today</div>
+        </ng-template>
+      </section>
+
+      <section class="room-display__schedule-section room-display__schedule-section--next-day">
+        <h2>Upcoming Schedule</h2>
+
+        <ng-container *ngIf="hasFutureBookings; else noFutureBookingsPortrait">
+          <ng-container *ngFor="let group of futureDateGroups; trackBy: trackByFutureDate">
+            <div class="room-display__schedule-date-header">{{ group.label }}</div>
+            <div *ngFor="let booking of group.schedules; trackBy: trackByBooking" class="room-display__schedule-item">
+              <div class="room-display__schedule-time">
+                {{ booking.timeRangeLabel }}
+              </div>
+              <div class="room-display__schedule-details">
+                <p class="room-display__schedule-topic">{{ booking.topic }}</p>
+                <p class="room-display__schedule-pic">PIC: {{ booking.pic }}</p>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+
+        <ng-template #noFutureBookingsPortrait>
+          <div class="room-display__empty-state">No upcoming bookings scheduled.</div>
+        </ng-template>
+      </section>
+    </section>
+  </main>
+
+  <footer class="room-display__footer" [class.room-display__footer--empty]="!isAdsEnable">
+    <ng-container *ngIf="isAdsEnable; else fallbackPortraitFooter">
+      <div class="room-display__media-stage">
+        <img *ngIf="isCurrentAdImage && currentAdFileUrl" [src]="currentAdFileUrl" [alt]="currentAdName || 'Ads image'"
+          class="room-display__media-asset">
+        <video #currentAdVideoEl *ngIf="isCurrentAdVideo && currentAdFileUrl" [src]="currentAdFileUrl"
+          class="room-display__media-asset" [autoplay]="true" [muted]="true" [defaultMuted]="true" playsinline
+          webkit-playsinline preload="metadata" [loop]="roomAdsItems.length === 1"
+          (loadedmetadata)="onCurrentAdVideoLoadedMetadata($event)" (canplay)="onCurrentAdVideoCanPlay($event)"
+          (error)="onCurrentAdVideoError($event)" (ended)="onCurrentAdVideoEnded()"></video>
+        <div *ngIf="isCurrentAdVideo && currentAdVideoError" class="room-display__media-message">
+          {{ currentAdVideoError }}
+        </div>
+        <div *ngIf="!currentAdFileUrl" class="room-display__media-message">
+          Tidak ada media ads
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #fallbackPortraitFooter>
+      <div class="room-display__media-stage room-display__media-stage--fallback"
+        [style.background-image]="footerBackgroundImage ? 'url(' + footerBackgroundImage + ')' : 'url(assets/banner-footer.png)'">
+      </div>
+    </ng-template>
+  </footer>
 </div>

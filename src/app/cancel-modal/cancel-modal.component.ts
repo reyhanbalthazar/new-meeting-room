@@ -31,7 +31,7 @@ export class CancelModalComponent {
   verifyEmail() {
     console.log(this.data);
     if (this.enteredEmail.trim() === this.data.bookingEmail.trim() || this.enteredEmail.trim() === 'fahmi.hamka@dmmxcorp.com'|| this.enteredEmail.trim() === 'yessica.noviana@dmmgroup.id') {
-      this.http.get(environment.apiUrl + `/bookings-delete/${this.data.id}`, {}).subscribe(
+      this.apiService.deleteBooking(this.data.id).subscribe(
         (response: any) => {
           console.log('Booking canceled successfully:', response);
         },
